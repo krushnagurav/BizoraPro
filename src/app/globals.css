@@ -1,0 +1,55 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* FORCE DARK MODE COLORS (Black & Gold) */
+    --background: 0 0% 0%; 
+    --foreground: 45 20% 98%; 
+
+    /* Cards */
+    --card: 0 0% 4%;
+    --card-foreground: 45 20% 98%;
+    
+    /* Popovers */
+    --popover: 0 0% 4%;
+    --popover-foreground: 45 20% 98%;
+
+    /* PRIMARY: Rich Gold */
+    --primary: 45 93% 47%;
+    --primary-foreground: 0 0% 9%; 
+
+    /* SECONDARY: Dark Grey */
+    --secondary: 0 0% 12%;
+    --secondary-foreground: 45 20% 98%;
+
+    /* MUTED */
+    --muted: 0 0% 12%;
+    --muted-foreground: 0 0% 60%;
+
+    /* ACCENT */
+    --accent: 0 0% 12%;
+    --accent-foreground: 45 20% 98%;
+
+    /* DESTRUCTIVE */
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 45 20% 98%;
+
+    /* BORDERS */
+    --border: 0 0% 15%;
+    --input: 0 0% 15%;
+    --ring: 45 93% 47%;
+
+    --radius: 0.5rem;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}

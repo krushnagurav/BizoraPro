@@ -21,6 +21,7 @@ const navItems = [
   { name: "Categories", href: "/categories", icon: Tag },
   { name: "Orders", href: "/orders", icon: ListOrdered },
   { name: "Settings", href: "/settings", icon: Settings },
+  { name: "Appearance", href: "/settings/appearance", icon: Settings },
 ];
 
 export function Sidebar() {

@@ -4,6 +4,7 @@
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { createClient } from "../lib/supabase/server";
+import { revalidatePath } from "next/cache";
 
 // --- STEP 1 VALIDATION ---
 const step1Schema = z.object({
@@ -130,4 +131,57 @@ export async function completeStep3(formData: FormData) {
   await supabase.from("shops").update({ onboarding_step: 4 }).eq("id", shop.id);
 
   redirect("/dashboard");
+}
+
+// --- THEME & SETTINGS ACTIONS ---
+
+export async function updateShopAppearanceAction(formData: FormData) {
+  const bannerUrl = formData.get("bannerUrl") as string;
+  const primaryColor = formData.get("primaryColor") as string;
+  
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
+  if (!user) return { error: "Login required" };
+
+  // Update Shop
+  const { error } = await supabase
+    .from("shops")
+    .update({
+      theme_config: {
+        primaryColor: primaryColor || "#E6B800",
+        bannerUrl: bannerUrl || "",
+      }
+    })
+    .eq("owner_id", user.id);
+
+  if (error) return { error: error.message };
+
+  return { success: "Shop appearance updated!" };
+}
+
+
+export async function updateShopSettingsAction(formData: FormData) {
+  const isOpen = formData.get("isOpen") === "on"; // Checkbox returns "on" if checked
+  const minOrder = Number(formData.get("minOrder"));
+  const deliveryNote = formData.get("deliveryNote") as string;
+
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
+  if (!user) return { error: "Login required" };
+
+  const { error } = await supabase
+    .from("shops")
+    .update({
+      is_open: isOpen,
+      min_order_value: minOrder,
+      delivery_note: deliveryNote
+    })
+    .eq("owner_id", user.id);
+
+  if (error) return { error: error.message };
+
+  revalidatePath("/settings");
+  return { success: "Settings updated" };
 }

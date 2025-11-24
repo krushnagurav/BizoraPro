@@ -76,7 +76,7 @@ export function ImageUpload({ value, onChange, disabled }: ImageUploadProps) {
             <X className="h-4 w-4" />
           </Button>
         </div>
-        <Image fill className="object-cover" alt="Product" src={value} />
+        <Image fill className="object-cover" alt="Product" src={value} unoptimized />
       </div>
     );
   }

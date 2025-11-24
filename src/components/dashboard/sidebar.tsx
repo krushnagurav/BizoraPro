@@ -10,15 +10,17 @@ import {
   ListOrdered, 
   Settings, 
   LogOut, 
-  Store 
+  Store, 
+  Tag
 } from "lucide-react";
 import { logoutAction } from "@/src/actions/auth-actions";
 
 const navItems = [
   { name: "Overview", href: "/dashboard", icon: LayoutDashboard },
-  { name: "Products", href: "/dashboard/products", icon: ShoppingBag },
-  { name: "Orders", href: "/dashboard/orders", icon: ListOrdered },
-  { name: "Settings", href: "/dashboard/settings", icon: Settings },
+  { name: "Products", href: "/products", icon: ShoppingBag },
+  { name: "Categories", href: "/categories", icon: Tag },
+  { name: "Orders", href: "/orders", icon: ListOrdered },
+  { name: "Settings", href: "/settings", icon: Settings },
 ];
 
 export function Sidebar() {

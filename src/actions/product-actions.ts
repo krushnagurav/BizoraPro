@@ -69,7 +69,7 @@ export async function createProductAction(formData: FormData) {
     name: parsed.data.name,
     price: parsed.data.price,
     sale_price: parsed.data.salePrice,
-    category: parsed.data.category, 
+    category_id: parsed.data.category,
     description: parsed.data.description,
     image_url: parsed.data.imageUrl || "",
     status: 'active'
@@ -118,7 +118,7 @@ export async function updateProductAction(formData: FormData) {
     name: parsed.data.name,
     price: parsed.data.price,
     sale_price: parsed.data.salePrice,
-    category: parsed.data.category,
+    category_id: parsed.data.category,
     description: parsed.data.description,
   };
 
@@ -169,4 +169,48 @@ export async function restoreProductAction(formData: FormData) {
   if (error) return { error: error.message };
   
   revalidatePath("/products");
+}
+
+// --- CATEGORY ACTIONS ---
+
+const categorySchema = z.object({
+  name: z.string().min(2, "Category name too short"),
+});
+
+export async function createCategoryAction(formData: FormData) {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
+  // 1. Get Shop
+  const { data: shop } = await supabase.from("shops").select("id").eq("owner_id", user?.id).single();
+  if (!shop) return { error: "Shop not found" };
+
+  // 2. Validate
+  const raw = { name: formData.get("name") };
+  const parsed = categorySchema.safeParse(raw);
+  if (!parsed.success) return { error: parsed.error.issues[0].message };
+
+  // 3. Insert
+  const { error } = await supabase
+    .from("categories")
+    .insert({ shop_id: shop.id, name: parsed.data.name });
+
+  if (error) return { error: error.message };
+
+  revalidatePath("/categories"); // Update the list instantly
+  return { success: "Category Added" };
+}
+
+export async function deleteCategoryAction(formData: FormData) {
+  const id = formData.get("id") as string;
+  const supabase = await createClient();
+
+  const { error } = await supabase
+    .from("categories")
+    .delete()
+    .eq("id", id);
+
+  if (error) return { error: error.message };
+
+  revalidatePath("/categories");
 }

@@ -89,7 +89,10 @@ export async function completeStep2(formData: FormData) {
   // Updating onboarding step
   const { error } = await supabase
     .from("shops")
-    .update({ onboarding_step: 3 })
+    .update({ 
+      whatsapp_number: parsed.data.whatsapp,
+      onboarding_step: 3 
+    })
     .eq("id", shop.id);
 
   if (error) return { error: error.message };

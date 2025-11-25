@@ -2,7 +2,6 @@
 
 import { createClient } from "@/src/lib/supabase/server";
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
 
 // 1. CREATE TICKET (Seller)
 export async function createTicketAction(formData: FormData) {

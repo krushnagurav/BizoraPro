@@ -1,6 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Shirt, Utensils, Scissors, Laptop, ShoppingCart, Sparkles, Check, ArrowRight } from "lucide-react";
-import Image from "next/image";
+import { Shirt, Utensils, Scissors, Laptop, ShoppingCart, Sparkles, ArrowRight } from "lucide-react";
 import Link from "next/link";
 
 export default function ExamplesPage() {

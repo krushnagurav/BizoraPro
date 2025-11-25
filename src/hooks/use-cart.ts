@@ -10,6 +10,11 @@ export interface CartItem {
   shop_id: string; // Crucial: We must ensure items belong to the SAME shop
 }
 
+interface Coupon {
+  code: string;
+  type: "fixed" | "percent";
+  value: number;
+}
 interface CartStore {
   items: CartItem[];
   addItem: (data: CartItem) => void;
@@ -17,13 +22,18 @@ interface CartStore {
   updateQuantity: (id: string, quantity: number) => void;
   clearCart: () => void;
   totalPrice: () => number;
+  coupon: Coupon | null;
+  applyCoupon: (c: Coupon) => void;
+  removeCoupon: () => void;
 }
 
 export const useCart = create(
   persist<CartStore>(
     (set, get) => ({
       items: [],
-      
+      coupon: null,
+      applyCoupon: (c) => set({ coupon: c }),
+      removeCoupon: () => set({ coupon: null }),
       addItem: (data: CartItem) => {
         const currentItems = get().items;
         const existingItem = currentItems.find((item) => item.id === data.id);
@@ -64,7 +74,19 @@ export const useCart = create(
       clearCart: () => set({ items: [] }),
 
       totalPrice: () => {
-        return get().items.reduce((total, item) => total + item.price * item.quantity, 0);
+        const subtotal = get().items.reduce((total, item) => total + item.price * item.quantity, 0);
+        const coupon = get().coupon;
+
+        if (!coupon) return subtotal;
+
+        let discountAmount = 0;
+        if (coupon.type === "fixed") {
+          discountAmount = coupon.value;
+        } else {
+          discountAmount = (subtotal * coupon.value) / 100;
+        }
+
+        return Math.max(0, subtotal - discountAmount); // Prevent negative total
       },
     }),
     {

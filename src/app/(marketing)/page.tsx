@@ -10,7 +10,6 @@ import {
   Edit,
   QrCode,
   ShieldCheck,
-  Check,
 } from "lucide-react";
 
 export default function LandingPage() {

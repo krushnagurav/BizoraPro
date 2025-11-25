@@ -14,7 +14,8 @@ import {
   Tag,
   Headphones,
   User,
-  ShieldCheck
+  ShieldCheck,
+  TicketPercent
 } from "lucide-react";
 import { logoutAction } from "@/src/actions/auth-actions";
 
@@ -26,7 +27,8 @@ const navItems = [
   { name: "Support", href: "/dashboard/support", icon: Headphones },
   { name: "Appearance", href: "/settings/appearance", icon: Settings },
   { name: "Profile", href: "/settings/profile", icon: User },
-  { name: "Policies", href: "/settings/policies", icon: ShieldCheck }
+  { name: "Policies", href: "/settings/policies", icon: ShieldCheck },
+  { name: "Coupons", href: "/coupons", icon: TicketPercent }
 ];
 
 export function Sidebar() {

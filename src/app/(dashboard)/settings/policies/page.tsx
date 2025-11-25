@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import { updateStorePoliciesAction } from "@/src/actions/shop-actions";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { Loader2, ShieldCheck } from "lucide-react";

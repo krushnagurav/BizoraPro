@@ -9,8 +9,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { useRouter, useParams } from "next/navigation";
-import { Loader2, ArrowLeft, MapPin, Phone, User } from "lucide-react";
+import { Loader2, ArrowLeft, MapPin, Phone, User, X, TicketPercent } from "lucide-react";
 import Link from "next/link";
+import { verifyCouponAction } from "@/src/actions/coupon-actions";
 
 export default function CheckoutPage() {
   const cart = useCart();
@@ -18,6 +19,7 @@ export default function CheckoutPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
+  const [couponCode, setCouponCode] = useState("");
 
   useEffect(() => setIsMounted(true), []);
 
@@ -34,6 +36,7 @@ export default function CheckoutPage() {
     // Append hidden data
     formData.append("slug", params.slug as string);
     formData.append("cartItems", JSON.stringify(cart.items));
+    if (cart.coupon) formData.append("couponCode", cart.coupon.code);
 
     const result = await placeOrderAction(formData);
 
@@ -43,6 +46,25 @@ export default function CheckoutPage() {
     } else if (result?.success) {
       cart.clearCart(); // Clear items
       router.push(`/${params.slug}/o/${result.orderId}`); // Redirect to success
+    }
+  };
+
+  const handleApplyCoupon = async () => {
+    if (!couponCode) return;
+    setLoading(true);
+    
+    // Calculate current subtotal manually for validation
+    const subtotal = cart.items.reduce((total, item) => total + item.price * item.quantity, 0);
+
+    const res = await verifyCouponAction(couponCode, params.slug as string, subtotal);
+    
+    setLoading(false);
+    if (res?.error) {
+      toast.error(res.error);
+      cart.removeCoupon();
+    } else if (res?.coupon) {
+      cart.applyCoupon(res.coupon);
+      toast.success("Coupon Applied!");
     }
   };
 
@@ -107,6 +129,59 @@ export default function CheckoutPage() {
             <span>Total to Pay</span>
             <span className="text-primary">₹{cart.totalPrice()}</span>
           </div>
+        </div>
+
+        {/* COUPON SECTION */}
+        <Card className="bg-card border-border/50">
+          <CardContent className="p-4">
+            {cart.coupon ? (
+              <div className="flex items-center justify-between bg-green-500/10 p-3 rounded border border-green-500/20">
+                <div className="flex items-center gap-2 text-green-600">
+                  <TicketPercent className="h-4 w-4" />
+                  <span className="font-mono font-bold">{cart.coupon.code}</span>
+                  <span className="text-xs">
+                    ({cart.coupon.type === 'percent' ? `${cart.coupon.value}%` : `₹${cart.coupon.value}`} Off)
+                  </span>
+                </div>
+                <Button 
+                  type="button" 
+                  size="icon" 
+                  variant="ghost" 
+                  className="h-6 w-6 hover:text-red-500"
+                  onClick={() => cart.removeCoupon()}
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              </div>
+            ) : (
+              <div className="flex gap-2">
+                <Input 
+                  placeholder="Promo Code" 
+                  value={couponCode}
+                  onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
+                  className="font-mono uppercase"
+                />
+                <Button type="button" variant="outline" onClick={handleApplyCoupon} disabled={loading}>
+                  Apply
+                </Button>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Order Summary (Updated) */}
+        <div className="bg-secondary/20 p-4 rounded-lg space-y-2 text-sm">
+           {/* ... existing subtotal ... */}
+           
+           {/* ADD DISCOUNT ROW */}
+           {cart.coupon && (
+             <div className="flex justify-between text-green-600">
+               <span>Discount ({cart.coupon.code})</span>
+               <span>- ₹{(cart.items.reduce((a, b) => a + b.price * b.quantity, 0) - cart.totalPrice()).toFixed(2)}</span>
+             </div>
+           )}
+
+           {/* ... existing total ... */}
         </div>
 
         <Button className="w-full h-14 text-lg font-bold bg-green-600 hover:bg-green-700 text-white" disabled={loading}>

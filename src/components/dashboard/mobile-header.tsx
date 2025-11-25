@@ -16,7 +16,8 @@ import {
   Tag,
   LogOut, 
   User,
-  ShieldCheck
+  ShieldCheck,
+  TicketPercent
 } from "lucide-react";
 import { useState } from "react";
 
@@ -29,7 +30,8 @@ const navItems = [
   { name: "Settings", href: "/settings", icon: Settings },
   { name: "Appearance", href: "/settings/appearance", icon: Settings },
   { name: "Profile", href: "/settings/profile", icon: User },
-  { name: "Policies", href: "/settings/policies", icon: ShieldCheck }
+  { name: "Policies", href: "/settings/policies", icon: ShieldCheck },
+  { name: "Coupons", href: "/coupons", icon: TicketPercent }
 ];
 
 export function MobileHeader() {

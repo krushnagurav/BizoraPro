@@ -6,13 +6,13 @@ import { z } from "zod";
 
 // Validation Schema
 const orderSchema = z.object({
-  slug: z.string(), // Shop Slug
+  slug: z.string(),
   name: z.string().min(2, "Name is required"),
   phone: z.string().min(10, "Phone number is required"),
   city: z.string().min(2, "City is required"),
   address: z.string().optional(),
-  // We receive items as a JSON string from the client
   cartItems: z.string(), 
+  couponCode: z.string().optional().nullable(), // Allow null/undefined
 });
 
 export async function placeOrderAction(formData: FormData) {
@@ -26,6 +26,7 @@ export async function placeOrderAction(formData: FormData) {
     city: formData.get("city"),
     address: formData.get("address"),
     cartItems: formData.get("cartItems"),
+    couponCode: formData.get("couponCode"), // ✅ FIX: Added this line
   };
 
   const parsed = orderSchema.safeParse(rawData);
@@ -44,7 +45,6 @@ export async function placeOrderAction(formData: FormData) {
   if (!shop) return { error: "Shop not found" };
 
   // 3. RE-CALCULATE TOTAL (Security Step)
-  // We fetch real prices from DB to prevent tampering
   const productIds = cartItems.map((item: any) => item.id);
   const { data: products } = await supabase
     .from("products")
@@ -54,19 +54,45 @@ export async function placeOrderAction(formData: FormData) {
   let totalAmount = 0;
   const finalItems = cartItems.map((cartItem: any) => {
     const realProduct = products?.find((p) => p.id === cartItem.id);
-    if (!realProduct) return null; // Product deleted? Skip.
+    if (!realProduct) return null;
     
     const itemTotal = realProduct.price * cartItem.quantity;
     totalAmount += itemTotal;
 
-    // Create Snapshot Item
     return {
       id: realProduct.id,
       name: realProduct.name,
-      price: realProduct.price, // Snapshot price
+      price: realProduct.price,
       qty: cartItem.quantity,
     };
-  }).filter(Boolean); // Remove nulls
+  }).filter(Boolean);
+
+  // 3.5 APPLY COUPON LOGIC (Server Side)
+  if (parsed.data.couponCode) {
+    const { data: coupon } = await supabase
+      .from("coupons")
+      .select("*")
+      .eq("shop_id", shop.id)
+      .eq("code", parsed.data.couponCode)
+      .single();
+
+    if (coupon && coupon.is_active) {
+       // Calculate Discount
+       let discount = 0;
+       if (coupon.discount_type === 'fixed') {
+         discount = coupon.discount_value;
+       } else {
+         discount = (totalAmount * coupon.discount_value) / 100;
+       }
+       totalAmount = Math.max(0, totalAmount - discount);
+
+       // ✅ FIX: Increment usage directly (No RPC needed)
+       await supabase
+         .from("coupons")
+         .update({ used_count: (coupon.used_count || 0) + 1 })
+         .eq("id", coupon.id);
+    }
+  }
 
   // 4. Create Order in DB
   const { data: order, error } = await supabase
@@ -81,14 +107,13 @@ export async function placeOrderAction(formData: FormData) {
       },
       items: finalItems,
       total_amount: totalAmount,
-      status: "draft", // Draft until they click WhatsApp
+      status: "draft",
     })
     .select("id")
     .single();
 
   if (error) return { error: error.message };
 
-  // 5. Return Success + Order ID (Client will redirect)
   return { success: true, orderId: order.id };
 }
 
@@ -98,7 +123,6 @@ export async function updateOrderStatusAction(formData: FormData) {
   
   const supabase = await createClient();
   
-  // Update Status
   const { error } = await supabase
     .from("orders")
     .update({ status: newStatus })
@@ -106,10 +130,7 @@ export async function updateOrderStatusAction(formData: FormData) {
 
   if (error) return { error: error.message };
   
-  // Tell Next.js to refresh the Order List
   revalidatePath("/orders");
-  
-  // Tell Next.js to refresh the specific Order Detail page
   revalidatePath(`/orders/${orderId}`);
   
   return { success: "Order status updated" };

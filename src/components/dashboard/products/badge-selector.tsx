@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Badge } from "@/components/ui/badge";
 import { Check } from "lucide-react";
 
 const AVAILABLE_BADGES = [

@@ -19,7 +19,7 @@ export default function SignupPage() {
 
     const formData = new FormData(event.currentTarget);
     const result = await signupAction(formData);
-console.log("result: ", result)
+
     if (result?.error) {
       toast.error(result.error);
       setLoading(false);

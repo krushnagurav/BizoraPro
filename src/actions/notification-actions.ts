@@ -55,7 +55,7 @@ export async function sendNotificationAction(formData: FormData) {
 // 2. MARK AS READ (Shop Owner)
 export async function markNotificationReadAction(notificationId: string) {
   const supabase = await createClient();
-  console.log("Marking notification as read:", notificationId);
+
   await supabase
     .from("notifications")
     .update({ is_read: true })

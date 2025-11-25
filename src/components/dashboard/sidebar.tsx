@@ -16,7 +16,8 @@ import {
   User,
   ShieldCheck,
   TicketPercent,
-  Bell
+  Bell,
+  Share2
 } from "lucide-react";
 import { logoutAction } from "@/src/actions/auth-actions";
 
@@ -31,6 +32,7 @@ const navItems = [
   { name: "Policies", href: "/settings/policies", icon: ShieldCheck },
   { name: "Coupons", href: "/coupons", icon: TicketPercent },
   { name: "Inbox", href: "/notifications", icon: Bell },
+  { name: "Marketing", href: "/marketing/share", icon: Share2 }
 ];
 
 export function Sidebar() {

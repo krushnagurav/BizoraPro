@@ -8,22 +8,34 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Card, CardContent } from "@/components/ui/card";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
+import { VariantBuilder } from "./variant-builder";
+import { MultiImageUpload } from "../multi-image-upload";
 
 // Accept categories as a Prop
 export function AddProductForm({ categories }: { categories: any[] }) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [imageUrl, setImageUrl] = useState("");
+  const [variants, setVariants] = useState<any[]>([]);
+  const [gallery, setGallery] = useState<string[]>([]);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setLoading(true);
 
     const formData = new FormData(event.currentTarget);
+    formData.append("variants", JSON.stringify(variants));
+    formData.append("galleryImages", JSON.stringify(gallery));
     if (imageUrl) formData.append("imageUrl", imageUrl);
 
     const result = await createProductAction(formData);
@@ -42,8 +54,13 @@ export function AddProductForm({ categories }: { categories: any[] }) {
     <form onSubmit={handleSubmit} className="space-y-8">
       <Card className="bg-card border-border/50">
         <CardContent className="pt-6">
-          <Label className="mb-4 block">Product Image</Label>
+          <Label className="mb-4 block">Main Image</Label>
           <ImageUpload value={imageUrl} onChange={setImageUrl} />
+
+          <div className="mt-6 pt-6 border-t border-border">
+            <Label className="mb-4 block">Gallery Images (Optional)</Label>
+            <MultiImageUpload value={gallery} onChange={setGallery} />
+          </div>
         </CardContent>
       </Card>
 
@@ -65,6 +82,10 @@ export function AddProductForm({ categories }: { categories: any[] }) {
             </div>
           </div>
 
+          <div className="pt-4 border-t border-border">
+            <VariantBuilder value={variants} onChange={setVariants} />
+          </div>
+
           <div className="space-y-2">
             <Label>Category</Label>
             <Select name="category">
@@ -76,18 +97,21 @@ export function AddProductForm({ categories }: { categories: any[] }) {
                 {categories.length > 0 ? (
                   categories.map((cat) => (
                     <SelectItem key={cat.id} value={cat.id}>
-  {cat.name}
-</SelectItem>
+                      {cat.name}
+                    </SelectItem>
                   ))
                 ) : (
-                  <SelectItem value="none" disabled>No categories created</SelectItem>
+                  <SelectItem value="none" disabled>
+                    No categories created
+                  </SelectItem>
                 )}
               </SelectContent>
             </Select>
             {categories.length === 0 && (
-               <p className="text-xs text-red-400">
-                 You haven't created any categories yet. Go to the Categories page first.
-               </p>
+              <p className="text-xs text-red-400">
+                You haven't created any categories yet. Go to the Categories
+                page first.
+              </p>
             )}
           </div>
 
@@ -99,7 +123,9 @@ export function AddProductForm({ categories }: { categories: any[] }) {
       </Card>
 
       <div className="flex justify-end gap-4">
-        <Button type="button" variant="outline" onClick={() => router.back()}>Cancel</Button>
+        <Button type="button" variant="outline" onClick={() => router.back()}>
+          Cancel
+        </Button>
         <Button type="submit" className="font-bold" disabled={loading}>
           {loading ? <Loader2 className="animate-spin mr-2" /> : "Save Product"}
         </Button>

@@ -166,6 +166,22 @@ export async function updateShopSettingsAction(formData: FormData) {
   const minOrder = Number(formData.get("minOrder"));
   const deliveryNote = formData.get("deliveryNote") as string;
 
+  const autoClose = formData.get("autoClose") === "on";
+  const openingTime = formData.get("openingTime") as string;
+  const closingTime = formData.get("closingTime") as string;
+
+  const socialLinks = {
+    instagram: formData.get("instagram") as string,
+    facebook: formData.get("facebook") as string,
+    youtube: formData.get("youtube") as string,
+    twitter: formData.get("twitter") as string,
+  };
+
+  const seoConfig = {
+    metaTitle: formData.get("metaTitle") as string,
+    metaDescription: formData.get("metaDescription") as string,
+  };
+
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
@@ -176,7 +192,12 @@ export async function updateShopSettingsAction(formData: FormData) {
     .update({
       is_open: isOpen,
       min_order_value: minOrder,
-      delivery_note: deliveryNote
+      delivery_note: deliveryNote,
+      auto_close: autoClose,
+      opening_time: openingTime,
+      closing_time: closingTime,
+      social_links: socialLinks,
+      seo_config: seoConfig
     })
     .eq("owner_id", user.id);
 

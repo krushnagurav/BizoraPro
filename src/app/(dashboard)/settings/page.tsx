@@ -78,6 +78,115 @@ export default function SettingsPage() {
           </CardContent>
         </Card>
 
+        {/* 3. Store Hours */}
+        <Card className="bg-card border-border/50">
+          <CardHeader>
+            <CardTitle>Store Hours</CardTitle>
+            <CardDescription>Automatically close shop outside business hours.</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div className="flex items-center gap-2">
+               <input 
+                 type="checkbox" 
+                 name="autoClose" 
+                 defaultChecked={shop.auto_close} 
+                 className="h-5 w-5 accent-primary"
+               />
+               <Label>Enable Auto-Close Schedule</Label>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>Opening Time</Label>
+                <Input 
+                  name="openingTime" 
+                  type="time" 
+                  defaultValue={shop.opening_time || "09:00"} 
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Closing Time</Label>
+                <Input 
+                  name="closingTime" 
+                  type="time" 
+                  defaultValue={shop.closing_time || "21:00"} 
+                />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* 4. Social Media */}
+        <Card className="bg-card border-border/50">
+          <CardHeader>
+            <CardTitle>Social Profiles</CardTitle>
+            <CardDescription>Connect your social media to build trust.</CardDescription>
+          </CardHeader>
+          <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label>Instagram URL</Label>
+              <Input 
+                name="instagram" 
+                defaultValue={shop.social_links?.instagram || ""} 
+                placeholder="https://instagram.com/..." 
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>Facebook URL</Label>
+              <Input 
+                name="facebook" 
+                defaultValue={shop.social_links?.facebook || ""} 
+                placeholder="https://facebook.com/..." 
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>YouTube URL</Label>
+              <Input 
+                name="youtube" 
+                defaultValue={shop.social_links?.youtube || ""} 
+                placeholder="https://youtube.com/..." 
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>Twitter / X URL</Label>
+              <Input 
+                name="twitter" 
+                defaultValue={shop.social_links?.twitter || ""} 
+                placeholder="https://x.com/..." 
+              />
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* 5. SEO Settings */}
+        <Card className="bg-card border-border/50">
+          <CardHeader>
+            <CardTitle>SEO & Social Sharing</CardTitle>
+            <CardDescription>Control how your shop looks on Google and WhatsApp.</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="space-y-2">
+              <Label>Meta Title</Label>
+              <Input 
+                name="metaTitle" 
+                defaultValue={shop.seo_config?.metaTitle || shop.name} 
+                placeholder="Raj Fashion - Best Sarees in Surat" 
+              />
+              <p className="text-[10px] text-muted-foreground">The bold text in Google/WhatsApp.</p>
+            </div>
+            <div className="space-y-2">
+              <Label>Meta Description</Label>
+              <Textarea 
+                name="metaDescription" 
+                defaultValue={shop.seo_config?.metaDescription || ""} 
+                placeholder="Buy premium cotton sarees at best prices..." 
+                rows={3}
+              />
+              <p className="text-[10px] text-muted-foreground">The small text description.</p>
+            </div>
+          </CardContent>
+        </Card>
+
         <Button size="lg" className="font-bold" disabled={loading}>
           {loading ? <Loader2 className="animate-spin mr-2" /> : "Save General Settings"}
         </Button>

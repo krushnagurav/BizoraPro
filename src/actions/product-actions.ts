@@ -14,6 +14,8 @@ const productSchema = z.object({
   category: z.string().optional(),
   description: z.string().optional(),
   imageUrl: z.string().optional().or(z.literal("")).nullable(),
+  variants: z.string().optional(),
+  galleryImages: z.string().optional(),
 });
 
 // We extend the base schema for Update to require ID
@@ -58,12 +60,25 @@ export async function createProductAction(formData: FormData) {
     category: formData.get("category"),
     description: formData.get("description"),
     imageUrl: formData.get("imageUrl"),
+    variants: formData.get("variants"),
+    galleryImages: formData.get("galleryImages"),
   };
 
   const parsed = productSchema.safeParse(rawData);
   if (!parsed.success) return { error: parsed.error.issues[0].message };
 
-  // Insert
+  let variantsData = [];
+  try {
+    if (parsed.data.variants) {
+      variantsData = JSON.parse(parsed.data.variants);
+    }
+  } catch (e) {
+    console.error("JSON Parse Error:", e);
+  }
+
+  const galleryData = rawData.galleryImages ? JSON.parse(rawData.galleryImages as string) : [];
+
+  // 4. Insert
   const { error } = await supabase.from("products").insert({
     shop_id: shop.id,
     name: parsed.data.name,
@@ -72,10 +87,14 @@ export async function createProductAction(formData: FormData) {
     category_id: parsed.data.category,
     description: parsed.data.description,
     image_url: parsed.data.imageUrl || "",
-    status: 'active'
+    status: 'active',
+    variants: variantsData,
+    gallery_images: galleryData,
   });
 
-  if (error) return { error: error.message };
+  if (error) {
+    return { error: error.message };
+  }
 
   // Handle Onboarding Redirect
   const { data: currentShop } = await supabase.from("shops").select("onboarding_step").eq("id", shop.id).single();
@@ -94,7 +113,6 @@ export async function createProductAction(formData: FormData) {
 export async function updateProductAction(formData: FormData) {
   const supabase = await createClient();
   
-  // 1. Validate
   const rawData = {
     id: formData.get("id"),
     name: formData.get("name"),
@@ -103,31 +121,35 @@ export async function updateProductAction(formData: FormData) {
     category: formData.get("category"),
     description: formData.get("description"),
     imageUrl: formData.get("imageUrl"),
+    variants: formData.get("variants"),
+    galleryImages: formData.get("galleryImages"),
   };
 
   const parsed = updateSchema.safeParse(rawData);
-  
-  // SAFETY CHECK: This prevents the "reading '0'" crash
-  if (!parsed.success) {
-    console.error(parsed.error);
-    return { error: parsed.error.issues[0].message };
-  }
+  if (!parsed.success) return { error: parsed.error.issues[0].message };
 
-  // 2. Prepare Update Data
+  // Parse Variants
+  let variantsData = [];
+  try {
+    if (parsed.data.variants) {
+      variantsData = JSON.parse(parsed.data.variants);
+    }
+  } catch (e) { console.error(e) }
+
   const updates: any = {
     name: parsed.data.name,
     price: parsed.data.price,
     sale_price: parsed.data.salePrice,
     category_id: parsed.data.category,
     description: parsed.data.description,
+    variants: variantsData,
+    gallery_images: rawData.galleryImages ? JSON.parse(rawData.galleryImages as string) : [],
   };
 
-  // Only update image if a NEW one was provided (not empty string)
   if (parsed.data.imageUrl && parsed.data.imageUrl.length > 0) {
     updates.image_url = parsed.data.imageUrl;
   }
 
-  // 3. Execute Update
   const { error } = await supabase
     .from("products")
     .update(updates)

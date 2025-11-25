@@ -17,7 +17,8 @@ import {
   LogOut, 
   User,
   ShieldCheck,
-  TicketPercent
+  TicketPercent,
+  Bell
 } from "lucide-react";
 import { useState } from "react";
 
@@ -31,7 +32,8 @@ const navItems = [
   { name: "Appearance", href: "/settings/appearance", icon: Settings },
   { name: "Profile", href: "/settings/profile", icon: User },
   { name: "Policies", href: "/settings/policies", icon: ShieldCheck },
-  { name: "Coupons", href: "/coupons", icon: TicketPercent }
+  { name: "Coupons", href: "/coupons", icon: TicketPercent },
+  { name: "Inbox", href: "/notifications", icon: Bell },
 ];
 
 export function MobileHeader() {

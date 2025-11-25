@@ -11,7 +11,8 @@ import {
   Settings, 
   ShieldAlert,
   LogOut,
-  Activity
+  Activity,
+  Bell
 } from "lucide-react";
 
 const adminNav = [
@@ -19,7 +20,8 @@ const adminNav = [
   { name: "All Shops", href: "/admin/shops", icon: Store },
   { name: "Payments", href: "/admin/payments", icon: CreditCard },
   { name: "Settings", href: "/admin/settings", icon: Settings },
-  { name: "Audit Logs", href: "/admin/logs", icon: Activity }
+  { name: "Audit Logs", href: "/admin/logs", icon: Activity },
+  { name: "Notifications", href: "/admin/notifications", icon: Bell },
 ];
 
 export function AdminSidebar() {

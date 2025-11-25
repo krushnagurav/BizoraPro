@@ -7,6 +7,7 @@ import { notFound } from "next/navigation";
 import { hexToHsl } from "@/src/lib/utils";
 import { Instagram, Facebook, Youtube, Twitter } from "lucide-react";
 import { Metadata } from "next";
+import Link from "next/link";
 
 // 1. Generate Dynamic Metadata
 export async function generateMetadata({ 
@@ -183,6 +184,13 @@ export default async function ShopHomePage({
               <Twitter className="w-6 h-6" />
             </a>
           )}
+        </div>
+        {/* Footer Links */}
+        <div className="text-center py-4">
+           {/* Corrected String Interpolation with backticks */}
+           <Link href={`/${slug}/legal`} className="text-xs text-muted-foreground hover:text-primary underline underline-offset-4">
+             Store Policies
+           </Link>
         </div>
 
         {/* Footer Branding */}

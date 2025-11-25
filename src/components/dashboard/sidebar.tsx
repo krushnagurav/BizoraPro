@@ -13,7 +13,8 @@ import {
   Store, 
   Tag,
   Headphones,
-  User
+  User,
+  ShieldCheck
 } from "lucide-react";
 import { logoutAction } from "@/src/actions/auth-actions";
 
@@ -24,7 +25,8 @@ const navItems = [
   { name: "Orders", href: "/orders", icon: ListOrdered },
   { name: "Support", href: "/dashboard/support", icon: Headphones },
   { name: "Appearance", href: "/settings/appearance", icon: Settings },
-  { name: "Profile", href: "/settings/profile", icon: User }
+  { name: "Profile", href: "/settings/profile", icon: User },
+  { name: "Policies", href: "/settings/policies", icon: ShieldCheck }
 ];
 
 export function Sidebar() {

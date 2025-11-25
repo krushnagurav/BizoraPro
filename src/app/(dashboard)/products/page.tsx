@@ -17,6 +17,7 @@ import {
   Trash2,
   Eye,
   RefreshCcw,
+  FileSpreadsheet,
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -58,11 +59,18 @@ export default async function ProductsPage() {
     <div className="p-8 space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold text-primary">Products</h1>
-        <Link href="/products/new">
-          <Button className="font-bold gap-2">
-            <Plus className="h-4 w-4" /> Add Product
-          </Button>
-        </Link>
+        <div className="flex gap-2">
+          <Link href="/products/import">
+            <Button variant="outline" className="gap-2">
+              <FileSpreadsheet className="h-4 w-4" /> Import
+            </Button>
+          </Link>
+          <Link href="/products/new">
+            <Button className="font-bold gap-2">
+              <Plus className="h-4 w-4" /> Add Product
+            </Button>
+          </Link>
+        </div>
       </div>
 
       <Tabs defaultValue="active" className="w-full">

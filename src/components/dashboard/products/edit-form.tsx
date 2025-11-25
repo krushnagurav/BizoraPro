@@ -20,6 +20,7 @@ import { Loader2 } from "lucide-react";
 import { updateProductAction } from "@/src/actions/product-actions";
 import { VariantBuilder } from "./variant-builder";
 import { MultiImageUpload } from "../multi-image-upload";
+import { BadgeSelector } from "./badge-selector";
 
 export function EditProductForm({
   product,
@@ -31,9 +32,12 @@ export function EditProductForm({
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [imageUrl, setImageUrl] = useState(product.image_url);
-  
+
   const [variants, setVariants] = useState<any[]>(product.variants || []);
-  const [gallery, setGallery] = useState<string[]>(product?.gallery_images || []);
+  const [gallery, setGallery] = useState<string[]>(
+    product?.gallery_images || []
+  );
+  const [badges, setBadges] = useState<string[]>(product?.badges || []);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -43,7 +47,8 @@ export function EditProductForm({
     formData.append("id", product.id);
     formData.append("variants", JSON.stringify(variants));
     formData.append("galleryImages", JSON.stringify(gallery));
-    
+    formData.append("badges", JSON.stringify(badges));
+
     if (imageUrl !== product.image_url) {
       formData.append("imageUrl", imageUrl);
     }
@@ -64,16 +69,16 @@ export function EditProductForm({
     <form onSubmit={handleSubmit} className="space-y-8">
       {/* Image Upload */}
       <Card className="bg-card border-border/50">
-  <CardContent className="pt-6">
-    <Label className="mb-4 block">Main Image</Label>
-    <ImageUpload value={imageUrl} onChange={setImageUrl} />
-    
-    <div className="mt-6 pt-6 border-t border-border">
-      <Label className="mb-4 block">Gallery Images (Optional)</Label>
-      <MultiImageUpload value={gallery} onChange={setGallery} />
-    </div>
-  </CardContent>
-</Card>
+        <CardContent className="pt-6">
+          <Label className="mb-4 block">Main Image</Label>
+          <ImageUpload value={imageUrl} onChange={setImageUrl} />
+
+          <div className="mt-6 pt-6 border-t border-border">
+            <Label className="mb-4 block">Gallery Images (Optional)</Label>
+            <MultiImageUpload value={gallery} onChange={setGallery} />
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Details */}
       <Card className="bg-card border-border/50">
@@ -109,9 +114,9 @@ export function EditProductForm({
 
           <div className="space-y-2">
             <Label>Category</Label>
-            <Select 
-              name="category" 
-              defaultValue={product.category_id || undefined} 
+            <Select
+              name="category"
+              defaultValue={product.category_id || undefined}
             >
               <SelectTrigger>
                 <SelectValue placeholder="Select Category" />
@@ -133,6 +138,10 @@ export function EditProductForm({
               defaultValue={product.description || ""}
               rows={4}
             />
+          </div>
+          <div className="space-y-2">
+            <Label>Promotion Labels</Label>
+            <BadgeSelector value={badges} onChange={setBadges} />
           </div>
         </CardContent>
       </Card>

@@ -20,6 +20,7 @@ import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 import { VariantBuilder } from "./variant-builder";
 import { MultiImageUpload } from "../multi-image-upload";
+import { BadgeSelector } from "./badge-selector";
 
 // Accept categories as a Prop
 export function AddProductForm({ categories }: { categories: any[] }) {
@@ -28,6 +29,7 @@ export function AddProductForm({ categories }: { categories: any[] }) {
   const [imageUrl, setImageUrl] = useState("");
   const [variants, setVariants] = useState<any[]>([]);
   const [gallery, setGallery] = useState<string[]>([]);
+  const [badges, setBadges] = useState<string[]>([]);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -36,6 +38,7 @@ export function AddProductForm({ categories }: { categories: any[] }) {
     const formData = new FormData(event.currentTarget);
     formData.append("variants", JSON.stringify(variants));
     formData.append("galleryImages", JSON.stringify(gallery));
+    formData.append("badges", JSON.stringify(badges));
     if (imageUrl) formData.append("imageUrl", imageUrl);
 
     const result = await createProductAction(formData);
@@ -118,6 +121,10 @@ export function AddProductForm({ categories }: { categories: any[] }) {
           <div className="space-y-2">
             <Label>Description</Label>
             <Textarea name="description" placeholder="Details..." rows={4} />
+          </div>
+          <div className="space-y-2">
+            <Label>Promotion Labels</Label>
+            <BadgeSelector value={badges} onChange={setBadges} />
           </div>
         </CardContent>
       </Card>

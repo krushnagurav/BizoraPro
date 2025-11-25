@@ -206,3 +206,26 @@ export async function updateShopSettingsAction(formData: FormData) {
   revalidatePath("/settings");
   return { success: "Settings updated" };
 }
+
+export async function updateStorePoliciesAction(formData: FormData) {
+  const privacy = formData.get("privacy") as string;
+  const terms = formData.get("terms") as string;
+  const refund = formData.get("refund") as string;
+
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
+  if (!user) return { error: "Login required" };
+
+  const { error } = await supabase
+    .from("shops")
+    .update({
+      policies: { privacy, terms, refund }
+    })
+    .eq("owner_id", user.id);
+
+  if (error) return { error: error.message };
+
+  revalidatePath("/settings/policies"); // We will create this path
+  return { success: "Policies updated successfully" };
+}

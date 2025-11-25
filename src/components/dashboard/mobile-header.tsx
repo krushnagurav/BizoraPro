@@ -15,7 +15,8 @@ import {
   Settings, 
   Tag,
   LogOut, 
-  User
+  User,
+  ShieldCheck
 } from "lucide-react";
 import { useState } from "react";
 
@@ -27,7 +28,8 @@ const navItems = [
   { name: "Orders", href: "/orders", icon: ListOrdered },
   { name: "Settings", href: "/settings", icon: Settings },
   { name: "Appearance", href: "/settings/appearance", icon: Settings },
-  { name: "Profile", href: "/settings/profile", icon: User }
+  { name: "Profile", href: "/settings/profile", icon: User },
+  { name: "Policies", href: "/settings/policies", icon: ShieldCheck }
 ];
 
 export function MobileHeader() {

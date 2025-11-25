@@ -16,6 +16,8 @@ const signupSchema = z.object({
   password: z.string().min(6, { message: "Password must be at least 6 chars" }),
 });
 
+const ADMIN_EMAIL = "krishna@bizorapro.com";
+
 // 2. Login Action
 export async function loginAction(formData: FormData) {
   const data = Object.fromEntries(formData);
@@ -38,6 +40,12 @@ export async function loginAction(formData: FormData) {
   }
 
   // If successful, redirect to Dashboard
+  // CHECK: Is this the Super Admin?
+  if (parsed.data.email === ADMIN_EMAIL) {
+    redirect("/admin"); // Go to Command Center
+  }
+
+  // Normal User -> Go to Dashboard
   redirect("/dashboard");
 }
 
@@ -65,7 +73,12 @@ export async function signupAction(formData: FormData) {
     return { error: error.message };
   }
 
-  // Redirect to Onboarding (Not dashboard yet)
+// CHECK: Is this the Super Admin?
+  if (parsed.data.email === ADMIN_EMAIL) {
+    redirect("/admin"); // Skip onboarding, go to Admin
+  }
+
+  // Normal User -> Go to Onboarding
   redirect("/onboarding");
 }
 
@@ -120,4 +133,23 @@ export async function updatePasswordAction(formData: FormData) {
   }
 
   redirect("/dashboard");
+}
+
+
+// 7. UPDATE PROFILE
+export async function updateProfileAction(formData: FormData) {
+  const fullName = formData.get("fullName") as string;
+  const email = formData.get("email") as string;
+
+  const supabase = await createClient();
+  
+  // 1. Update Auth User (Metadata)
+  const { error: userError } = await supabase.auth.updateUser({
+    email: email, // This triggers a confirmation email to the new address
+    data: { full_name: fullName }
+  });
+
+  if (userError) return { error: userError.message };
+
+  return { success: "Profile updated. If you changed email, check your inbox." };
 }

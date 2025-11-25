@@ -11,7 +11,9 @@ import {
   Settings, 
   LogOut, 
   Store, 
-  Tag
+  Tag,
+  Headphones,
+  User
 } from "lucide-react";
 import { logoutAction } from "@/src/actions/auth-actions";
 
@@ -20,8 +22,9 @@ const navItems = [
   { name: "Products", href: "/products", icon: ShoppingBag },
   { name: "Categories", href: "/categories", icon: Tag },
   { name: "Orders", href: "/orders", icon: ListOrdered },
-  { name: "Settings", href: "/settings", icon: Settings },
+  { name: "Support", href: "/dashboard/support", icon: Headphones },
   { name: "Appearance", href: "/settings/appearance", icon: Settings },
+  { name: "Profile", href: "/settings/profile", icon: User }
 ];
 
 export function Sidebar() {

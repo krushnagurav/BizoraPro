@@ -2,6 +2,7 @@
 
 import { createClient } from "@/src/lib/supabase/server";
 import { revalidatePath } from "next/cache";
+import { createAdminClient } from "../lib/supabase/admin";
 
 // 1. GET GLOBAL STATS
 export async function getAdminStats() {
@@ -69,4 +70,54 @@ export async function createPlanAction(formData: FormData) {
 
   revalidatePath("/admin/plans");
   return { success: "Plan created successfully" };
+}
+
+// 3. IMPERSONATE SHOP OWNER
+export async function impersonateUserAction(userId: string) {
+  const supabaseAdmin = createAdminClient();
+
+  // 1. Get the Target User's Email
+  const { data: targetUser } = await supabaseAdmin.auth.admin.getUserById(userId);
+  if (!targetUser?.user?.email) return { error: "User not found" };
+
+  // 2. Determine Current Domain
+  // We use NEXT_PUBLIC_APP_URL from env, or fallback to origin header
+  const origin = process.env.NEXT_PUBLIC_APP_URL;
+
+  // 3. Generate Magic Link with Explicit Redirect
+  const { data, error } = await supabaseAdmin.auth.admin.generateLink({
+    type: 'magiclink',
+    email: targetUser.user.email,
+    options: {
+      // Force redirect to /dashboard after login
+      redirectTo: `${origin}/verify`
+    }
+  });
+
+  if (error) return { error: error.message };
+
+  return { success: true, url: data.properties.action_link };
+}
+
+// 4. UPDATE PLATFORM SETTINGS
+export async function updatePlatformSettingsAction(formData: FormData) {
+  const maintenance = formData.get("maintenance") === "on";
+  const signups = formData.get("signups") === "on";
+  const banner = formData.get("banner") as string;
+
+  const supabase = await createClient();
+
+  const { error } = await supabase
+    .from("platform_settings")
+    .update({
+      maintenance_mode: maintenance,
+      allow_new_signups: signups,
+      global_banner: banner
+    })
+    .eq("id", 1); // Always update row 1
+
+  if (error) return { error: error.message };
+
+  revalidatePath("/"); // Refresh entire site logic
+  return { success: "Platform settings updated" };
 }

@@ -151,3 +151,37 @@ export async function createAdminUserAction(formData: FormData) {
   revalidatePath("/admin/users");
   return { success: "Team member added" };
 }
+
+// 6. MANAGE TEMPLATES
+export async function saveTemplateAction(formData: FormData) {
+  const id = formData.get("id") as string; // If ID exists, it's an update
+  const name = formData.get("name") as string;
+  const slug = formData.get("slug") as string;
+  const channel = formData.get("channel") as string;
+  const subject = formData.get("subject") as string;
+  const body = formData.get("body") as string;
+
+  const supabase = await createClient();
+
+  const payload = { name, slug, channel, subject, body };
+
+  if (id) {
+    // UPDATE
+    const { error } = await supabase.from("notification_templates").update(payload).eq("id", id);
+    if (error) return { error: error.message };
+  } else {
+    // CREATE
+    const { error } = await supabase.from("notification_templates").insert(payload);
+    if (error) return { error: error.message };
+  }
+
+  revalidatePath("/admin/templates");
+  return { success: "Template saved successfully" };
+}
+
+export async function deleteTemplateAction(formData: FormData) {
+  const id = formData.get("id") as string;
+  const supabase = await createClient();
+  await supabase.from("notification_templates").delete().eq("id", id);
+  revalidatePath("/admin/templates");
+}

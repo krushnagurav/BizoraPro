@@ -14,7 +14,9 @@ import {
   Activity,
   Bell,
   MessageCircle,
-  Users
+  Users,
+  Mail,
+  FileText
 } from "lucide-react";
 
 const adminNav = [
@@ -26,6 +28,8 @@ const adminNav = [
   { name: "Notifications", href: "/admin/notifications", icon: Bell },
   { name: "WhatsApp Orders", href: "/admin/orders", icon: MessageCircle },
   { name: "Team & Roles", href: "/admin/users", icon: Users },
+  { name: "Templates", href: "/admin/templates", icon: Mail },
+  { name: "Invoices", href: "/admin/invoices", icon: FileText },
 ];
 
 export function AdminSidebar() {

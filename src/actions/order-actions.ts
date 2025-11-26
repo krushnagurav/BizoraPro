@@ -36,13 +36,28 @@ export async function placeOrderAction(formData: FormData) {
   if (cartItems.length === 0) return { error: "Cart is empty" };
 
   // 2. Get Shop ID
-  const { data: shop } = await supabase
+const { data: shop } = await supabase
     .from("shops")
-    .select("id, whatsapp_number")
+    .select("id, whatsapp_number, is_open, auto_close, opening_time, closing_time") // Fetch time settings
     .eq("slug", parsed.data.slug)
     .single();
 
   if (!shop) return { error: "Shop not found" };
+
+  // 🔒 CHECK: IS SHOP OPEN?
+  let isShopOpen = shop.is_open;
+  if (shop.auto_close) {
+    const now = new Date();
+    const indiaTime = now.toLocaleTimeString('en-IN', { timeZone: 'Asia/Kolkata', hour12: false });
+    const currentHM = indiaTime.slice(0, 5);
+    if (currentHM < shop.opening_time || currentHM > shop.closing_time) {
+      isShopOpen = false;
+    }
+  }
+
+  if (!isShopOpen) {
+    return { error: "Shop is currently closed. Please try again tomorrow." };
+  }
 
   // 3. RE-CALCULATE TOTAL (Security Step)
   const productIds = cartItems.map((item: any) => item.id);

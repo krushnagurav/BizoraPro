@@ -8,7 +8,7 @@ import { useCart } from "@/src/hooks/use-cart";
 import { toast } from "sonner";
 import { useState } from "react";
 
-export function ProductCard({ product }: { product: any }) {
+export function ProductCard({ product, isShopOpen }: { product: any, isShopOpen: boolean }) {
   const cart = useCart();
   const [isAdded, setIsAdded] = useState(false);
 
@@ -86,10 +86,11 @@ export function ProductCard({ product }: { product: any }) {
           </div>
           <Button
             size="icon"
+            disabled={!isShopOpen}
             className={`h-8 w-8 rounded-full transition-all ${
               isAdded ? "bg-green-500 hover:bg-green-600" : ""
             }`}
-            onClick={onAddToCart}
+            onClick={isShopOpen ? onAddToCart : undefined}
           >
             {isAdded ? (
               <Check className="h-4 w-4 text-white" />

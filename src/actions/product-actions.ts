@@ -369,3 +369,44 @@ export async function importProductsAction(products: any[]) {
     success: `Imported ${toInsert.length} products! (Skipped ${skippedCount} duplicates, Created ${newCategoriesCount} new categories)` 
   };
 }
+
+// 7. GET PAGINATED PRODUCTS
+export async function getProductsAction(
+  shopId: string, 
+  page: number = 1, 
+  limit: number = 10,
+  query: string = ""
+) {
+  const supabase = await createClient();
+  
+  // Calculate Range
+  const from = (page - 1) * limit;
+  const to = from + limit - 1;
+
+  // Start building query
+  let dbQuery = supabase
+    .from("products")
+    .select("*", { count: "exact" }) // Get total count for pagination
+    .eq("shop_id", shopId)
+    .is("deleted_at", null)
+    .order("created_at", { ascending: false })
+    .range(from, to);
+
+  // Apply Search if exists
+  if (query) {
+    dbQuery = dbQuery.ilike("name", `%${query}%`);
+  }
+
+  const { data, count, error } = await dbQuery;
+
+  if (error) {
+    console.error("Error fetching products:", error);
+    return { data: [], totalPages: 0, error: error.message };
+  }
+
+  return {
+    data,
+    totalPages: Math.ceil((count || 0) / limit),
+    totalItems: count
+  };
+}

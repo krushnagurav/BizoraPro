@@ -141,6 +141,7 @@ export async function updateShopAppearanceAction(formData: FormData) {
   
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
+  const logoUrl = formData.get("logoUrl") as string;
 
   if (!user) return { error: "Login required" };
 
@@ -151,6 +152,7 @@ export async function updateShopAppearanceAction(formData: FormData) {
       theme_config: {
         primaryColor: primaryColor || "#E6B800",
         bannerUrl: bannerUrl || "",
+        logoUrl: logoUrl
       }
     })
     .eq("owner_id", user.id);
@@ -228,4 +230,34 @@ export async function updateStorePoliciesAction(formData: FormData) {
 
   revalidatePath("/settings/policies"); // We will create this path
   return { success: "Policies updated successfully" };
+}
+
+// UPDATE NOTIFICATION PREFS
+export async function updateNotificationPrefsAction(formData: FormData) {
+  const emailOrder = formData.get("email_order") === "on";
+  const emailLowStock = formData.get("email_low_stock") === "on";
+  const whatsappOrder = formData.get("whatsapp_order") === "on";
+  const marketingUpdates = formData.get("marketing_updates") === "on";
+
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
+  if (!user) return { error: "Login required" };
+
+  const { error } = await supabase
+    .from("shops")
+    .update({
+      notification_preferences: {
+        email_order: emailOrder,
+        email_low_stock: emailLowStock,
+        whatsapp_order: whatsappOrder,
+        marketing_updates: marketingUpdates
+      }
+    })
+    .eq("owner_id", user.id);
+
+  if (error) return { error: error.message };
+
+  revalidatePath("/settings/notifications");
+  return { success: "Preferences updated" };
 }

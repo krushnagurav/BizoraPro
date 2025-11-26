@@ -23,6 +23,7 @@ import {
   Users,
   TrendingUp,
   Instagram,
+  BellRing,
 } from "lucide-react";
 import { logoutAction } from "@/src/actions/auth-actions";
 
@@ -61,6 +62,7 @@ const navGroups = [
       { name: "Appearance", href: "/settings/appearance", icon: Settings },
       { name: "Policies", href: "/settings/policies", icon: ShieldCheck },
       { name: "Profile", href: "/settings/profile", icon: User },
+      { name: "Alerts", href: "/settings/notifications", icon: BellRing },
       { name: "Support", href: "/dashboard/support", icon: Headphones },
     ],
   },

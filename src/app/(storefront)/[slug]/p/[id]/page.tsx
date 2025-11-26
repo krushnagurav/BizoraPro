@@ -43,6 +43,27 @@ export default async function ProductDetailPage({
   const theme = product.shops.theme_config as any || {};
   const primaryColor = theme.primaryColor || "#E6B800";
 
+  let isShopActuallyOpen = product.shops.is_open;
+
+  if (product.shops.auto_close) {
+    const now = new Date();
+    // Convert current server time to HH:MM format for comparison
+    // Note: Vercel servers are UTC. We need to adjust for India (UTC+5:30)
+    // Simple hack: Get string time in 'en-IN' locale
+    const indiaTime = now.toLocaleTimeString("en-IN", {
+      timeZone: "Asia/Kolkata",
+      hour12: false,
+    });
+    const currentHM = indiaTime.slice(0, 5); // "14:30"
+
+    const openHM = product.shops.opening_time?.slice(0, 5) || "09:00";
+    const closeHM = product.shops.closing_time?.slice(0, 5) || "21:00";
+
+    if (currentHM < openHM || currentHM > closeHM) {
+      isShopActuallyOpen = false;
+    }
+  }
+
   return (
     <div 
       className="min-h-screen bg-background pb-24"
@@ -167,7 +188,7 @@ export default async function ProductDetailPage({
       {/* Sticky Footer: Add to Cart */}
       <div className="fixed bottom-0 left-0 right-0 p-4 bg-background border-t border-border/50 z-50">
         <div className="max-w-2xl mx-auto flex gap-4">
-           <AddToCartButton product={product} />
+           <AddToCartButton product={product} isShopOpen={isShopActuallyOpen}/>
         </div>
       </div>
 

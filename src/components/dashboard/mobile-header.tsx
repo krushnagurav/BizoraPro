@@ -32,6 +32,7 @@ import {
   Headphones,
   TrendingUp,
   Instagram,
+  BellRing,
 } from "lucide-react";
 import { useState } from "react";
 
@@ -70,6 +71,7 @@ const navGroups = [
       { name: "Appearance", href: "/settings/appearance", icon: Settings },
       { name: "Policies", href: "/settings/policies", icon: ShieldCheck },
       { name: "Profile", href: "/settings/profile", icon: User },
+      { name: "Alerts", href: "/settings/notifications", icon: BellRing },
       { name: "Support", href: "/dashboard/support", icon: Headphones },
     ],
   },

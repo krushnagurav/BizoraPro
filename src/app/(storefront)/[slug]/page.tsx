@@ -11,10 +11,10 @@ import Link from "next/link";
 import { NewsletterForm } from "@/src/components/storefront/newsletter-form";
 
 // 1. Generate Dynamic Metadata
-export async function generateMetadata({ 
-  params 
-}: { 
-  params: Promise<{ slug: string }> 
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
   const supabase = await createClient();
@@ -27,8 +27,8 @@ export async function generateMetadata({
 
   if (!shop) return { title: "Shop Not Found" };
 
-  const seo = shop.seo_config as any || {};
-  const theme = shop.theme_config as any || {};
+  const seo = (shop.seo_config as any) || {};
+  const theme = (shop.theme_config as any) || {};
 
   return {
     title: seo.metaTitle || shop.name,
@@ -64,7 +64,10 @@ export default async function ShopHomePage({
     // Convert current server time to HH:MM format for comparison
     // Note: Vercel servers are UTC. We need to adjust for India (UTC+5:30)
     // Simple hack: Get string time in 'en-IN' locale
-    const indiaTime = now.toLocaleTimeString('en-IN', { timeZone: 'Asia/Kolkata', hour12: false });
+    const indiaTime = now.toLocaleTimeString("en-IN", {
+      timeZone: "Asia/Kolkata",
+      hour12: false,
+    });
     const currentHM = indiaTime.slice(0, 5); // "14:30"
 
     const openHM = shop.opening_time?.slice(0, 5) || "09:00";
@@ -90,6 +93,7 @@ export default async function ShopHomePage({
   const banner = theme.bannerUrl || "";
   const primaryColorHex = theme.primaryColor || "#E6B800";
   const primaryColorHsl = hexToHsl(primaryColorHex);
+  const logo = theme.logoUrl || "";
 
   return (
     <div
@@ -98,11 +102,11 @@ export default async function ShopHomePage({
     >
       {!isShopActuallyOpen && (
         <div className="bg-red-600 text-white text-center p-3 font-bold sticky top-0 z-50 shadow-md">
-          {shop.is_open 
-             ? `⛔ Shop is closed. Opens at ${shop.opening_time}` 
-             : "⛔ This shop is currently closed."}
+          {shop.is_open
+            ? `⛔ Shop is closed. Opens at ${shop.opening_time}`
+            : "⛔ This shop is currently closed."}
         </div>
-     )}
+      )}
 
       {/* HEADER / BANNER */}
       <div className="relative h-48 bg-gradient-to-b from-secondary to-background overflow-hidden">
@@ -126,7 +130,20 @@ export default async function ShopHomePage({
 
         {/* Shop Info Overlay */}
         <div className="absolute -bottom-8 left-4 right-4 flex items-end gap-4">
-          <div className="w-20 h-20 rounded-xl bg-card border-2 border-primary shadow-lg overflow-hidden flex items-center justify-center">
+          <div className="w-20 h-20 rounded-xl bg-card border-2 border-primary shadow-lg overflow-hidden flex items-center justify-center relative">
+            {logo ? (
+              <Image
+                src={logo}
+                fill
+                className="object-cover"
+                alt="Logo"
+                unoptimized
+              />
+            ) : (
+              <span className="text-2xl font-bold text-primary">
+                {shop.name.charAt(0)}
+              </span>
+            )}
             <span className="text-2xl font-bold text-primary">
               {shop.name.charAt(0)}
             </span>
@@ -152,27 +169,37 @@ export default async function ShopHomePage({
         <div className="grid grid-cols-2 gap-4">
           {products?.map((product) => (
             <Link href={`/${slug}/p/${product.id}`} key={product.id}>
-            <ProductCard product={product} />
+              <ProductCard
+                key={product.id}
+                product={product}
+                isShopOpen={isShopActuallyOpen}
+              />{" "}
             </Link>
           ))}
         </div>
 
         {/* INSTAGRAM FEED */}
-{shop.instagram_feed?.length > 0 && (
-  <div className="mt-12">
-    <div className="flex items-center justify-center gap-2 mb-6">
-      <Instagram className="h-5 w-5" />
-      <h3 className="font-bold">Follow us on Instagram</h3>
-    </div>
-    <div className="grid grid-cols-3 gap-1">
-      {shop.instagram_feed.map((url: string, i: number) => (
-        <div key={i} className="aspect-square relative">
-           <Image src={url} fill className="object-cover" unoptimized alt="" />
-        </div>
-      ))}
-    </div>
-  </div>
-)}
+        {shop.instagram_feed?.length > 0 && (
+          <div className="mt-12">
+            <div className="flex items-center justify-center gap-2 mb-6">
+              <Instagram className="h-5 w-5" />
+              <h3 className="font-bold">Follow us on Instagram</h3>
+            </div>
+            <div className="grid grid-cols-3 gap-1">
+              {shop.instagram_feed.map((url: string, i: number) => (
+                <div key={i} className="aspect-square relative">
+                  <Image
+                    src={url}
+                    fill
+                    className="object-cover"
+                    unoptimized
+                    alt=""
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Empty State */}
         {products?.length === 0 && (
@@ -183,42 +210,65 @@ export default async function ShopHomePage({
       </div>
       <CartBar slug={slug} />
       {/* SOCIAL LINKS */}
-        <div className="flex justify-center gap-6 py-8 mt-8 border-t border-border/50">
-          {social.instagram && (
-            <a href={social.instagram} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition">
-              <Instagram className="w-6 h-6" />
-            </a>
-          )}
-          {social.facebook && (
-            <a href={social.facebook} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition">
-              <Facebook className="w-6 h-6" />
-            </a>
-          )}
-          {social.youtube && (
-            <a href={social.youtube} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition">
-              <Youtube className="w-6 h-6" />
-            </a>
-          )}
-          {social.twitter && (
-            <a href={social.twitter} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition">
-              <Twitter className="w-6 h-6" />
-            </a>
-          )}
-        </div>
-        {/* Footer Links */}
-        <div className="text-center py-4">
-           {/* Corrected String Interpolation with backticks */}
-           <Link href={`/${slug}/legal`} className="text-xs text-muted-foreground hover:text-primary underline underline-offset-4">
-             Store Policies
-           </Link>
-        </div>
+      <div className="flex justify-center gap-6 py-8 mt-8 border-t border-border/50">
+        {social.instagram && (
+          <a
+            href={social.instagram}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-muted-foreground hover:text-primary transition"
+          >
+            <Instagram className="w-6 h-6" />
+          </a>
+        )}
+        {social.facebook && (
+          <a
+            href={social.facebook}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-muted-foreground hover:text-primary transition"
+          >
+            <Facebook className="w-6 h-6" />
+          </a>
+        )}
+        {social.youtube && (
+          <a
+            href={social.youtube}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-muted-foreground hover:text-primary transition"
+          >
+            <Youtube className="w-6 h-6" />
+          </a>
+        )}
+        {social.twitter && (
+          <a
+            href={social.twitter}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-muted-foreground hover:text-primary transition"
+          >
+            <Twitter className="w-6 h-6" />
+          </a>
+        )}
+      </div>
+      {/* Footer Links */}
+      <div className="text-center py-4">
+        {/* Corrected String Interpolation with backticks */}
+        <Link
+          href={`/${slug}/legal`}
+          className="text-xs text-muted-foreground hover:text-primary underline underline-offset-4"
+        >
+          Store Policies
+        </Link>
+      </div>
 
-        <NewsletterForm shopId={shop.id} />
+      <NewsletterForm shopId={shop.id} />
 
-        {/* Footer Branding */}
-        <div className="text-center pb-8 text-xs text-muted-foreground">
-           Powered by <span className="font-bold text-foreground">BizoraPro</span>
-        </div>
+      {/* Footer Branding */}
+      <div className="text-center pb-8 text-xs text-muted-foreground">
+        Powered by <span className="font-bold text-foreground">BizoraPro</span>
+      </div>
     </div>
   );
 }

@@ -17,6 +17,7 @@ import {
   Trash2,
   RefreshCcw,
   FileSpreadsheet,
+  BarChart3,
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -169,6 +170,14 @@ function ProductTable({
                         <Link href={`/products/${product.id}`}>
                           <DropdownMenuItem>
                             <Pencil className="mr-2 h-4 w-4" /> Edit
+                          </DropdownMenuItem>
+                          <DropdownMenuItem asChild>
+                            <Link
+                              href={`/products/${product.id}/analytics`}
+                              className="flex items-center cursor-pointer"
+                            >
+                              <BarChart3 className="mr-2 h-4 w-4" /> Analytics
+                            </Link>
                           </DropdownMenuItem>
                         </Link>
 

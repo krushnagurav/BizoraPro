@@ -8,6 +8,7 @@ import { hexToHsl } from "@/src/lib/utils";
 import { Instagram, Facebook, Youtube, Twitter } from "lucide-react";
 import { Metadata } from "next";
 import Link from "next/link";
+import { NewsletterForm } from "@/src/components/storefront/newsletter-form";
 
 // 1. Generate Dynamic Metadata
 export async function generateMetadata({ 
@@ -150,9 +151,28 @@ export default async function ShopHomePage({
 
         <div className="grid grid-cols-2 gap-4">
           {products?.map((product) => (
-            <ProductCard key={product.id} product={product} />
+            <Link href={`/${slug}/p/${product.id}`} key={product.id}>
+            <ProductCard product={product} />
+            </Link>
           ))}
         </div>
+
+        {/* INSTAGRAM FEED */}
+{shop.instagram_feed?.length > 0 && (
+  <div className="mt-12">
+    <div className="flex items-center justify-center gap-2 mb-6">
+      <Instagram className="h-5 w-5" />
+      <h3 className="font-bold">Follow us on Instagram</h3>
+    </div>
+    <div className="grid grid-cols-3 gap-1">
+      {shop.instagram_feed.map((url: string, i: number) => (
+        <div key={i} className="aspect-square relative">
+           <Image src={url} fill className="object-cover" unoptimized alt="" />
+        </div>
+      ))}
+    </div>
+  </div>
+)}
 
         {/* Empty State */}
         {products?.length === 0 && (
@@ -192,6 +212,8 @@ export default async function ShopHomePage({
              Store Policies
            </Link>
         </div>
+
+        <NewsletterForm shopId={shop.id} />
 
         {/* Footer Branding */}
         <div className="text-center pb-8 text-xs text-muted-foreground">

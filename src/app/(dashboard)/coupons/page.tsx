@@ -3,19 +3,43 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Trash2 } from "lucide-react";
+import { Trash2, TicketPercent } from "lucide-react";
 import { deleteCouponAction } from "@/src/actions/coupon-actions";
 import { AddCouponDialog } from "@/src/components/dashboard/coupons/add-coupon-dialog";
+import { redirect } from "next/navigation";
 
 export default async function CouponsPage() {
   const supabase = await createClient();
+  
+  // 1. SECURITY CHECK: Get User
   const { data: { user } } = await supabase.auth.getUser();
-  const { data: shop } = await supabase.from("shops").select("id").eq("owner_id", user!.id).single();
+  if (!user) {
+    redirect("/login"); // Kick out if not logged in
+  }
 
+  // 2. SECURITY CHECK: Get Shop
+  const { data: shop } = await supabase
+    .from("shops")
+    .select("id")
+    .eq("owner_id", user.id)
+    .single();
+
+  // If user is logged in but has no shop (e.g. Admin accessing wrong page, or incomplete signup)
+  if (!shop) {
+    return (
+      <div className="p-8 text-center">
+        <h1 className="text-2xl font-bold text-red-500">No Shop Found</h1>
+        <p className="text-muted-foreground">You need to create a shop to manage coupons.</p>
+        <Button asChild className="mt-4"><a href="/onboarding">Create Shop</a></Button>
+      </div>
+    );
+  }
+
+  // 3. Safe to fetch coupons now
   const { data: coupons } = await supabase
     .from("coupons")
     .select("*")
-    .eq("shop_id", shop?.id)
+    .eq("shop_id", shop.id)
     .order("created_at", { ascending: false });
 
   return (

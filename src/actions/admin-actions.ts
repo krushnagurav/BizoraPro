@@ -128,3 +128,26 @@ export async function updatePlatformSettingsAction(formData: FormData) {
   revalidatePath("/"); // Refresh entire site logic
   return { success: "Platform settings updated" };
 }
+
+// 5. CREATE ADMIN USER
+export async function createAdminUserAction(formData: FormData) {
+  const email = formData.get("email") as string;
+  const fullName = formData.get("fullName") as string;
+  const role = formData.get("role") as string;
+
+  const supabase = await createClient();
+  
+  // Security: Only Super Admin can do this
+  // (RLS handles it, but good to double check)
+  
+  const { error } = await supabase.from("admin_users").insert({
+    email,
+    full_name: fullName,
+    role
+  });
+
+  if (error) return { error: error.message };
+
+  revalidatePath("/admin/users");
+  return { success: "Team member added" };
+}

@@ -9,7 +9,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Eye } from "lucide-react";
+import { Eye, MessageCircle } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
@@ -37,6 +37,16 @@ export default async function OrdersPage() {
   return (
     <div className="p-8 space-y-6">
       <h1 className="text-3xl font-bold text-primary">Orders</h1>
+
+      {/* NEW BUTTON */}
+      <Link href="/orders/abandoned">
+        <Button
+          variant="outline"
+          className="border-red-500/50 text-red-500 hover:bg-red-500/10 gap-2"
+        >
+          <MessageCircle className="h-4 w-4" /> View Abandoned
+        </Button>
+      </Link>
 
       <Card className="bg-card border-border/50">
         <CardContent className="p-0">

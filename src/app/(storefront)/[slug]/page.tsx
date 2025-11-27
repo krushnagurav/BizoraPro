@@ -1,16 +1,22 @@
-import { CartBar } from "@/src/components/storefront/cart-bar";
-import { ProductCard } from "@/src/components/storefront/product-card";
 import { createClient } from "@/src/lib/supabase/server";
-import { ShoppingCart, Star } from "lucide-react";
-import Image from "next/image";
 import { notFound } from "next/navigation";
-import { hexToHsl } from "@/src/lib/utils";
-import { Instagram, Facebook, Youtube, Twitter } from "lucide-react";
-import { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
+import { ShopHeader } from "@/src/components/storefront/shared/shop-header";
+import { ShopFooter } from "@/src/components/storefront/shared/shop-footer";
+import { ProductCard } from "@/src/components/storefront/product-card";
+import { CartBar } from "@/src/components/storefront/cart-bar";
+import { ViewTracker } from "@/src/components/storefront/view-tracker";
 import { NewsletterForm } from "@/src/components/storefront/newsletter-form";
+import {
+  ShopSearch,
+  CategoryFilter,
+} from "@/src/components/storefront/search-filter";
+import { Metadata } from "next";
+import { Star, Store } from "lucide-react";
+import { hexToHsl } from "@/src/lib/utils";
+import { fontMapper } from "@/src/lib/fonts";
 
-// 1. Generate Dynamic Metadata
 export async function generateMetadata({
   params,
 }: {
@@ -18,98 +24,94 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params;
   const supabase = await createClient();
-
   const { data: shop } = await supabase
     .from("shops")
-    .select("name, theme_config, seo_config") // Fetch SEO config
+    .select("name, seo_config, theme_config")
     .eq("slug", slug)
     .single();
-
   if (!shop) return { title: "Shop Not Found" };
-
   const seo = (shop.seo_config as any) || {};
-  const theme = (shop.theme_config as any) || {};
-
   return {
     title: seo.metaTitle || shop.name,
     description: seo.metaDescription || `Welcome to ${shop.name}`,
-    openGraph: {
-      images: [theme.bannerUrl || "/default-og.png"], // Use Banner as social image
-    },
   };
 }
 
 export default async function ShopHomePage({
   params,
+  searchParams,
 }: {
   params: Promise<{ slug: string }>;
+  searchParams: Promise<{ q?: string; cat?: string }>;
 }) {
-  // 1. Await Params (Next.js 15)
   const { slug } = await params;
+  const { q: searchQuery, cat: categoryId } = await searchParams;
   const supabase = await createClient();
 
-  // 2. Fetch Shop
   const { data: shop } = await supabase
     .from("shops")
     .select("*")
     .eq("slug", slug)
     .single();
-
   if (!shop) return notFound();
 
-  let isShopActuallyOpen = shop.is_open;
+  const { data: categories } = await supabase
+    .from("categories")
+    .select("id, name")
+    .eq("shop_id", shop.id);
 
-  if (shop.auto_close) {
-    const now = new Date();
-    // Convert current server time to HH:MM format for comparison
-    // Note: Vercel servers are UTC. We need to adjust for India (UTC+5:30)
-    // Simple hack: Get string time in 'en-IN' locale
-    const indiaTime = now.toLocaleTimeString("en-IN", {
-      timeZone: "Asia/Kolkata",
-      hour12: false,
-    });
-    const currentHM = indiaTime.slice(0, 5); // "14:30"
-
-    const openHM = shop.opening_time?.slice(0, 5) || "09:00";
-    const closeHM = shop.closing_time?.slice(0, 5) || "21:00";
-
-    if (currentHM < openHM || currentHM > closeHM) {
-      isShopActuallyOpen = false;
-    }
-  }
-
-  const social = shop.social_links || {};
-
-  // 3. Fetch Active Products
-  const { data: products } = await supabase
+  let productQuery = supabase
     .from("products")
-    .select("*")
+    .select("*, categories(name)")
     .eq("shop_id", shop.id)
     .eq("status", "active")
     .is("deleted_at", null)
     .order("created_at", { ascending: false });
 
+  if (searchQuery)
+    productQuery = productQuery.ilike("name", `%${searchQuery}%`);
+  if (categoryId) productQuery = productQuery.eq("category_id", categoryId);
+
+  const { data: products } = await productQuery;
+
   const theme = (shop.theme_config as any) || {};
   const banner = theme.bannerUrl || "";
-  const primaryColorHex = theme.primaryColor || "#E6B800";
-  const primaryColorHsl = hexToHsl(primaryColorHex);
-  const logo = theme.logoUrl || "";
+  const primaryColor = theme.primaryColor || "#E6B800";
+  const primaryColorHsl = hexToHsl(primaryColor);
+
+  const fontKey = theme.font || "inter";
+  const fontClass = fontMapper[fontKey as keyof typeof fontMapper]; // e.g., inter.className
+  const radius = theme.radius || "0.5rem";
+
+  let isShopActuallyOpen = shop.is_open;
+  if (shop.auto_close) {
+    const now = new Date();
+    const indiaTime = now.toLocaleTimeString("en-IN", {
+      timeZone: "Asia/Kolkata",
+      hour12: false,
+    });
+    const currentHM = indiaTime.slice(0, 5);
+    if (
+      currentHM < (shop.opening_time || "09:00") ||
+      currentHM > (shop.closing_time || "21:00")
+    ) {
+      isShopActuallyOpen = false;
+    }
+  }
 
   return (
     <div
-      className="max-w-md mx-auto bg-background min-h-screen border-x border-border/30 shadow-2xl shadow-black"
-      style={{ "--primary": primaryColorHsl } as React.CSSProperties}
+      className={`min-h-screen bg-[#F8F9FA] text-slate-900 pb-20 ${fontClass}`}
+      style={{ 
+       "--primary": primaryColorHsl,
+       "--radius": radius
+    } as React.CSSProperties}
     >
-      {!isShopActuallyOpen && (
-        <div className="bg-red-600 text-white text-center p-3 font-bold sticky top-0 z-50 shadow-md">
-          {shop.is_open
-            ? `⛔ Shop is closed. Opens at ${shop.opening_time}`
-            : "⛔ This shop is currently closed."}
-        </div>
-      )}
+      {/* Header */}
+      <ShopHeader shop={shop} />
 
-      {/* HEADER / BANNER */}
-      <div className="relative h-48 bg-gradient-to-b from-secondary to-background overflow-hidden">
+      {/* Shop Banner */}
+      <div className="relative w-full h-64 md:h-80 bg-slate-100 overflow-hidden shadow-sm">
         {banner ? (
           <Image
             src={banner}
@@ -119,156 +121,109 @@ export default async function ShopHomePage({
             unoptimized
           />
         ) : (
-          <div className="absolute inset-0 flex items-center justify-center opacity-10">
-            <ShoppingCart className="w-24 h-24" />
+          <div className="absolute inset-0 flex items-center justify-center text-slate-300">
+            <Store className="w-16 h-16 opacity-50" />
           </div>
         )}
-        {/* Placeholder for Banner Image */}
-        <div className="absolute inset-0 flex items-center justify-center opacity-10">
-          <ShoppingCart className="w-24 h-24" />
+        <div className="absolute inset-0 bg-black/30" />{" "}
+        {/* Dark overlay for text readability */}
+        <div className="absolute bottom-0 left-0 right-0 p-6 container mx-auto">
+          <h1 className="text-3xl md:text-5xl font-bold text-white mb-2 drop-shadow-md">
+            {shop.name}
+          </h1>
+          <div className="flex items-center gap-2 text-sm text-white/90 font-medium">
+            <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+            <span>Trusted Business</span>
+          </div>
+        </div>
+      </div>
+
+      <div className="container mx-auto px-4 py-8 space-y-8">
+        {/* Search & Filters */}
+        <div className="space-y-4">
+          <div className="p-1 bg-white border border-slate-200 rounded-xl shadow-sm">
+            <ShopSearch slug={slug} />
+          </div>
+
+          <div className="flex gap-2 overflow-x-auto pb-2 no-scrollbar">
+            <Link href={`/${slug}`}>
+              <button
+                className={`px-6 py-2 rounded-full text-sm font-bold transition-all border ${
+                  !categoryId
+                    ? "bg-slate-900 text-white border-slate-900"
+                    : "bg-white text-slate-600 border-slate-200 hover:border-slate-300"
+                }`}
+              >
+                All Products
+              </button>
+            </Link>
+            {categories?.map((cat) => (
+              <Link key={cat.id} href={`/${slug}?cat=${cat.id}`}>
+                <button
+                  className={`px-6 py-2 rounded-full text-sm font-bold transition-all whitespace-nowrap border ${
+                    categoryId === cat.id
+                      ? "bg-slate-900 text-white border-slate-900"
+                      : "bg-white text-slate-600 border-slate-200 hover:border-slate-300"
+                  }`}
+                >
+                  {cat.name}
+                </button>
+              </Link>
+            ))}
+          </div>
         </div>
 
-        {/* Shop Info Overlay */}
-        <div className="absolute -bottom-8 left-4 right-4 flex items-end gap-4">
-          <div className="w-20 h-20 rounded-xl bg-card border-2 border-primary shadow-lg overflow-hidden flex items-center justify-center relative">
-            {logo ? (
-              <Image
-                src={logo}
-                fill
-                className="object-cover"
-                alt="Logo"
-                unoptimized
-              />
-            ) : (
-              <span className="text-2xl font-bold text-primary">
-                {shop.name.charAt(0)}
-              </span>
-            )}
-            <span className="text-2xl font-bold text-primary">
-              {shop.name.charAt(0)}
+        {/* Products Grid */}
+        <div>
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-xl font-bold text-slate-900">
+              {searchQuery
+                ? `Results for "${searchQuery}"`
+                : categoryId
+                ? "Category Results"
+                : "Featured Collection"}
+            </h2>
+            <span className="text-sm text-slate-500">
+              {products?.length} items
             </span>
           </div>
-          <div className="mb-2">
-            <h1 className="text-xl font-bold text-foreground">{shop.name}</h1>
-            <p className="text-xs text-muted-foreground">@ {shop.slug}</p>
-          </div>
-        </div>
-      </div>
 
-      {/* CONTENT AREA */}
-      <div className="mt-12 px-4 space-y-6">
-        {/* Intro / Trust Badge */}
-        <div className="flex items-center gap-2 text-xs text-muted-foreground bg-secondary/30 p-2 rounded-lg">
-          <Star className="w-4 h-4 text-primary fill-primary" />
-          <span>Trusted Seller • Verified by BizoraPro</span>
-        </div>
-
-        {/* PRODUCTS GRID */}
-        <h2 className="font-bold text-lg">All Products</h2>
-
-        <div className="grid grid-cols-2 gap-4">
-          {products?.map((product) => (
-            <Link href={`/${slug}/p/${product.id}`} key={product.id}>
-              <ProductCard
-                key={product.id}
-                product={product}
-                isShopOpen={isShopActuallyOpen}
-              />{" "}
-            </Link>
-          ))}
-        </div>
-
-        {/* INSTAGRAM FEED */}
-        {shop.instagram_feed?.length > 0 && (
-          <div className="mt-12">
-            <div className="flex items-center justify-center gap-2 mb-6">
-              <Instagram className="h-5 w-5" />
-              <h3 className="font-bold">Follow us on Instagram</h3>
-            </div>
-            <div className="grid grid-cols-3 gap-1">
-              {shop.instagram_feed.map((url: string, i: number) => (
-                <div key={i} className="aspect-square relative">
-                  <Image
-                    src={url}
-                    fill
-                    className="object-cover"
-                    unoptimized
-                    alt=""
+          {products && products.length > 0 ? (
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+              {products.map((product) => (
+                <Link href={`/${slug}/p/${product.id}`} key={product.id}>
+                  <ProductCard
+                    product={product}
+                    isShopOpen={isShopActuallyOpen}
                   />
-                </div>
+                </Link>
               ))}
             </div>
-          </div>
-        )}
+          ) : (
+            <div className="text-center py-20 text-slate-400">
+              <p>No products found in this collection.</p>
+            </div>
+          )}
+        </div>
 
-        {/* Empty State */}
-        {products?.length === 0 && (
-          <div className="text-center py-10 text-muted-foreground">
-            <p>No products added yet.</p>
-          </div>
-        )}
+        {/* Newsletter */}
+        <div className="mt-12">
+          <NewsletterForm shopId={shop.id} />
+        </div>
       </div>
+
+      <ShopFooter shop={shop} />
       <CartBar slug={slug} />
-      {/* SOCIAL LINKS */}
-      <div className="flex justify-center gap-6 py-8 mt-8 border-t border-border/50">
-        {social.instagram && (
-          <a
-            href={social.instagram}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-muted-foreground hover:text-primary transition"
-          >
-            <Instagram className="w-6 h-6" />
-          </a>
-        )}
-        {social.facebook && (
-          <a
-            href={social.facebook}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-muted-foreground hover:text-primary transition"
-          >
-            <Facebook className="w-6 h-6" />
-          </a>
-        )}
-        {social.youtube && (
-          <a
-            href={social.youtube}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-muted-foreground hover:text-primary transition"
-          >
-            <Youtube className="w-6 h-6" />
-          </a>
-        )}
-        {social.twitter && (
-          <a
-            href={social.twitter}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-muted-foreground hover:text-primary transition"
-          >
-            <Twitter className="w-6 h-6" />
-          </a>
-        )}
-      </div>
-      {/* Footer Links */}
-      <div className="text-center py-4">
-        {/* Corrected String Interpolation with backticks */}
-        <Link
-          href={`/${slug}/legal`}
-          className="text-xs text-muted-foreground hover:text-primary underline underline-offset-4"
-        >
-          Store Policies
-        </Link>
-      </div>
 
-      <NewsletterForm shopId={shop.id} />
+      {products?.map((p) => (
+        <ViewTracker key={p.id} shopId={shop.id} productId={p.id} />
+      ))}
 
-      {/* Footer Branding */}
-      <div className="text-center pb-8 text-xs text-muted-foreground">
-        Powered by <span className="font-bold text-foreground">BizoraPro</span>
-      </div>
+      {!isShopActuallyOpen && (
+        <div className="fixed bottom-0 left-0 right-0 bg-red-600 text-white text-center p-3 font-bold z-50 shadow-lg">
+          ⛔ Shop is currently closed
+        </div>
+      )}
     </div>
   );
 }

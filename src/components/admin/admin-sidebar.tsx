@@ -36,7 +36,7 @@ const adminGroups = [
     items: [
       { name: "All Shops", href: "/admin/shops", icon: Store },
       { name: "Team & Roles", href: "/admin/users", icon: Users },
-      { name: "Support Queue", href: "/admin/support", icon: Headphones }, // ✅ Added
+      { name: "Support Queue", href: "/admin/support", icon: Headphones },
     ]
   },
   {
@@ -44,7 +44,7 @@ const adminGroups = [
     items: [
       { name: "Payments", href: "/admin/payments", icon: CreditCard },
       { name: "Invoices", href: "/admin/invoices", icon: FileText },
-      { name: "Plans", href: "/admin/plans", icon: TicketPercent }, // ✅ Added
+      { name: "Plans", href: "/admin/plans", icon: TicketPercent },
     ]
   },
   {
@@ -53,6 +53,7 @@ const adminGroups = [
       { name: "Notifications", href: "/admin/notifications", icon: Bell },
       { name: "Templates", href: "/admin/templates", icon: Mail },
       { name: "Settings", href: "/admin/settings", icon: Settings },
+      {name: "Analytics", href: "/admin/analytics", icon: ShieldAlert },
     ]
   }
 ];

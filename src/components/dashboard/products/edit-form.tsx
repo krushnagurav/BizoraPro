@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { updateProductAction } from "@/src/actions/product-actions";
 import { ImageUpload } from "@/src/components/dashboard/image-upload";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -17,7 +18,6 @@ import {
 import { Card, CardContent } from "@/components/ui/card";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
-import { updateProductAction } from "@/src/actions/product-actions";
 import { VariantBuilder } from "./variant-builder";
 import { MultiImageUpload } from "../multi-image-upload";
 import { BadgeSelector } from "./badge-selector";
@@ -31,48 +31,62 @@ export function EditProductForm({
 }) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
-  const [imageUrl, setImageUrl] = useState(product.image_url);
-
+  
+  // 1. INITIALIZE STATE (Handle nulls safely)
+  const [imageUrl, setImageUrl] = useState(product.image_url || "");
   const [variants, setVariants] = useState<any[]>(product.variants || []);
-  const [gallery, setGallery] = useState<string[]>(
-    product?.gallery_images || []
-  );
-  const [badges, setBadges] = useState<string[]>(product?.badges || []);
+  const [gallery, setGallery] = useState<string[]>(product.gallery_images || []);
+  const [badges, setBadges] = useState<string[]>(product.badges || []);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setLoading(true);
 
     const formData = new FormData(event.currentTarget);
-    formData.append("id", product.id);
-    formData.append("variants", JSON.stringify(variants));
-    formData.append("galleryImages", JSON.stringify(gallery));
-    formData.append("badges", JSON.stringify(badges));
 
-    if (imageUrl !== product.image_url) {
-      formData.append("imageUrl", imageUrl);
-    }
+    // 2. PREPARE DATA OBJECT (Matches updateProductSchema)
+    const rawData = {
+      id: product.id, // Critical
+      name: formData.get("name") as string,
+      price: Number(formData.get("price")),
+      salePrice: formData.get("salePrice") ? Number(formData.get("salePrice")) : null,
+      category: formData.get("category") as string,
+      description: formData.get("description") as string,
+      
+      // State variables
+      imageUrl: imageUrl,
+      variants: JSON.stringify(variants),
+      galleryImages: JSON.stringify(gallery),
+      badges: JSON.stringify(badges),
+    };
 
-    const result = await updateProductAction(formData);
+    // 3. CALL SERVER ACTION
+    const result = await updateProductAction(rawData);
 
-    if (result?.error) {
-      toast.error(result.error);
-      setLoading(false);
-    } else {
-      toast.success("Product updated!");
-      router.push("/products");
-      router.refresh();
+    setLoading(false);
+
+    // 4. HANDLE RESPONSE
+    if (result?.serverError) {
+       toast.error("Server Error: " + result.serverError);
+    } else if (result?.validationErrors) {
+       const firstError = Object.values(result.validationErrors)[0];
+       toast.error(firstError ? String(firstError) : "Validation Failed");
+    } else if (result?.data?.success) {
+       toast.success("Product updated successfully!");
+       router.push("/products");
+       router.refresh();
     }
   };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-8">
-      {/* Image Upload */}
+      
+      {/* Image Section */}
       <Card className="bg-card border-border/50">
         <CardContent className="pt-6">
           <Label className="mb-4 block">Main Image</Label>
           <ImageUpload value={imageUrl} onChange={setImageUrl} />
-
+          
           <div className="mt-6 pt-6 border-t border-border">
             <Label className="mb-4 block">Gallery Images (Optional)</Label>
             <MultiImageUpload value={gallery} onChange={setGallery} />
@@ -80,9 +94,10 @@ export function EditProductForm({
         </CardContent>
       </Card>
 
-      {/* Details */}
+      {/* Details Section */}
       <Card className="bg-card border-border/50">
         <CardContent className="pt-6 space-y-4">
+          
           <div className="space-y-2">
             <Label>Product Name</Label>
             <Input name="name" defaultValue={product.name} required />
@@ -114,8 +129,8 @@ export function EditProductForm({
 
           <div className="space-y-2">
             <Label>Category</Label>
-            <Select
-              name="category"
+            <Select 
+              name="category" 
               defaultValue={product.category_id || undefined}
             >
               <SelectTrigger>
@@ -139,13 +154,16 @@ export function EditProductForm({
               rows={4}
             />
           </div>
+          
           <div className="space-y-2">
             <Label>Promotion Labels</Label>
             <BadgeSelector value={badges} onChange={setBadges} />
           </div>
+
         </CardContent>
       </Card>
 
+      {/* Actions */}
       <div className="flex justify-end gap-4">
         <Button type="button" variant="outline" onClick={() => router.back()}>
           Cancel

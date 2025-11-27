@@ -131,3 +131,63 @@ export async function getProductStatsAction(productId: string) {
     totalSales: productOrders.length
   };
 }
+
+// 4. GET DEEP ANALYTICS
+export async function getDeepAnalyticsAction() {
+  const supabase = await createClient();
+
+  // A. Plan Distribution (Pie Chart)
+  // Count how many shops are on 'free' vs 'pro'
+  const { data: shops } = await supabase.from("shops").select("plan");
+  
+  const planDistribution = [
+    { name: "Free", value: 0, fill: "#94a3b8" }, // Gray
+    { name: "Pro", value: 0, fill: "#E6B800" }, // Gold
+  ];
+
+  shops?.forEach(s => {
+    if (s.plan === 'pro') planDistribution[1].value++;
+    else planDistribution[0].value++;
+  });
+
+  // B. Top Shops (Leaderboard)
+  // We need to count orders per shop. 
+  // (Note: In a huge DB, we'd use an RPC function. For MVP, we fetch orders and aggregate in JS).
+  const { data: orders } = await supabase
+    .from("orders")
+    .select("shop_id, total_amount")
+    .neq("status", "draft");
+
+  const shopStats = new Map();
+  
+  orders?.forEach(o => {
+    if (!shopStats.has(o.shop_id)) {
+      shopStats.set(o.shop_id, { revenue: 0, orders: 0 });
+    }
+    const stat = shopStats.get(o.shop_id);
+    stat.revenue += o.total_amount;
+    stat.orders += 1;
+  });
+
+  // Convert to array and get Shop Names (This part is heavy, so we limit to top 5 IDs first)
+  const topShopIds = Array.from(shopStats.entries())
+    .sort((a, b) => b[1].revenue - a[1].revenue)
+    .slice(0, 5)
+    .map(x => x[0]);
+
+  const { data: topShopsDetails } = await supabase
+    .from("shops")
+    .select("id, name")
+    .in("id", topShopIds);
+
+  const leaderboard = topShopsDetails?.map(s => ({
+    name: s.name,
+    revenue: shopStats.get(s.id)?.revenue || 0,
+    orders: shopStats.get(s.id)?.orders || 0,
+  })).sort((a, b) => b.revenue - a.revenue) || [];
+
+  return {
+    planDistribution,
+    leaderboard
+  };
+}

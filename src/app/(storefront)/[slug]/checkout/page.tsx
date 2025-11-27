@@ -1,17 +1,17 @@
 "use client";
 
-import { useCart } from "@/src/hooks/use-cart";
-import { placeOrderAction } from "@/src/actions/order-actions";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useState, useEffect } from "react";
-import { toast } from "sonner";
-import { useRouter, useParams } from "next/navigation";
-import { Loader2, ArrowLeft, MapPin, Phone, User, X, TicketPercent } from "lucide-react";
+import { placeOrderAction } from "@/src/actions/order-actions";
+import { useCart } from "@/src/hooks/use-cart";
+import { ArrowLeft, Headset, Loader2, MessageCircle, ShieldCheck, Wallet } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
-import { verifyCouponAction } from "@/src/actions/coupon-actions";
+import { useParams, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 export default function CheckoutPage() {
   const cart = useCart();
@@ -19,13 +19,19 @@ export default function CheckoutPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
-  const [couponCode, setCouponCode] = useState("");
 
   useEffect(() => setIsMounted(true), []);
 
   if (!isMounted) return null;
   if (cart.items.length === 0) {
-    return <div className="p-8 text-center">Your cart is empty.</div>;
+    return (
+      <div className="min-h-screen bg-[#F8F9FA] text-slate-900 flex flex-col items-center justify-center p-4">
+        <p className="text-lg">Your cart is empty.</p>
+        <Link href={`/${params.slug}`}>
+          <Button variant="link">Go Back</Button>
+        </Link>
+      </div>
+    );
   }
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -44,150 +50,160 @@ export default function CheckoutPage() {
       toast.error(result.error);
       setLoading(false);
     } else if (result?.success) {
-      cart.clearCart(); // Clear items
-      router.push(`/${params.slug}/o/${result.orderId}`); // Redirect to success
+      cart.clearCart(); 
+      router.push(`/${params.slug}/o/${result.orderId}`); 
     }
   };
 
-  const handleApplyCoupon = async () => {
-    if (!couponCode) return;
-    setLoading(true);
-    
-    // Calculate current subtotal manually for validation
-    const subtotal = cart.items.reduce((total, item) => total + item.price * item.quantity, 0);
-
-    const res = await verifyCouponAction(couponCode, params.slug as string, subtotal);
-    
-    setLoading(false);
-    if (res?.error) {
-      toast.error(res.error);
-      cart.removeCoupon();
-    } else if (res?.coupon) {
-      cart.applyCoupon(res.coupon);
-      toast.success("Coupon Applied!");
-    }
-  };
+  // Totals
+  const subtotal = cart.items.reduce((acc, item) => acc + (item.price * item.quantity), 0);
+  const discount = subtotal - cart.totalPrice();
+  const total = cart.totalPrice();
 
   return (
-    <div className="min-h-screen bg-background p-4 max-w-md mx-auto">
-      <div className="flex items-center gap-4 mb-6">
-        <Link href={`/${params.slug}/cart`}>
-          <Button variant="ghost" size="icon"><ArrowLeft className="h-6 w-6" /></Button>
-        </Link>
-        <h1 className="text-2xl font-bold">Checkout</h1>
+    <div className="min-h-screen bg-[#F8F9FA] pb-20">
+      
+      {/* Header */}
+      <div className="bg-white border-b border-gray-100 sticky top-0 z-30">
+        <div className="max-w-6xl mx-auto px-4 md:px-8 h-20 flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <Link href={`/${params.slug}/cart`}>
+              <Button variant="ghost" size="icon" className="hover:bg-slate-50 text-slate-900">
+                <ArrowLeft className="h-6 w-6" />
+              </Button>
+            </Link>
+            <div className="flex items-center gap-2">
+               <div className="bg-[#E6B800] p-1.5 rounded-lg">
+                  <ShieldCheck className="w-5 h-5 text-white" />
+               </div>
+               <div>
+                 <h1 className="text-lg font-bold text-slate-900 leading-none">BizoraPro</h1>
+                 <p className="text-xs text-slate-500">Secure Checkout</p>
+               </div>
+            </div>
+          </div>
+          <div className="text-green-600 flex items-center gap-2 text-sm font-medium">
+             <ShieldCheck className="w-4 h-4" /> Secure
+          </div>
+        </div>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-6">
-        <Card className="bg-card border-border/50">
-          <CardHeader>
-            <CardTitle className="text-lg">Contact Details</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label>Full Name</Label>
-              <div className="relative">
-                <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                <Input name="name" placeholder="Raj Kumar" className="pl-9" required />
-              </div>
-            </div>
-            <div className="space-y-2">
-              <Label>WhatsApp Number</Label>
-              <div className="relative">
-                <Phone className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                <Input name="phone" placeholder="9876543210" type="tel" className="pl-9" required />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-card border-border/50">
-          <CardHeader>
-            <CardTitle className="text-lg">Delivery</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label>City / Area</Label>
-              <div className="relative">
-                <MapPin className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                <Input name="city" placeholder="Varachha, Surat" className="pl-9" required />
-              </div>
-            </div>
-            <div className="space-y-2">
-              <Label>Full Address (Optional)</Label>
-              <Input name="address" placeholder="House No, Street..." />
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Order Summary */}
-        <div className="bg-secondary/20 p-4 rounded-lg space-y-2 text-sm">
-          <div className="flex justify-between">
-            <span>Subtotal ({cart.items.length} items)</span>
-            <span>₹{cart.totalPrice()}</span>
-          </div>
-          <div className="flex justify-between font-bold text-lg border-t border-border pt-2 mt-2">
-            <span>Total to Pay</span>
-            <span className="text-primary">₹{cart.totalPrice()}</span>
-          </div>
-        </div>
-
-        {/* COUPON SECTION */}
-        <Card className="bg-card border-border/50">
-          <CardContent className="p-4">
-            {cart.coupon ? (
-              <div className="flex items-center justify-between bg-green-500/10 p-3 rounded border border-green-500/20">
-                <div className="flex items-center gap-2 text-green-600">
-                  <TicketPercent className="h-4 w-4" />
-                  <span className="font-mono font-bold">{cart.coupon.code}</span>
-                  <span className="text-xs">
-                    ({cart.coupon.type === 'percent' ? `${cart.coupon.value}%` : `₹${cart.coupon.value}`} Off)
-                  </span>
+      <div className="max-w-6xl mx-auto px-4 md:px-8 py-8 md:py-12">
+        <form onSubmit={handleSubmit} className="grid lg:grid-cols-12 gap-8">
+          
+          {/* LEFT COLUMN: FORM */}
+          <div className="lg:col-span-7 space-y-6">
+            
+            <Card className="bg-white border-gray-100 shadow-sm">
+              <CardHeader className="pb-4 border-b border-gray-50">
+                <CardTitle className="text-xl text-slate-900">Contact Information</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-6 pt-6">
+                <div className="space-y-2">
+                  <Label className="text-slate-700">Full Name *</Label>
+                  <Input name="name" placeholder="Enter your full name" className="h-12 bg-white border-slate-200" required />
                 </div>
-                <Button 
-                  type="button" 
-                  size="icon" 
-                  variant="ghost" 
-                  className="h-6 w-6 hover:text-red-500"
-                  onClick={() => cart.removeCoupon()}
-                >
-                  <X className="h-4 w-4" />
+                <div className="space-y-2">
+                  <Label className="text-slate-700">WhatsApp Number *</Label>
+                  <div className="relative">
+                    <div className="absolute left-3 top-3 flex items-center gap-2 border-r border-slate-200 pr-2">
+                       <span className="text-xl">🇮🇳</span>
+                       <span className="text-sm font-medium text-slate-600">+91</span>
+                    </div>
+                    <Input name="phone" placeholder="98765 43210" type="tel" className="h-12 pl-24 bg-white border-slate-200" required />
+                  </div>
+                  <p className="text-xs text-slate-500">We'll send order confirmation via WhatsApp</p>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-white border-gray-100 shadow-sm">
+              <CardHeader className="pb-4 border-b border-gray-50">
+                <CardTitle className="text-xl text-slate-900">Delivery Details</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-6 pt-6">
+                <div className="space-y-2">
+                  <Label className="text-slate-700">City / Area *</Label>
+                  <Input name="city" placeholder="Enter your city or area" className="h-12 bg-white border-slate-200" required />
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-slate-700">Full Address (Optional)</Label>
+                  <Input name="address" placeholder="House No, Street name..." className="h-12 bg-white border-slate-200" />
+                </div>
+              </CardContent>
+            </Card>
+
+          </div>
+
+          {/* RIGHT COLUMN: SUMMARY */}
+          <div className="lg:col-span-5 space-y-6">
+            <Card className="bg-white border-gray-100 shadow-lg sticky top-28">
+              <CardHeader className="pb-4 border-b border-gray-50 flex flex-row justify-between items-center">
+                <CardTitle className="text-xl text-slate-900">Order Summary</CardTitle>
+                {/* Chevron up/down could go here for mobile toggle */}
+              </CardHeader>
+              
+              <CardContent className="space-y-6 pt-6">
+                
+                {/* Product List (Mini) */}
+                <div className="space-y-4 max-h-[300px] overflow-y-auto pr-2">
+                  {cart.items.map((item) => (
+                    <div key={item.id} className="flex gap-4">
+                       <div className="h-16 w-16 bg-slate-100 rounded-lg relative overflow-hidden shrink-0 border border-gray-100">
+                          {item.image_url && <Image src={item.image_url} fill className="object-cover" alt="" unoptimized />}
+                       </div>
+                       <div className="flex-1 flex justify-between">
+                          <div>
+                             <p className="font-bold text-slate-900 text-sm line-clamp-2">{item.name}</p>
+                             <p className="text-xs text-slate-500 mt-1">Qty: {item.quantity}</p>
+                          </div>
+                          <p className="font-bold text-slate-900 text-sm">₹{(item.price * item.quantity).toLocaleString()}</p>
+                       </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Totals */}
+                <div className="space-y-3 pt-4 border-t border-gray-100 text-sm">
+                   <div className="flex justify-between text-slate-600">
+                      <span>Subtotal</span>
+                      <span>₹{subtotal.toLocaleString()}</span>
+                   </div>
+                   {cart.coupon && (
+                     <div className="flex justify-between text-green-600 font-medium">
+                        <span>Discount (20%)</span>
+                        <span>- ₹{discount.toLocaleString()}</span>
+                     </div>
+                   )}
+                   <div className="flex justify-between items-end pt-4 border-t border-gray-100">
+                      <span className="font-bold text-lg text-slate-900">Total</span>
+                      <span className="font-bold text-2xl text-slate-900">₹{total.toLocaleString()}</span>
+                   </div>
+                </div>
+
+                <Button className="w-full h-14 text-lg font-bold bg-[#E6B800] text-black hover:bg-[#FFD700] shadow-lg shadow-[#E6B800]/20 rounded-xl gap-2" disabled={loading}>
+                  {loading ? <Loader2 className="animate-spin" /> : <><MessageCircle className="w-5 h-5" /> Order on WhatsApp</>}
                 </Button>
-              </div>
-            ) : (
-              <div className="flex gap-2">
-                <Input 
-                  placeholder="Promo Code" 
-                  value={couponCode}
-                  onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
-                  className="font-mono uppercase"
-                />
-                <Button type="button" variant="outline" onClick={handleApplyCoupon} disabled={loading}>
-                  Apply
-                </Button>
-              </div>
-            )}
-          </CardContent>
-        </Card>
 
-        {/* Order Summary (Updated) */}
-        <div className="bg-secondary/20 p-4 rounded-lg space-y-2 text-sm">
-           {/* ... existing subtotal ... */}
-           
-           {/* ADD DISCOUNT ROW */}
-           {cart.coupon && (
-             <div className="flex justify-between text-green-600">
-               <span>Discount ({cart.coupon.code})</span>
-               <span>- ₹{(cart.items.reduce((a, b) => a + b.price * b.quantity, 0) - cart.totalPrice()).toFixed(2)}</span>
-             </div>
-           )}
+                {/* Trust Badges */}
+                <div className="space-y-3 pt-4">
+                   <div className="flex items-center gap-3 text-xs text-slate-500">
+                      <ShieldCheck className="w-4 h-4 text-green-600" /> Secure Order Process
+                   </div>
+                   <div className="flex items-center gap-3 text-xs text-slate-500">
+                      <Wallet className="w-4 h-4 text-blue-600" /> No Hidden Fees
+                   </div>
+                   <div className="flex items-center gap-3 text-xs text-slate-500">
+                      <Headset className="w-4 h-4 text-purple-600" /> Direct Business Support
+                   </div>
+                </div>
 
-           {/* ... existing total ... */}
-        </div>
+              </CardContent>
+            </Card>
+          </div>
 
-        <Button className="w-full h-14 text-lg font-bold bg-green-600 hover:bg-green-700 text-white" disabled={loading}>
-          {loading ? <Loader2 className="animate-spin" /> : "Confirm Order"}
-        </Button>
-      </form>
+        </form>
+      </div>
     </div>
   );
 }

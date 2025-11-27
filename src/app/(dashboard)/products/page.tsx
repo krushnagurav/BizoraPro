@@ -1,43 +1,40 @@
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import Link from "next/link";
+import { createClient } from "@/src/lib/supabase/server";
+import { getProducts } from "@/src/data/products"; // Import DAL
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import {
-  DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger
-} from "@/components/ui/dropdown-menu";
-import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { deleteProductAction, getProductsAction } from "@/src/actions/product-actions";
-import { createClient } from "@/src/lib/supabase/server";
-import {
-  ChevronLeft, ChevronRight, FileSpreadsheet,
-  MoreHorizontal, Pencil,
-  Plus,
-  Search,
-  Trash2
+import { Input } from "@/components/ui/input";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { 
+  DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger 
+} from "@/components/ui/dropdown-menu";
+import { 
+  Plus, MoreHorizontal, Pencil, Trash2, Search, ChevronLeft, ChevronRight, FileSpreadsheet
 } from "lucide-react";
-import Link from "next/link";
+import { deleteProductAction } from "@/src/actions/product-actions";
 import { redirect } from "next/navigation";
 
-// Server Component that accepts searchParams
 export default async function ProductsPage({
   searchParams,
 }: {
   searchParams: Promise<{ page?: string; search?: string }>;
 }) {
+  // 1. Parse URL Params
   const params = await searchParams;
   const currentPage = Number(params.page) || 1;
   const searchQuery = params.search || "";
   
+  // 2. Auth Check
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
-  // 1. Get Shop ID
   const { data: shop } = await supabase.from("shops").select("id").eq("owner_id", user.id).single();
   if (!shop) redirect("/onboarding");
 
-  // 2. Fetch Paginated Data
-  const { data: products, totalPages } = await getProductsAction(shop.id, currentPage, 10, searchQuery);
+  // 3. Fetch Data via DAL
+  const { data: products, metadata } = await getProducts(shop.id, currentPage, searchQuery);
 
   return (
     <div className="p-8 space-y-6">
@@ -45,7 +42,9 @@ export default async function ProductsPage({
       <div className="flex flex-col sm:flex-row justify-between gap-4 items-start sm:items-center">
         <div>
           <h1 className="text-3xl font-bold text-primary">Products</h1>
-          <p className="text-muted-foreground">Manage your inventory</p>
+          <p className="text-muted-foreground">
+            Manage your inventory ({metadata.totalItems} items)
+          </p>
         </div>
         <div className="flex gap-2">
           <Link href="/products/import">
@@ -60,7 +59,8 @@ export default async function ProductsPage({
       {/* Search Bar */}
       <div className="relative w-full max-w-sm">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-        <form>
+        {/* Server-Side Search Form */}
+        <form action="/products" method="GET">
           <Input 
             name="search" 
             placeholder="Search products..." 
@@ -84,14 +84,14 @@ export default async function ProductsPage({
               </TableRow>
             </TableHeader>
             <TableBody>
-              {products?.length === 0 ? (
+              {products.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={5} className="h-32 text-center text-muted-foreground">
-                    {searchQuery ? "No products match your search." : "No products yet."}
+                    {searchQuery ? `No matches for "${searchQuery}"` : "No products yet."}
                   </TableCell>
                 </TableRow>
               ) : (
-                products?.map((product) => (
+                products.map((product) => (
                   <TableRow key={product.id} className="border-border hover:bg-secondary/10">
                     <TableCell>
                       <Avatar className="h-10 w-10 rounded-md border border-border">
@@ -131,21 +131,23 @@ export default async function ProductsPage({
       </Card>
 
       {/* Pagination Controls */}
-      <div className="flex items-center justify-end gap-2">
-        <Link href={`/products?page=${currentPage - 1}&search=${searchQuery}`}>
-          <Button variant="outline" size="sm" disabled={currentPage <= 1}>
-            <ChevronLeft className="h-4 w-4" /> Prev
-          </Button>
-        </Link>
-        <span className="text-sm text-muted-foreground">
-          Page {currentPage} of {totalPages || 1}
-        </span>
-        <Link href={`/products?page=${currentPage + 1}&search=${searchQuery}`}>
-          <Button variant="outline" size="sm" disabled={currentPage >= (totalPages || 1)}>
-            Next <ChevronRight className="h-4 w-4" />
-          </Button>
-        </Link>
-      </div>
+      {metadata.totalPages > 1 && (
+        <div className="flex items-center justify-end gap-2">
+          <Link href={`/products?page=${currentPage - 1}&search=${searchQuery}`}>
+            <Button variant="outline" size="sm" disabled={!metadata.hasPrevPage}>
+              <ChevronLeft className="h-4 w-4" /> Prev
+            </Button>
+          </Link>
+          <span className="text-sm text-muted-foreground">
+            Page {metadata.page} of {metadata.totalPages}
+          </span>
+          <Link href={`/products?page=${currentPage + 1}&search=${searchQuery}`}>
+            <Button variant="outline" size="sm" disabled={!metadata.hasNextPage}>
+              Next <ChevronRight className="h-4 w-4" />
+            </Button>
+          </Link>
+        </div>
+      )}
     </div>
   );
 }

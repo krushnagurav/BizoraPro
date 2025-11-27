@@ -56,6 +56,7 @@ const adminGroups = [
       { name: "Notifications", href: "/admin/notifications", icon: Bell },
       { name: "Templates", href: "/admin/templates", icon: Mail },
       { name: "Settings", href: "/admin/settings", icon: Settings },
+      {name: "Analytics", href: "/admin/analytics", icon: ShieldAlert },
     ]
   }
 ];

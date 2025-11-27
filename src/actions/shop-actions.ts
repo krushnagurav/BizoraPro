@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 import { createClient } from "../lib/supabase/server";
 import { revalidatePath } from "next/cache";
+import { categoryPresets } from "@/src/lib/fonts";
 
 // --- STEP 1 VALIDATION ---
 const step1Schema = z.object({
@@ -69,6 +70,11 @@ export async function completeStep2(formData: FormData) {
   const parsed = step2Schema.safeParse(raw);
   if (!parsed.success) return { error: parsed.error.errors[0].message };
 
+  const category = parsed.data.category;
+  
+  // 1. Get Preset based on Category (or default to Other)
+  const preset = categoryPresets[category] || categoryPresets["Other"];
+
   // 1. Create the Category in DB first
   const { data: shop } = await supabase.from("shops").select("id").eq("owner_id", user?.id).single();
   if (!shop) return { error: "Shop not found" };
@@ -92,7 +98,14 @@ export async function completeStep2(formData: FormData) {
     .from("shops")
     .update({ 
       whatsapp_number: parsed.data.whatsapp,
-      onboarding_step: 3 
+      onboarding_step: 3 ,
+      theme_config: {
+        primaryColor: preset.primaryColor,
+        font: preset.font,
+        radius: preset.radius,
+        bannerUrl: "",
+        logoUrl: ""
+      }
     })
     .eq("id", shop.id);
 

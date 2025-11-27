@@ -26,6 +26,8 @@ import { BadgeSelector } from "./badge-selector";
 export function AddProductForm({ categories }: { categories: any[] }) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  
+  // Client State
   const [imageUrl, setImageUrl] = useState("");
   const [variants, setVariants] = useState<any[]>([]);
   const [gallery, setGallery] = useState<string[]>([]);
@@ -36,20 +38,41 @@ export function AddProductForm({ categories }: { categories: any[] }) {
     setLoading(true);
 
     const formData = new FormData(event.currentTarget);
-    formData.append("variants", JSON.stringify(variants));
-    formData.append("galleryImages", JSON.stringify(gallery));
-    formData.append("badges", JSON.stringify(badges));
-    if (imageUrl) formData.append("imageUrl", imageUrl);
 
-    const result = await createProductAction(formData);
+    // 1. Prepare Raw Data Object (Matching Zod Schema)
+    // Note: safe-action expects a plain object, NOT FormData directly
+    const rawData = {
+      name: formData.get("name") as string,
+      price: Number(formData.get("price")),
+      salePrice: formData.get("salePrice") ? Number(formData.get("salePrice")) : null,
+      category: formData.get("category") as string,
+      description: formData.get("description") as string,
+      
+      // Client State Variables
+      imageUrl: imageUrl,
+      variants: JSON.stringify(variants),
+      galleryImages: JSON.stringify(gallery),
+      badges: JSON.stringify(badges),
+    };
 
-    if (result?.error) {
-      toast.error(result.error);
-      setLoading(false);
-    } else {
-      toast.success("Product created!");
-      router.push("/products");
-      router.refresh();
+    // 2. Call Safe Action
+    const result = await createProductAction(rawData);
+
+    setLoading(false);
+
+    // 3. Handle Response
+    if (result?.serverError) {
+       toast.error("Server Error: " + result.serverError);
+    } else if (result?.validationErrors) {
+       // Show first validation error
+       const firstError = Object.values(result.validationErrors)[0];
+       toast.error(firstError ? String(firstError) : "Validation Failed");
+    } else if (result?.data?.success) {
+       toast.success("Product created!");
+       if (result.data.redirect) {
+           router.push(result.data.redirect);
+           router.refresh();
+       }
     }
   };
 
@@ -96,7 +119,6 @@ export function AddProductForm({ categories }: { categories: any[] }) {
                 <SelectValue placeholder="Select Category" />
               </SelectTrigger>
               <SelectContent>
-                {/* DYNAMIC CATEGORIES FROM DB */}
                 {categories.length > 0 ? (
                   categories.map((cat) => (
                     <SelectItem key={cat.id} value={cat.id}>
@@ -112,8 +134,7 @@ export function AddProductForm({ categories }: { categories: any[] }) {
             </Select>
             {categories.length === 0 && (
               <p className="text-xs text-red-400">
-                You haven't created any categories yet. Go to the Categories
-                page first.
+                You haven't created any categories yet. Go to the Categories page first.
               </p>
             )}
           </div>
@@ -122,6 +143,7 @@ export function AddProductForm({ categories }: { categories: any[] }) {
             <Label>Description</Label>
             <Textarea name="description" placeholder="Details..." rows={4} />
           </div>
+          
           <div className="space-y-2">
             <Label>Promotion Labels</Label>
             <BadgeSelector value={badges} onChange={setBadges} />

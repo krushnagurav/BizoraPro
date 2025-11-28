@@ -73,7 +73,6 @@ export async function toggleReviewStatusAction(formData: FormData) {
 // 4. SUBMIT LEAD (Public)
 export async function submitLeadAction(formData: FormData) {
   const shopId = formData.get("shopId") as string;
-  const email = formData.get("email") as string;
   const phone = formData.get("phone") as string;
 
   const supabase = await createClient();
@@ -101,7 +100,7 @@ export async function createUpsellAction(formData: FormData) {
   const { data: shop } = await supabase.from("shops").select("id").eq("owner_id", user?.id).single();
   if (!shop) return { error: "Shop not found" };
 
-  // Validate: Can't upsell the same product
+  // Validate: Can&apos;t upsell the same product
   if (triggerId === suggestedId) return { error: "Cannot suggest the same product" };
 
   const { error } = await supabase.from("upsells").insert({

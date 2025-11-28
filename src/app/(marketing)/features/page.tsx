@@ -1,3 +1,4 @@
+// src/app/(marketing)/features/page.tsx
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import {
@@ -16,93 +17,103 @@ import {
 
 export default function FeaturesPage() {
   return (
-    <div className="flex flex-col min-h-screen bg-background text-foreground">
-      {/* -------------------------------------------------------------------------- */
-      /* HERO SECTION                                */
-      /* -------------------------------------------------------------------------- */}
-      <section className="relative py-24 md:py-32 text-center overflow-hidden">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-primary/10 blur-[120px] rounded-full opacity-30 pointer-events-none" />
+    <>
+      {/* HERO */}
+      <section className="relative overflow-hidden py-16 md:py-24 text-center">
+        <div className="pointer-events-none absolute top-0 left-1/2 h-[420px] w-[780px] -translate-x-1/2 rounded-full bg-primary/10 blur-[120px] opacity-35" />
 
-        <div className="container px-6 md:px-12 relative z-10">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-secondary/30 border border-white/10 text-xs font-medium text-primary mb-6">
-            ✨ All Features
+        <div className="relative z-10 mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
+          <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-white/10 bg-secondary/20 px-3 py-1 text-[11px] font-medium uppercase tracking-[0.2em] text-primary">
+            ✨ All features
           </div>
-          <h1 className="text-4xl md:text-6xl font-extrabold mb-6 leading-tight">
-            Everything you need to grow your <br />
-            <span className="text-primary">WhatsApp Business</span>
+          <h1 className="mb-4 text-3xl md:text-5xl lg:text-6xl font-extrabold leading-tight text-white">
+            Everything you need to grow your{" "}
+            <span className="text-primary">WhatsApp business</span>
           </h1>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-10">
-            Beautiful storefront + Add-to-Cart + Direct WhatsApp orders. The
-            complete toolkit for modern sellers.
+          <p className="mx-auto mb-8 max-w-2xl text-sm md:text-lg text-muted-foreground">
+            Premium storefront, add-to-cart, WhatsApp ordering and a simple
+            dashboard — all in one place. Built for small businesses that sell
+            through chat.
           </p>
           <Link href="/signup">
             <Button
               size="lg"
-              className="h-14 px-10 text-lg font-bold bg-primary text-black hover:bg-primary/90"
+              className="h-12 md:h-14 px-8 md:px-10 text-sm md:text-lg font-bold bg-primary text-black hover:bg-primary/90"
             >
-              Create Shop Link <ArrowRight className="ml-2 h-5 w-5" />
+              Create shop link
+              <ArrowRight className="ml-2 h-4 w-4 md:h-5 md:w-5" />
             </Button>
           </Link>
         </div>
       </section>
 
-      {/* -------------------------------------------------------------------------- */
-      /* FEATURE GRID (6 CARDS)                          */
-      /* -------------------------------------------------------------------------- */}
-      <section className="py-20 bg-[#0A0A0A]">
-        <div className="container px-6 md:px-12">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {/* FEATURE GRID */}
+      <section className="bg-[#050507] py-16 md:py-20">
+        <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+          <div className="mb-8 text-center space-y-2">
+            <h2 className="text-2xl md:text-3xl font-bold text-white">
+              Core features of BizoraPro
+            </h2>
+            <p className="text-xs md:text-sm text-muted-foreground max-w-2xl mx-auto">
+              Designed for Indian WhatsApp-first businesses that want a clean,
+              trustworthy online presence without complex tools.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
             {[
               {
                 icon: Store,
-                title: "Premium Storefront",
-                text: "Beautiful product showcase that builds trust instantly.",
+                title: "Premium storefront",
+                text: "Beautiful product listing with pricing and sections that build instant trust.",
               },
               {
                 icon: MessageCircle,
-                title: "Add-to-Cart + WhatsApp",
-                text: "Seamless cart to WhatsApp checkout flow.",
+                title: "Add-to-cart + WhatsApp",
+                text: "Cart summary converts into a clean WhatsApp message in a single tap.",
               },
               {
                 icon: QrCode,
-                title: "QR Code for Sharing",
-                text: "Print and share your shop instantly.",
+                title: "Shareable QR code",
+                text: "Print your QR on boards, cards or boxes — customers land directly on your shop.",
               },
               {
                 icon: Smartphone,
-                title: "Mobile-First Design",
-                text: "Perfect on every smartphone screen.",
+                title: "Mobile-first design",
+                text: "Optimised for Indian smartphones and 4G networks — fast and responsive.",
               },
               {
                 icon: ShieldCheck,
-                title: "Secure Hosting",
-                text: "Fast, reliable, and always online.",
+                title: "Secure, managed hosting",
+                text: "Hosted, secured and maintained for you. No servers or plugins to manage.",
               },
               {
                 icon: Edit,
-                title: "Manage Products",
-                text: "Add, edit, delete products in seconds.",
+                title: "Easy product management",
+                text: "Add, edit or hide products in seconds with images, prices and badges.",
               },
               {
                 icon: BarChart3,
-                title: "Business Analytics",
-                text: "Track views, clicks, and engagement.",
+                title: "Basic analytics",
+                text: "Track shop views, product interest and WhatsApp clicks (owner views excluded).",
               },
               {
                 icon: Globe,
-                title: "Custom Domain",
-                text: "Use your own domain name (Premium).",
+                title: "Custom domain (Pro)",
+                text: "Upgrade to use your own domain name and look even more professional.",
               },
             ].map((item, i) => (
               <div
-                key={i}
-                className="p-8 rounded-xl bg-[#111] border border-white/5 hover:border-primary/30 transition-all group"
+                key={item.title + i}
+                className="group rounded-xl border border-white/5 bg-[#0C0C10] p-7 transition-all hover:border-primary/30"
               >
-                <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-6 group-hover:bg-primary/20 transition-colors">
-                  <item.icon className="w-6 h-6 text-primary" />
+                <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-lg border border-primary/20 bg-primary/10 transition-colors group-hover:bg-primary/20">
+                  <item.icon className="h-6 w-6 text-primary" />
                 </div>
-                <h3 className="text-lg font-bold mb-3">{item.title}</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">
+                <h3 className="mb-2 text-base md:text-lg font-semibold text-white">
+                  {item.title}
+                </h3>
+                <p className="text-xs md:text-sm leading-relaxed text-muted-foreground">
                   {item.text}
                 </p>
               </div>
@@ -111,44 +122,44 @@ export default function FeaturesPage() {
         </div>
       </section>
 
-      {/* -------------------------------------------------------------------------- */
-      /* SPOTLIGHT 1: STOREFRONT                          */
-      /* -------------------------------------------------------------------------- */}
-      <section className="py-32 bg-background">
-        <div className="container px-6 md:px-12 flex flex-col md:flex-row items-center gap-16">
-          <div className="flex-1 space-y-8">
-            <div className="text-xs font-bold tracking-widest text-primary uppercase">
+      {/* SPOTLIGHT 1: STOREFRONT */}
+      <section className="bg-background py-16 md:py-24">
+        <div className="mx-auto flex max-w-6xl flex-col items-center gap-12 px-4 sm:px-6 lg:px-8 md:flex-row">
+          <div className="flex-1 space-y-6">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-primary">
               Storefront
-            </div>
-            <h2 className="text-4xl md:text-5xl font-bold leading-tight">
-              Turn WhatsApp into a <br />
-              <span className="text-primary">Real Online Store</span>
-            </h2>
-            <p className="text-lg text-muted-foreground leading-relaxed">
-              Professional product listing with prices, descriptions, and
-              high-quality images. Your customers see everything before they
-              message you.
             </p>
-            <ul className="space-y-4">
+            <h2 className="text-2xl md:text-4xl lg:text-5xl font-bold leading-tight text-white">
+              Turn your WhatsApp catalogue into a{" "}
+              <span className="text-primary">real online store</span>
+            </h2>
+            <p className="text-sm md:text-lg text-muted-foreground leading-relaxed">
+              Instead of sending random photos in chat, share one clean link
+              with organised products, clear pricing and a consistent brand
+              experience.
+            </p>
+            <ul className="space-y-3">
               {[
-                "Unlimited products with images and descriptions",
-                "Categories to organize your catalog",
-                "Looks professional on all devices",
-              ].map((text, i) => (
-                <li key={i} className="flex items-center gap-3">
-                  <CheckCircle2 className="w-5 h-5 text-primary flex-shrink-0" />
-                  <span className="text-sm md:text-base">{text}</span>
+                "Product cards with images, price, badges and short descriptions.",
+                "Categories to separate sarees, combos, festive collections and more.",
+                "Uniform grid layout with fixed image ratios so everything looks premium.",
+              ].map((text) => (
+                <li key={text} className="flex items-start gap-3">
+                  <CheckCircle2 className="mt-0.5 h-5 w-5 flex-shrink-0 text-primary" />
+                  <span className="text-xs md:text-sm text-slate-200">
+                    {text}
+                  </span>
                 </li>
               ))}
             </ul>
           </div>
+
           <div className="flex-1 w-full">
-            {/* Placeholder for Phone Mockup Image */}
-            <div className="relative aspect-[4/3] bg-[#111] rounded-3xl border border-white/10 shadow-2xl overflow-hidden flex items-center justify-center">
-              <div className="text-center space-y-4 opacity-50">
-                <Smartphone className="w-24 h-24 mx-auto text-white/20" />
-                <p className="text-sm font-mono text-muted-foreground">
-                  STORE UI MOCKUP
+            <div className="relative flex aspect-[4/3] items-center justify-center overflow-hidden rounded-3xl border border-white/10 bg-[#101018] shadow-2xl">
+              <div className="space-y-3 text-center opacity-60">
+                <Smartphone className="mx-auto h-20 w-20 text-white/15" />
+                <p className="font-mono text-[11px] tracking-[0.3em] text-muted-foreground">
+                  STOREFRONT UI MOCKUP
                 </p>
               </div>
             </div>
@@ -156,42 +167,42 @@ export default function FeaturesPage() {
         </div>
       </section>
 
-      {/* -------------------------------------------------------------------------- */
-      /* SPOTLIGHT 2: ORDERING FLOW (Reversed)               */
-      /* -------------------------------------------------------------------------- */}
-      <section className="py-32 bg-[#050505]">
-        <div className="container px-6 md:px-12 flex flex-col md:flex-row-reverse items-center gap-16">
-          <div className="flex-1 space-y-8">
-            <div className="text-xs font-bold tracking-widest text-primary uppercase">
+      {/* SPOTLIGHT 2: ORDER FLOW */}
+      <section className="bg-[#050507] py-16 md:py-24">
+        <div className="mx-auto flex max-w-6xl flex-col items-center gap-12 px-4 sm:px-6 lg:px-8 md:flex-row-reverse">
+          <div className="flex-1 space-y-6">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-primary">
               Ordering
-            </div>
-            <h2 className="text-4xl md:text-5xl font-bold leading-tight">
-              Seamless <span className="text-primary">WhatsApp Ordering</span>
-            </h2>
-            <p className="text-lg text-muted-foreground leading-relaxed">
-              Customers add products to cart, review their order, and send it
-              directly to your WhatsApp with one tap. No complicated checkout
-              forms.
             </p>
-            <ul className="space-y-4">
+            <h2 className="text-2xl md:text-4xl lg:text-5xl font-bold leading-tight text-white">
+              Seamless{" "}
+              <span className="text-primary">WhatsApp ordering flow</span>
+            </h2>
+            <p className="text-sm md:text-lg text-muted-foreground leading-relaxed">
+              Customers browse, add items to cart and send you a neat WhatsApp
+              message. No confusing payment pages or abandoned checkout forms.
+            </p>
+            <ul className="space-y-3">
               {[
-                "Simple add-to-cart functionality",
-                "Order summary sent to your WhatsApp",
-                "Continue conversation for payment & delivery",
-              ].map((text, i) => (
-                <li key={i} className="flex items-center gap-3">
-                  <CheckCircle2 className="w-5 h-5 text-primary flex-shrink-0" />
-                  <span className="text-sm md:text-base">{text}</span>
+                "Simple “Add to cart” buttons built for mobile thumbs.",
+                "Cart page with quantities, notes and order summary.",
+                "Order message includes a secure tracking link instead of huge text blobs.",
+              ].map((text) => (
+                <li key={text} className="flex items-start gap-3">
+                  <CheckCircle2 className="mt-0.5 h-5 w-5 flex-shrink-0 text-primary" />
+                  <span className="text-xs md:text-sm text-slate-200">
+                    {text}
+                  </span>
                 </li>
               ))}
             </ul>
           </div>
+
           <div className="flex-1 w-full">
-            {/* Placeholder for Cart UI Image */}
-            <div className="relative aspect-[4/3] bg-[#111] rounded-3xl border border-white/10 shadow-2xl overflow-hidden flex items-center justify-center">
-              <div className="text-center space-y-4 opacity-50">
-                <MessageCircle className="w-24 h-24 mx-auto text-white/20" />
-                <p className="text-sm font-mono text-muted-foreground">
+            <div className="relative flex aspect-[4/3] items-center justify-center overflow-hidden rounded-3xl border border-white/10 bg-[#101018] shadow-2xl">
+              <div className="space-y-3 text-center opacity-60">
+                <MessageCircle className="mx-auto h-20 w-20 text-white/15" />
+                <p className="font-mono text-[11px] tracking-[0.3em] text-muted-foreground">
                   WHATSAPP FLOW MOCKUP
                 </p>
               </div>
@@ -200,42 +211,42 @@ export default function FeaturesPage() {
         </div>
       </section>
 
-      {/* -------------------------------------------------------------------------- */
-      /* SPOTLIGHT 3: MANAGEMENT                          */
-      /* -------------------------------------------------------------------------- */}
-      <section className="py-32 bg-background">
-        <div className="container px-6 md:px-12 flex flex-col md:flex-row items-center gap-16">
-          <div className="flex-1 space-y-8">
-            <div className="text-xs font-bold tracking-widest text-primary uppercase">
+      {/* SPOTLIGHT 3: MANAGEMENT */}
+      <section className="bg-background py-16 md:py-24">
+        <div className="mx-auto flex max-w-6xl flex-col items-center gap-12 px-4 sm:px-6 lg:px-8 md:flex-row">
+          <div className="flex-1 space-y-6">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-primary">
               Management
-            </div>
-            <h2 className="text-4xl md:text-5xl font-bold leading-tight">
-              Manage your shop{" "}
-              <span className="text-primary">from anywhere</span>
-            </h2>
-            <p className="text-lg text-muted-foreground leading-relaxed">
-              Update products, prices, and images in seconds. No technical
-              skills needed. Just login and edit from any device.
             </p>
-            <ul className="space-y-4">
+            <h2 className="text-2xl md:text-4xl lg:text-5xl font-bold leading-tight text-white">
+              Manage your shop{" "}
+              <span className="text-primary">from any device</span>
+            </h2>
+            <p className="text-sm md:text-lg text-muted-foreground leading-relaxed">
+              The BizoraPro dashboard is designed for non-technical business
+              owners. Update prices, photos and stock without touching code.
+            </p>
+            <ul className="space-y-3">
               {[
-                "Simple dashboard to manage everything",
-                "Add products with photos instantly",
-                "Changes go live immediately",
-              ].map((text, i) => (
-                <li key={i} className="flex items-center gap-3">
-                  <CheckCircle2 className="w-5 h-5 text-primary flex-shrink-0" />
-                  <span className="text-sm md:text-base">{text}</span>
+                "Clean dashboard showing products, orders and basic analytics.",
+                "Bulk image uploads with compression to keep pages fast.",
+                "Changes go live instantly on your public shop link.",
+              ].map((text) => (
+                <li key={text} className="flex items-start gap-3">
+                  <CheckCircle2 className="mt-0.5 h-5 w-5 flex-shrink-0 text-primary" />
+                  <span className="text-xs md:text-sm text-slate-200">
+                    {text}
+                  </span>
                 </li>
               ))}
             </ul>
           </div>
+
           <div className="flex-1 w-full">
-            {/* Placeholder for Dashboard UI Image */}
-            <div className="relative aspect-[4/3] bg-[#111] rounded-3xl border border-white/10 shadow-2xl overflow-hidden flex items-center justify-center">
-              <div className="text-center space-y-4 opacity-50">
-                <LayoutDashboard className="w-24 h-24 mx-auto text-white/20" />
-                <p className="text-sm font-mono text-muted-foreground">
+            <div className="relative flex aspect-[4/3] items-center justify-center overflow-hidden rounded-3xl border border-white/10 bg-[#101018] shadow-2xl">
+              <div className="space-y-3 text-center opacity-60">
+                <LayoutDashboard className="mx-auto h-20 w-20 text-white/15" />
+                <p className="font-mono text-[11px] tracking-[0.3em] text-muted-foreground">
                   DASHBOARD UI MOCKUP
                 </p>
               </div>
@@ -244,47 +255,45 @@ export default function FeaturesPage() {
         </div>
       </section>
 
-      {/* -------------------------------------------------------------------------- */
-      /* CTA FOOTER                                  */
-      /* -------------------------------------------------------------------------- */}
-      <section className="py-32 bg-[#0A0A0A] border-t border-white/5 relative overflow-hidden">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-primary/10 via-transparent to-transparent opacity-50" />
-
-        <div className="container px-6 md:px-12 text-center relative z-10">
-          <h2 className="text-4xl md:text-6xl font-bold mb-8">
-            Start Free — No GST. <br />
-            <span className="text-primary">No App Required.</span>
+      {/* CTA FOOTER */}
+      <section className="relative overflow-hidden border-t border-white/5 bg-[#050507] py-18 md:py-24">
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(234,179,8,0.25),_transparent_60%)]" />
+        <div className="relative z-10 mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 text-center">
+          <h2 className="mb-5 text-2xl md:text-4xl lg:text-5xl font-bold text-white">
+            Start free — no GST, no app required
           </h2>
-          <p className="text-xl text-muted-foreground mb-12 max-w-2xl mx-auto">
-            Create your WhatsApp shop in 5 minutes. No credit card needed.
+          <p className="mx-auto mb-10 max-w-2xl text-sm md:text-lg text-muted-foreground">
+            Create your BizoraPro shop link in under 5 minutes, share it on
+            WhatsApp and start taking organised orders today.
           </p>
 
-          <div className="flex flex-col sm:flex-row gap-6 justify-center">
+          <div className="flex flex-col items-center justify-center gap-4 sm:flex-row sm:justify-center">
             <Link href="/signup">
               <Button
                 size="lg"
-                className="h-14 px-10 text-lg font-bold bg-primary text-black hover:bg-primary/90"
+                className="h-12 md:h-14 px-8 md:px-10 text-sm md:text-lg font-bold bg-primary text-black hover:bg-primary/90"
               >
-                Start Free Trial <ArrowRight className="ml-2 h-5 w-5" />
+                Start free trial
+                <ArrowRight className="ml-2 h-4 w-4 md:h-5 md:w-5" />
               </Button>
             </Link>
             <Link href="/examples">
               <Button
                 variant="outline"
                 size="lg"
-                className="h-14 px-10 text-lg border-white/20 text-white hover:bg-white/10"
+                className="h-12 md:h-14 px-8 md:px-10 text-sm md:text-lg border-white/20 text-white hover:bg-white/10"
               >
-                View Sample Shop
+                View sample shops
               </Button>
             </Link>
           </div>
 
-          <p className="mt-8 text-sm text-muted-foreground opacity-60 flex items-center justify-center gap-2">
-            <ShieldCheck className="w-4 h-4" /> Secure • No hidden charges •
-            Cancel anytime
+          <p className="mt-6 flex items-center justify-center gap-2 text-xs md:text-sm text-muted-foreground opacity-70">
+            <ShieldCheck className="h-4 w-4" />
+            Secure • No hidden charges • Cancel anytime
           </p>
         </div>
       </section>
-    </div>
+    </>
   );
 }

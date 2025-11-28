@@ -26,7 +26,7 @@ export default async function AbandonedOrdersPage() {
         </Link>
         <div>
           <h1 className="text-3xl font-bold text-primary">Abandoned Checkouts</h1>
-          <p className="text-muted-foreground">Customers who didn't complete the WhatsApp step.</p>
+          <p className="text-muted-foreground">Customers who didn&apos;t complete the WhatsApp step.</p>
         </div>
       </div>
 

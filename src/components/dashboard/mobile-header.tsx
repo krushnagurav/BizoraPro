@@ -33,6 +33,7 @@ import {
   TrendingUp,
   Instagram,
   BellRing,
+  Globe,
 } from "lucide-react";
 import { useState } from "react";
 
@@ -73,6 +74,7 @@ const navGroups = [
       { name: "Profile", href: "/settings/profile", icon: User },
       { name: "Alerts", href: "/settings/notifications", icon: BellRing },
       { name: "Support", href: "/dashboard/support", icon: Headphones },
+      { name: "Domain", href: "/settings/domain", icon: Globe },
     ],
   },
 ];

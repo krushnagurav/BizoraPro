@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, ExternalLink, UserCog, Ban } from "lucide-react";
+import { ArrowLeft, ExternalLink } from "lucide-react";
 import Link from "next/link";
 import { ImpersonateButton } from "@/src/components/admin/impersonate-button";
 

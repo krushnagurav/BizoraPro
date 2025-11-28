@@ -1,132 +1,156 @@
+// src/app/(marketing)/contact/page.tsx
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { MessageCircle, Mail } from "lucide-react";
 
 export default function ContactPage() {
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center py-20 px-4">
-      <div className="container max-w-6xl">
-        {/* Header */}
-        <div className="text-center mb-16">
-          <h1 className="text-5xl font-bold text-white mb-4">Get in Touch</h1>
-          <p className="text-xl text-muted-foreground">
-            We're here to support your business growth
-          </p>
-        </div>
+    <>
+      {/* Header */}
+      <section className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-16 md:py-20 text-center">
+        <h1 className="text-3xl md:text-5xl font-bold text-white mb-4">
+          Get in Touch
+        </h1>
+        <p className="text-sm md:text-lg text-muted-foreground max-w-xl mx-auto">
+          Fast support for your business — on WhatsApp or email
+        </p>
+      </section>
 
+      {/* Content */}
+      <section className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 pb-20">
         <div className="grid lg:grid-cols-2 gap-12 items-start">
-          {/* LEFT COLUMN: Info Cards */}
-          <div className="space-y-6">
-            {/* WhatsApp Card */}
-            <div className="bg-[#111] border border-white/10 rounded-2xl p-8 hover:border-primary/30 transition-colors">
-              <div className="flex items-start gap-4 mb-6">
-                <div className="p-3 bg-primary/10 rounded-xl border border-primary/20">
-                  <MessageCircle className="w-8 h-8 text-primary" />
+          {/* Contact Options */}
+          <div className="space-y-7">
+            {/* WhatsApp */}
+            <div className="rounded-2xl border border-white/10 bg-[#111] p-8 hover:border-primary/40 transition-colors">
+              <div className="flex items-start gap-4">
+                <div className="border border-primary/20 bg-primary/10 p-3 rounded-xl">
+                  <MessageCircle className="w-7 h-7 text-primary" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold text-white">
-                    Chat on WhatsApp
+                  <h3 className="text-xl font-semibold text-white mb-1">
+                    WhatsApp Support
                   </h3>
-                  <p className="text-muted-foreground">
-                    Fastest support response
+                  <p className="text-sm text-muted-foreground">
+                    Fastest replies during working hours
                   </p>
                 </div>
               </div>
-              <Button className="w-fit bg-primary text-black font-bold hover:bg-primary/90">
-                <MessageCircle className="w-4 h-4 mr-2" /> Message Us
+
+              <Button className="mt-6 font-bold bg-primary text-black hover:bg-primary/90 flex items-center gap-2">
+                <MessageCircle className="w-4 h-4" /> Message Us
               </Button>
+
               <p className="text-xs text-muted-foreground mt-4">
-                Mon-Sat, 10 AM – 7 PM IST
+                Mon–Sat, 10 AM – 7 PM IST
               </p>
             </div>
 
-            {/* Email Card */}
-            <div className="bg-[#111] border border-white/10 rounded-2xl p-8 hover:border-white/20 transition-colors">
-              <div className="flex items-start gap-4 mb-6">
-                <div className="p-3 bg-white/5 rounded-xl border border-white/10">
-                  <Mail className="w-8 h-8 text-white" />
+            {/* Email */}
+            <div className="rounded-2xl border border-white/10 bg-[#111] p-8 hover:border-white/20 transition-colors">
+              <div className="flex items-start gap-4">
+                <div className="border border-white/10 bg-white/5 p-3 rounded-xl">
+                  <Mail className="w-7 h-7 text-white" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold text-white">Email Us</h3>
-                  <p className="text-primary">support@bizorapro.com</p>
+                  <h3 className="text-xl font-semibold text-white mb-1">
+                    Email Support
+                  </h3>
+                  <p className="text-primary text-sm font-medium">
+                    support@bizorapro.com
+                  </p>
                   <p className="text-xs text-muted-foreground mt-1">
-                    We reply within a few hours
+                    We respond within a few hours
                   </p>
                 </div>
               </div>
             </div>
 
-            <div className="flex items-center gap-2 text-muted-foreground pl-2">
-              <span>🇮🇳</span> Based in Surat, Gujarat
-            </div>
+            <p className="flex items-center gap-2 text-muted-foreground pl-2 text-sm">
+              🇮🇳 Based in Surat, Gujarat
+            </p>
           </div>
 
-          {/* RIGHT COLUMN: Form */}
-          <div className="bg-[#111] border border-white/10 rounded-2xl p-8 md:p-10">
-            <form className="space-y-6">
-              <div className="grid md:grid-cols-2 gap-6">
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-white">
-                    Full Name *
-                  </label>
-                  <Input
-                    className="bg-[#0A0A0A] border-white/10 h-12"
-                    placeholder=""
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-white">
-                    Business Name
-                  </label>
-                  <Input
-                    className="bg-[#0A0A0A] border-white/10 h-12"
-                    placeholder=""
-                  />
-                </div>
-              </div>
-
-              <div className="grid md:grid-cols-2 gap-6">
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-white">
-                    Phone / WhatsApp *
-                  </label>
-                  <Input
-                    className="bg-[#0A0A0A] border-white/10 h-12"
-                    placeholder=""
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-white">
-                    Email Address *
-                  </label>
-                  <Input
-                    className="bg-[#0A0A0A] border-white/10 h-12"
-                    placeholder=""
-                  />
-                </div>
-              </div>
-
+          {/* Form */}
+          {/* <form
+            className="rounded-2xl border border-white/10 bg-[#111] p-8 md:p-10 space-y-6"
+            onSubmit={(e) => {
+              e.preventDefault()
+            }}
+          >
+            <div className="grid md:grid-cols-2 gap-6">
               <div className="space-y-2">
-                <label className="text-sm font-medium text-white">
-                  Message *
+                <label
+                  className="text-sm font-medium text-white"
+                  htmlFor="name"
+                >
+                  Full Name *
                 </label>
-                <Textarea
-                  className="bg-[#0A0A0A] border-white/10 min-h-[150px] resize-none"
-                  placeholder="Tell us how we can help you..."
+                <Input id="name" className="h-12 bg-black/40 border-white/10" />
+              </div>
+              <div className="space-y-2">
+                <label
+                  className="text-sm font-medium text-white"
+                  htmlFor="business"
+                >
+                  Business Name
+                </label>
+                <Input
+                  id="business"
+                  className="h-12 bg-black/40 border-white/10"
                 />
               </div>
+            </div>
 
-              <Button className="w-full h-14 text-lg font-bold bg-primary text-black hover:bg-primary/90">
-                Send Message
-              </Button>
-              <p className="text-center text-xs text-muted-foreground">
-                We'll reach out shortly on WhatsApp or Email
-              </p>
-            </form>
-          </div>
+            <div className="grid md:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <label
+                  className="text-sm font-medium text-white"
+                  htmlFor="phone"
+                >
+                  Phone / WhatsApp *
+                </label>
+                <Input
+                  id="phone"
+                  className="h-12 bg-black/40 border-white/10"
+                />
+              </div>
+              <div className="space-y-2">
+                <label
+                  className="text-sm font-medium text-white"
+                  htmlFor="email"
+                >
+                  Email Address *
+                </label>
+                <Input
+                  id="email"
+                  className="h-12 bg-black/40 border-white/10"
+                />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <label
+                className="text-sm font-medium text-white"
+                htmlFor="message"
+              >
+                Message *
+              </label>
+              <Textarea
+                id="message"
+                className="min-h-[140px] resize-none bg-black/40 border-white/10"
+                placeholder="Tell us how we can help you..."
+              />
+            </div>
+
+            <Button className="w-full h-14 text-base md:text-lg font-bold bg-primary text-black hover:bg-primary/90">
+              Send Message
+            </Button>
+            <p className="text-center text-xs text-muted-foreground">
+              We’ll reach out on WhatsApp or Email
+            </p>
+          </form> */}
         </div>
-      </div>
-    </div>
+      </section>
+    </>
   );
 }

@@ -22,7 +22,6 @@ export async function getGrowthStatsAction() {
 
   // 2. Process Data for Charts
   // We want an array: [{ date: "Nov 24", shops: 5, orders: 12 }, ...]
-  const chartData = [];
   const dateMap = new Map();
 
   // Initialize last 30 days with 0

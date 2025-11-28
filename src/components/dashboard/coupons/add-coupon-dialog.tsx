@@ -71,7 +71,7 @@ export function AddCouponDialog() {
           <div className="space-y-2">
             <Label>Min Order Amount (₹)</Label>
             <Input name="minOrderValue" type="number" placeholder="0" defaultValue="0" />
-            <p className="text-[10px] text-muted-foreground">Code won't work below this total.</p>
+            <p className="text-[10px] text-muted-foreground">Code won&apos;t work below this total.</p>
           </div>
 
           <div className="flex justify-end">

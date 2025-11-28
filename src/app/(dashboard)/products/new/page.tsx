@@ -10,7 +10,7 @@ export default async function AddProductPage() {
   // 1. Get Shop ID
   const { data: shop } = await supabase
     .from("shops")
-    .select("id")
+    .select("id, plan")
     .eq("owner_id", user!.id)
     .single();
 
@@ -30,7 +30,7 @@ export default async function AddProductPage() {
       <h1 className="text-3xl font-bold text-primary mb-8">Add New Product</h1>
 
       {/* Pass categories to the Client Component */}
-      <AddProductForm categories={categories || []} />
+      <AddProductForm categories={categories || []} plan={shop?.plan || 'free'} />
     </div>
   );
 }

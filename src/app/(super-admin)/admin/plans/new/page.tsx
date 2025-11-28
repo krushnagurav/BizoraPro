@@ -49,7 +49,7 @@ export default function CreatePlanPage() {
 
             <div className="flex items-center gap-2">
               <input type="checkbox" name="isPopular" className="h-4 w-4 accent-primary" />
-              <Label>Mark as "Best Value"</Label>
+              <Label>Mark as Best Value</Label>
             </div>
 
             <Button type="submit" className="w-full bg-primary text-black font-bold hover:bg-primary/90">

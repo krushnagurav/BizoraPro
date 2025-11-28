@@ -3,7 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Plus, Shield, Trash2 } from "lucide-react";
+import { Trash2 } from "lucide-react";
 import { AddAdminDialog } from "@/src/components/admin/add-admin-dialog"; // We build this next
 
 export default async function AdminUsersPage() {

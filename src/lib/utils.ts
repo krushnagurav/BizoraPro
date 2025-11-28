@@ -4,18 +4,18 @@ export function hexToHsl(hex: string) {
   hex = hex.replace(/^#/, '');
 
   // Parse r, g, b
-  let bigint = parseInt(hex, 16);
+  const bigint = parseInt(hex, 16);
   let r = (bigint >> 16) & 255;
   let g = (bigint >> 8) & 255;
   let b = bigint & 255;
 
   // Convert RGB to HSL
   r /= 255; g /= 255; b /= 255;
-  let max = Math.max(r, g, b), min = Math.min(r, g, b);
+  const max = Math.max(r, g, b), min = Math.min(r, g, b);
   let h = 0, s = 0, l = (max + min) / 2;
 
   if (max !== min) {
-    let d = max - min;
+    const d = max - min;
     s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
     switch (max) {
       case r: h = (g - b) / d + (g < b ? 6 : 0); break;

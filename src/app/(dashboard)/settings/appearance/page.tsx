@@ -71,7 +71,7 @@ export default function AppearancePage() {
   return (
     <div className="p-8 max-w-2xl space-y-6">
       <h1 className="text-3xl font-bold text-primary">Appearance</h1>
-      <p className="text-muted-foreground">Customize your shop's look.</p>
+      <p className="text-muted-foreground">Customize your shop&apos;s look.</p>
 
       <form onSubmit={handleSubmit} className="space-y-6">
         

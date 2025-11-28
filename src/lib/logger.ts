@@ -5,7 +5,7 @@ export async function logActivity(action: string, target: string, details: any =
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
-    if (!user) return; // Don't log anonymous actions for now
+    if (!user) return; // Don&apos;t log anonymous actions for now
 
     await supabase.from("audit_logs").insert({
       actor_id: user.id,
@@ -16,6 +16,6 @@ export async function logActivity(action: string, target: string, details: any =
     });
   } catch (error) {
     console.error("Audit Log Failed:", error);
-    // We don't throw error here to prevent blocking the main user action
+    // We don&apos;t throw error here to prevent blocking the main user action
   }
 }

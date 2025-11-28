@@ -38,7 +38,7 @@ export const useCart = create(
         const currentItems = get().items;
         const existingItem = currentItems.find((item) => item.id === data.id);
 
-        // Guard: Don't allow mixing items from different shops
+        // Guard: Don&apos;t allow mixing items from different shops
         if (currentItems.length > 0 && currentItems[0].shop_id !== data.shop_id) {
           const confirmReset = window.confirm(
             "You have items from another shop. Clear cart to add this?"

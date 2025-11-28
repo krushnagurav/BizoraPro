@@ -1,175 +1,243 @@
-import { Button } from "@/components/ui/button";
-import { Shirt, Utensils, Scissors, Laptop, ShoppingCart, Sparkles, ArrowRight } from "lucide-react";
+// src/app/(marketing)/examples/page.tsx
 import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import {
+  Shirt,
+  Utensils,
+  Scissors,
+  Laptop,
+  ShoppingCart,
+  Sparkles,
+  ArrowRight,
+} from "lucide-react";
+
+const filters = [
+  { name: "All Designs", icon: Sparkles },
+  { name: "Fashion", icon: Shirt },
+  { name: "Bakery", icon: Utensils },
+  { name: "Salon", icon: Scissors },
+  { name: "Electronics", icon: Laptop },
+  { name: "Grocery", icon: ShoppingCart },
+];
+
+const shops = [
+  {
+    title: "Fashion Boutique",
+    desc: "Elegant clothing store layout with hero banner, featured collections and a clean product grid.",
+    tags: ["Add-to-Cart", "WhatsApp Orders", "Premium Theme"],
+    imageColor: "bg-[#1E1E1E]",
+    category: "Fashion",
+  },
+  {
+    title: "Bakery Bliss",
+    desc: "Warm, cozy design for home bakers and cafes, with daily specials and highlight cards.",
+    tags: ["Add-to-Cart", "WhatsApp Orders", "Daily Specials"],
+    imageColor: "bg-[#1E1E1E]",
+    category: "Bakery",
+  },
+  {
+    title: "Groom & Glam Salon",
+    desc: "Modern salon layout with service sections, time slots and WhatsApp booking.",
+    tags: ["Service Sections", "WhatsApp Booking"],
+    imageColor: "bg-[#1E1E1E]",
+    category: "Salon",
+  },
+  {
+    title: "TechElectro",
+    desc: "Clean electronics catalogue with spec highlights and category filters.",
+    tags: ["Specs Highlight", "Add-to-Cart"],
+    imageColor: "bg-[#1E1E1E]",
+    category: "Electronics",
+  },
+  {
+    title: "FreshGrocer",
+    desc: "Simple grocery design with essentials, quick-add buttons and delivery notes.",
+    tags: ["Quick Add", "WhatsApp Orders"],
+    imageColor: "bg-[#1E1E1E]",
+    category: "Grocery",
+  },
+  {
+    title: "BeautyBliss",
+    desc: "Premium cosmetics grid with badges for bestsellers and new arrivals.",
+    tags: ["Bestseller Badge", "New Arrivals"],
+    imageColor: "bg-[#1E1E1E]",
+    category: "Beauty",
+  },
+];
 
 export default function ExamplesPage() {
-  const filters = [
-    { name: "All Designs", icon: Sparkles, active: true },
-    { name: "Fashion", icon: Shirt, active: false },
-    { name: "Bakery", icon: Utensils, active: false },
-    { name: "Salon", icon: Scissors, active: false },
-    { name: "Electronics", icon: Laptop, active: false },
-    { name: "Grocery", icon: ShoppingCart, active: false },
-  ];
-
-  const shops = [
-    {
-      title: "Fashion Boutique",
-      desc: "Elegant clothing store with product catalog and cart",
-      tags: ["Add-to-Cart", "WhatsApp Orders"],
-      imageColor: "bg-[#1E1E1E]", // Placeholder for image
-      category: "Fashion"
-    },
-    {
-      title: "Bakery Bliss",
-      desc: "Fresh baked goods with daily specials and ordering",
-      tags: ["Add-to-Cart", "WhatsApp Orders"],
-      imageColor: "bg-[#1E1E1E]",
-      category: "Bakery"
-    },
-    {
-      title: "Groom & Glam Salon",
-      desc: "Professional salon services with appointment booking",
-      tags: ["Add-to-Cart", "WhatsApp Orders"],
-      imageColor: "bg-[#1E1E1E]",
-      category: "Salon"
-    },
-    {
-      title: "TechElectro",
-      desc: "Latest gadgets and electronics with detailed specs",
-      tags: ["Add-to-Cart", "WhatsApp Orders"],
-      imageColor: "bg-[#1E1E1E]",
-      category: "Electronics"
-    },
-    {
-      title: "FreshGrocer",
-      desc: "Daily essentials and fresh produce delivery service",
-      tags: ["Add-to-Cart", "WhatsApp Orders"],
-      imageColor: "bg-[#1E1E1E]",
-      category: "Grocery"
-    },
-    {
-      title: "BeautyBliss",
-      desc: "Premium cosmetics and skincare products collection",
-      tags: ["Add-to-Cart", "WhatsApp Orders"],
-      imageColor: "bg-[#1E1E1E]",
-      category: "Beauty"
-    }
-  ];
-
   return (
-    <div className="min-h-screen bg-background text-foreground pb-20">
-      
+    <>
       {/* HEADER */}
-      <div className="pt-32 pb-20 text-center container px-6 md:px-12">
-        <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
-          See How Different Businesses <br/>
-          <span className="text-primary">Use BizoraPro</span>
+      <section className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 pt-16 md:pt-20 pb-12 text-center">
+        <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold mb-5 leading-tight">
+          See how different businesses
+          <br />
+          <span className="text-primary">use BizoraPro</span>
         </h1>
-        <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-12">
-          Choose a design that fits your brand perfectly
+        <p className="text-sm md:text-lg text-muted-foreground max-w-2xl mx-auto mb-10">
+          Explore ready-made layouts for boutiques, salons, bakeries and more.
+          Each design is 100% WhatsApp-first and mobile-ready.
         </p>
 
-        {/* FILTERS */}
-        <div className="flex flex-wrap justify-center gap-4">
-          {filters.map((f, i) => (
-            <button 
-              key={i}
-              className={`flex items-center gap-2 px-6 py-3 rounded-full text-sm font-bold transition-all ${
-                f.active 
-                  ? "bg-primary text-black hover:bg-primary/90" 
-                  : "bg-[#111] border border-white/10 text-muted-foreground hover:text-white hover:border-white/30"
-              }`}
-            >
-              <f.icon className="w-4 h-4" />
-              {f.name}
-            </button>
-          ))}
+        {/* FILTERS (visual only for now) */}
+        <div className="flex flex-wrap justify-center gap-3">
+          {filters.map((FilterIcon, index) => {
+            const Icon = FilterIcon.icon;
+            const isActive = index === 0; // “All Designs” looks active
+            return (
+              <button
+                key={FilterIcon.name}
+                type="button"
+                className={
+                  "flex items-center gap-2 rounded-full px-5 py-2.5 text-xs md:text-sm font-semibold transition-all " +
+                  (isActive
+                    ? "bg-primary text-black hover:bg-primary/90"
+                    : "bg-[#101010] border border-white/10 text-muted-foreground hover:text-white hover:border-white/30")
+                }
+              >
+                <Icon className="h-4 w-4" />
+                {FilterIcon.name}
+              </button>
+            );
+          })}
         </div>
-      </div>
+      </section>
 
       {/* SHOP GRID */}
-      <div className="container px-6 md:px-12 mb-32">
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <section className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 pb-20">
+        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
           {shops.map((shop, i) => (
-            <div key={i} className="group bg-[#0A0A0A] rounded-2xl overflow-hidden border border-white/10 hover:border-primary/50 transition-all">
-              {/* Image Area */}
-              <div className={`aspect-[4/3] ${shop.imageColor} relative border-b border-white/5`}>
-                <div className="absolute top-4 right-4 bg-black/60 backdrop-blur-md text-[10px] font-bold px-2 py-1 rounded border border-white/10 text-primary">
+            <div
+              key={shop.title + i}
+              className="group overflow-hidden rounded-2xl border border-white/10 bg-[#060608] hover:border-primary/60 transition-all"
+            >
+              {/* Image / Screenshot Placeholder */}
+              <div
+                className={`relative aspect-[4/3] ${shop.imageColor} border-b border-white/5`}
+              >
+                <div className="absolute top-4 right-4 rounded-full border border-white/15 bg-black/70 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-primary">
                   Mobile Ready
                 </div>
-                {/* Placeholder for Screenshot */}
                 <div className="absolute inset-0 flex items-center justify-center opacity-20">
-                  <div className="w-3/4 h-3/4 bg-white/10 rounded-lg transform rotate-2" />
+                  <div className="h-3/4 w-3/4 rounded-xl bg-white/10 rotate-2" />
+                </div>
+                <div className="absolute bottom-4 left-4 rounded-full bg-black/70 px-3 py-1 text-[10px] font-medium text-slate-200">
+                  {shop.category} template
                 </div>
               </div>
 
-              {/* Content */}
-              <div className="p-6">
-                <h3 className="text-xl font-bold text-white mb-2">{shop.title}</h3>
-                <p className="text-sm text-muted-foreground mb-6 line-clamp-2">{shop.desc}</p>
-                
-                <div className="flex flex-wrap gap-2 mb-6">
-                  {shop.tags.map((tag, t) => (
-                    <span key={t} className="px-3 py-1 rounded bg-white/5 text-[10px] text-gray-400 border border-white/5">
+              {/* Card Body */}
+              <div className="p-6 flex flex-col h-full">
+                <h3 className="mb-2 text-lg md:text-xl font-semibold text-white">
+                  {shop.title}
+                </h3>
+                <p className="mb-5 text-xs md:text-sm text-muted-foreground line-clamp-2">
+                  {shop.desc}
+                </p>
+
+                <div className="mb-6 flex flex-wrap gap-2">
+                  {shop.tags.map((tag, tIndex) => (
+                    <span
+                      key={tag + tIndex}
+                      className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[10px] uppercase tracking-[0.16em] text-slate-300"
+                    >
                       {tag}
                     </span>
                   ))}
                 </div>
 
-                <Button variant="outline" className="w-full border-primary/30 text-primary hover:bg-primary hover:text-black transition-all font-bold">
-                  Open Demo <ArrowRight className="w-4 h-4 ml-2" />
+                <Button
+                  variant="outline"
+                  className="mt-auto w-full border-primary/40 text-primary hover:bg-primary hover:text-black transition-colors font-semibold text-sm"
+                >
+                  Open demo
+                  <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
               </div>
             </div>
           ))}
         </div>
-      </div>
+      </section>
 
-      {/* TRUSTED BY (Testimonials) */}
-      <div className="bg-[#0A0A0A] py-20 border-y border-white/5">
-        <div className="container px-6 md:px-12 text-center">
-          <p className="text-muted-foreground mb-12 uppercase tracking-widest text-xs">Trusted by small business owners in India</p>
-          <div className="grid md:grid-cols-3 gap-8">
+      {/* TRUSTED BY / MICRO TESTIMONIALS */}
+      <section className="border-y border-white/5 bg-[#050507] py-16 md:py-20">
+        <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 text-center">
+          <p className="mb-10 text-[10px] md:text-xs uppercase tracking-[0.25em] text-muted-foreground">
+            Trusted by WhatsApp-first businesses across India
+          </p>
+
+          <div className="grid gap-6 md:grid-cols-3 text-left">
             {[
-              { text: "BizoraPro transformed my fashion store!", name: "Priya Sharma", role: "Fashion Boutique" },
-              { text: "Easy setup and my sales doubled!", name: "Rahul Verma", role: "Electronics Hub" },
-              { text: "Perfect for my bakery business!", name: "Anjali Mehta", role: "Home Baker" }
+              {
+                text: "BizoraPro finally gave our boutique a link we’re proud to share on Instagram.",
+                name: "Priya Sharma",
+                role: "Fashion Boutique, Mumbai",
+              },
+              {
+                text: "I send one link instead of 30 photos. Customers understand my menu instantly.",
+                name: "Anjali Mehta",
+                role: "Home Baker, Surat",
+              },
+              {
+                text: "Setup took less than an hour. Now all my WhatsApp orders feel organised.",
+                name: "Rahul Verma",
+                role: "Electronics Store, Pune",
+              },
             ].map((t, i) => (
-              <div key={i} className="flex items-center gap-4 text-left p-4">
-                <div className="w-12 h-12 rounded-full bg-white/10 shrink-0" /> {/* Avatar Placeholder */}
+              <div
+                key={i}
+                className="flex items-start gap-3 rounded-2xl bg-black/40 p-4"
+              >
+                <div className="h-10 w-10 shrink-0 rounded-full bg-white/10" />
                 <div>
-                  <p className="text-sm font-medium text-white mb-1">"{t.text}"</p>
-                  <p className="text-xs text-muted-foreground">- {t.name}</p>
+                  <p className="mb-2 text-xs md:text-sm font-medium text-slate-100">
+                    “{t.text}”
+                  </p>
+                  <p className="text-[11px] text-muted-foreground">
+                    {t.name}
+                    <br />
+                    <span className="text-[10px] opacity-80">{t.role}</span>
+                  </p>
                 </div>
               </div>
             ))}
           </div>
         </div>
-      </div>
+      </section>
 
-      {/* FOOTER CTA */}
-      <div className="container px-6 md:px-12 text-center py-32">
-        <h2 className="text-4xl md:text-6xl font-bold mb-6">
-          Launch your shop today — <span className="text-primary">7 days free</span>
+      {/* CTA FOOTER */}
+      <section className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-20 md:py-24 text-center">
+        <h2 className="text-2xl md:text-4xl lg:text-5xl font-bold mb-5">
+          Launch your own shop in{" "}
+          <span className="text-primary">under 5 minutes</span>
         </h2>
-        <p className="text-xl text-muted-foreground mb-10">
-          No credit card required. Start selling in minutes.
+        <p className="text-sm md:text-lg text-muted-foreground mb-10 max-w-2xl mx-auto">
+          No credit card required. Create your shop link, add products and start
+          taking WhatsApp orders — today.
         </p>
+
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <Link href="/signup">
-            <Button size="lg" className="h-14 px-10 text-lg font-bold bg-primary text-black hover:bg-primary/90">
-              Create Shop Link <ArrowRight className="ml-2 w-5 h-5"/>
+            <Button
+              size="lg"
+              className="h-12 md:h-14 px-8 md:px-10 text-sm md:text-lg font-semibold bg-primary text-black hover:bg-primary/90"
+            >
+              Create shop link
+              <ArrowRight className="ml-2 h-4 w-4 md:h-5 md:w-5" />
             </Button>
           </Link>
           <Link href="/pricing">
-            <Button variant="outline" size="lg" className="h-14 px-10 text-lg border-white/20 hover:bg-white/10">
-              View Pricing
+            <Button
+              variant="outline"
+              size="lg"
+              className="h-12 md:h-14 px-8 md:px-10 text-sm md:text-lg border-white/20 hover:bg-white/10"
+            >
+              View pricing
             </Button>
           </Link>
         </div>
-      </div>
-
-    </div>
+      </section>
+    </>
   );
 }

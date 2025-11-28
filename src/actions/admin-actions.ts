@@ -10,7 +10,7 @@ export async function getAdminStats() {
   const supabase = await createClient();
 
   // Run parallel queries for speed
-  const [shops, orders, users] = await Promise.all([
+  const [shops, orders] = await Promise.all([
     supabase.from("shops").select("id", { count: "exact", head: true }),
     supabase.from("orders").select("id", { count: "exact", head: true }),
     supabase.auth.admin.listUsers(), // Requires Service Role Key if using admin api, but for MVP we count rows in public table if linked
@@ -34,10 +34,10 @@ export async function toggleShopStatusAction(formData: FormData) {
   const supabase = await createClient();
 
   // We use 'is_published' or create a new 'status' column.
-  // Let's assume we use 'is_published' as a proxy for "Active" for now,
+  // Let&apos;s assume we use 'is_published' as a proxy for "Active" for now,
   // or better: add a 'status' column to shops table.
 
-  // Let's use is_open for now to force close.
+  // Let&apos;s use is_open for now to force close.
   const { error } = await supabase
     .from("shops")
     .update({ is_open: !currentStatus })
@@ -154,7 +154,7 @@ export async function createAdminUserAction(formData: FormData) {
 
 // 6. MANAGE TEMPLATES
 export async function saveTemplateAction(formData: FormData) {
-  const id = formData.get("id") as string; // If ID exists, it's an update
+  const id = formData.get("id") as string; // If ID exists, it&apos;s an update
   const name = formData.get("name") as string;
   const slug = formData.get("slug") as string;
   const channel = formData.get("channel") as string;

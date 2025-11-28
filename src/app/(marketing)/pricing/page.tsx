@@ -17,212 +17,389 @@ export default function PricingPage() {
 
   const plans = [
     {
-      name: "Basic",
-      price: isYearly ? "₹4,999" : "₹499",
+      name: "Starter",
+      price: isYearly ? "₹1,999" : "₹199",
       period: isYearly ? "/year" : "/month",
-      desc: "200 products • 5GB storage",
-      features: ["200 products", "5GB storage", "WhatsApp orders", "QR code for shop", "Support: Email"],
+      desc: "For new WhatsApp sellers getting started.",
+      features: [
+        "Up to 50 products",
+        "Basic themes",
+        "Add-to-cart → WhatsApp orders",
+        "Shop URL on BizoraPro",
+        "Email support",
+      ],
       highlight: false,
-      btnText: "Get Started"
+      btnText: "Get Started",
     },
     {
       name: "Business",
-      price: isYearly ? "₹9,999" : "₹999",
+      price: isYearly ? "₹4,999" : "₹499",
       period: isYearly ? "/year" : "/month",
-      desc: "1000 products • 20GB storage",
-      features: ["1000 products", "20GB storage", "Premium themes included", "WhatsApp automation", "Priority support"],
+      desc: "For growing shops that want a premium brand feel.",
+      features: [
+        "Up to 300 products",
+        "Premium themes + appearance controls",
+        "Abandoned order tracking (MVP scope)",
+        "Shop analytics (views, clicks)",
+        "Priority WhatsApp support",
+      ],
       highlight: true,
-      btnText: "Get Started"
+      btnText: "Most Popular",
     },
     {
-      name: "Premium",
-      price: isYearly ? "₹19,999" : "₹1,999",
+      name: "Pro Plus",
+      price: isYearly ? "₹9,999" : "₹999",
       period: isYearly ? "/year" : "/month",
-      desc: "Unlimited • Custom Domain",
-      features: ["Unlimited products & categories", "100GB storage", "Custom domain included", "Advanced analytics", "1:1 Onboarding"],
+      desc: "For serious brands and agencies managing multiple shops.",
+      features: [
+        "Up to 1,000 products",
+        "Advanced themes & layout options",
+        "Custom domain support (manual setup in MVP)",
+        "Advanced analytics (top products, trends)",
+        "1:1 onboarding call",
+      ],
       highlight: false,
-      btnText: "Start Premium"
-    }
+      btnText: "Talk to Us",
+    },
+  ];
+
+  const comparisonRows: {
+    name: string;
+    starter: boolean | string;
+    business: boolean | string;
+    pro: boolean | string;
+  }[] = [
+    {
+      name: "Shop URL on BizoraPro",
+      starter: true,
+      business: true,
+      pro: true,
+    },
+    {
+      name: "Add-to-cart → WhatsApp orders",
+      starter: true,
+      business: true,
+      pro: true,
+    },
+    {
+      name: "Theme customisation",
+      starter: "Basic",
+      business: "Premium",
+      pro: "Advanced",
+    },
+    {
+      name: "Product limit",
+      starter: "50",
+      business: "300",
+      pro: "1,000",
+    },
+    {
+      name: "Basic analytics dashboard",
+      starter: false,
+      business: true,
+      pro: true,
+    },
+    {
+      name: "Custom domain support",
+      starter: false,
+      business: "Manual setup",
+      pro: "Priority setup",
+    },
+    {
+      name: "Priority WhatsApp support",
+      starter: false,
+      business: true,
+      pro: true,
+    },
   ];
 
   return (
-    <div className="min-h-screen bg-black text-foreground pt-24 pb-20">
-      
-      {/* HEADER */}
-      <div className="container px-6 md:px-12 text-center mb-16">
-        <h1 className="text-4xl md:text-5xl font-bold mb-4 text-white">
-          Choose the plan that <span className="text-primary">grows your business</span>
+    <main className="bg-black text-foreground pb-20 pt-24">
+      {/* HEADER + TOGGLE */}
+      <section className="container mx-auto px-6 md:px-12 mb-16 text-center">
+        <p className="mb-3 text-xs font-semibold uppercase tracking-[0.25em] text-primary">
+          Pricing
+        </p>
+        <h1 className="mb-4 text-3xl md:text-5xl font-bold text-white">
+          Simple pricing that{" "}
+          <span className="text-primary">grows with your shop</span>
         </h1>
-        <p className="text-muted-foreground text-lg mb-8">
-          14 days free. No GST. Cancel anytime.
+        <p className="mb-8 text-sm md:text-lg text-muted-foreground">
+          Start free for a limited time. No GST required to begin. Cancel
+          anytime from your dashboard.
         </p>
 
-        {/* TOGGLE */}
         <div className="flex items-center justify-center gap-4">
-          <div className="bg-[#111] p-1 rounded-lg border border-white/10 inline-flex items-center relative">
-            <button 
+          <div className="relative inline-flex items-center rounded-full border border-white/15 bg-[#111] p-1">
+            <button
+              type="button"
               onClick={() => setIsYearly(false)}
-              className={`px-6 py-2 rounded-md text-sm font-bold transition-all ${!isYearly ? 'bg-primary text-black' : 'text-muted-foreground hover:text-white'}`}
+              className={`px-5 py-2 text-xs md:text-sm font-semibold rounded-full transition-all ${
+                !isYearly
+                  ? "bg-primary text-black shadow-sm"
+                  : "text-muted-foreground hover:text-white"
+              }`}
             >
               Monthly
             </button>
-            <button 
+            <button
+              type="button"
               onClick={() => setIsYearly(true)}
-              className={`px-6 py-2 rounded-md text-sm font-bold transition-all ${isYearly ? 'bg-primary text-black' : 'text-muted-foreground hover:text-white'}`}
+              className={`px-5 py-2 text-xs md:text-sm font-semibold rounded-full transition-all ${
+                isYearly
+                  ? "bg-primary text-black shadow-sm"
+                  : "text-muted-foreground hover:text-white"
+              }`}
             >
               Yearly
             </button>
-            
-            {/* Badge */}
-            <div className="absolute -top-3 -right-12 bg-yellow-400 text-black text-[10px] font-bold px-2 py-0.5 rounded-full transform rotate-3">
-              Save 58%
-            </div>
+
+            {isYearly && (
+              <div className="absolute -right-14 -top-3 rotate-2 rounded-full bg-yellow-400 px-2 py-0.5 text-[10px] font-bold text-black shadow-sm">
+                Save more
+              </div>
+            )}
           </div>
         </div>
-      </div>
+        <p className="mt-3 text-xs text-muted-foreground">
+          Yearly plans effectively give you a few months free compared to
+          monthly billing.
+        </p>
+      </section>
 
       {/* PRICING CARDS */}
-      <div className="container px-6 md:px-12 grid lg:grid-cols-3 gap-8 max-w-7xl mx-auto mb-24">
+      <section className="container mx-auto mb-24 grid max-w-6xl grid-cols-1 gap-8 px-6 md:px-12 lg:grid-cols-3">
         {plans.map((plan, i) => (
-          <Card 
-            key={i} 
-            className={`bg-[#111] border relative flex flex-col ${plan.highlight ? 'border-primary shadow-2xl shadow-primary/10 scale-105 z-10' : 'border-white/10 hover:border-white/20'}`}
+          <Card
+            key={plan.name + i}
+            className={`relative flex flex-col border bg-[#111] ${
+              plan.highlight
+                ? "border-primary shadow-2xl shadow-primary/15 scale-[1.03] z-10"
+                : "border-white/10 hover:border-white/20"
+            }`}
           >
             {plan.highlight && (
-              <div className="absolute top-0 inset-x-0 flex justify-center -mt-3">
-                <span className="bg-primary text-black text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide">
-                  Most Popular
+              <div className="absolute inset-x-0 -top-3 flex justify-center">
+                <span className="rounded-full bg-primary px-3 py-1 text-xs font-bold uppercase tracking-wide text-black">
+                  Recommended
                 </span>
               </div>
             )}
 
-            <CardHeader className="p-8 pb-4">
-              <h3 className={`text-2xl font-bold ${plan.highlight ? 'text-white' : 'text-white'}`}>{plan.name}</h3>
+            <CardHeader className="p-7 pb-4 md:p-8 md:pb-4">
+              <h3 className="text-xl md:text-2xl font-bold text-white">
+                {plan.name}
+              </h3>
+              <p className="mt-2 text-xs md:text-sm text-muted-foreground">
+                {plan.desc}
+              </p>
               <div className="mt-4 flex items-baseline gap-1">
-                <span className="text-5xl font-bold text-white">{plan.price}</span>
-                <span className="text-muted-foreground">{plan.period}</span>
+                <span className="text-4xl md:text-5xl font-bold text-white">
+                  {plan.price}
+                </span>
+                <span className="text-xs md:text-sm text-muted-foreground">
+                  {plan.period}
+                </span>
               </div>
             </CardHeader>
-            
-            <CardContent className="p-8 pt-2 flex-1 flex flex-col">
-              <ul className="space-y-4 mb-8 flex-1">
-                {plan.features.map((feature, idx) => (
-                  <li key={idx} className="flex items-start gap-3 text-sm text-gray-300">
-                    <Check className="w-5 h-5 text-primary shrink-0" />
-                    {feature}
+
+            <CardContent className="flex flex-1 flex-col p-7 pt-2 md:p-8 md:pt-2">
+              <ul className="mb-8 flex-1 space-y-3">
+                {plan.features.map((feature) => (
+                  <li
+                    key={feature}
+                    className="flex items-start gap-3 text-xs md:text-sm text-gray-200"
+                  >
+                    <Check className="mt-0.5 h-4 w-4 flex-shrink-0 text-primary" />
+                    <span>{feature}</span>
                   </li>
                 ))}
               </ul>
-              
-              <div className="mt-auto space-y-4">
+
+              <div className="mt-auto space-y-3">
                 <Link href="/signup" className="block">
-                  <Button className={`w-full h-12 text-lg font-bold ${plan.highlight ? 'bg-primary text-black hover:bg-primary/90' : 'bg-primary text-black hover:bg-primary/90'}`}>
+                  <Button
+                    className={`h-11 w-full text-sm md:h-12 md:text-lg font-bold ${
+                      plan.highlight
+                        ? "bg-primary text-black hover:bg-primary/90"
+                        : "bg-primary text-black hover:bg-primary/90"
+                    }`}
+                  >
                     {plan.btnText}
                   </Button>
                 </Link>
-                <button className="w-full text-xs text-primary hover:underline">
-                  View Sample Shop
+                <button
+                  type="button"
+                  className="w-full text-xs font-medium text-primary hover:underline"
+                >
+                  View sample shop for this plan
                 </button>
               </div>
             </CardContent>
           </Card>
         ))}
-      </div>
+      </section>
 
       {/* COMPARISON TABLE */}
-      <div className="container px-6 md:px-12 max-w-5xl mx-auto mb-24">
-        <h2 className="text-3xl font-bold text-center mb-12 text-white">Compare Plans</h2>
-        
-        <div className="bg-[#111] border border-white/10 rounded-xl overflow-hidden">
-          {/* Table Header */}
-          <div className="grid grid-cols-4 bg-[#151515] p-4 text-sm font-bold text-gray-300 border-b border-white/10">
-            <div className="pl-4">Features</div>
-            <div className="text-center">Basic</div>
+      <section className="container mx-auto mb-24 max-w-5xl px-6 md:px-12">
+        <h2 className="mb-8 text-center text-2xl md:text-3xl font-bold text-white">
+          Compare plans
+        </h2>
+        <div className="overflow-hidden rounded-2xl border border-white/10 bg-[#111]">
+          <div className="grid grid-cols-4 border-b border-white/10 bg-[#151515] p-4 text-xs md:text-sm font-semibold text-gray-200">
+            <div className="pl-4 text-left">Features</div>
+            <div className="text-center">Starter</div>
             <div className="text-center text-primary">Business</div>
-            <div className="text-center">Premium</div>
+            <div className="text-center">Pro Plus</div>
           </div>
 
-          {/* Rows */}
-          {[
-            { name: "Shop URL", basic: true, business: true, premium: true },
-            { name: "Add to Cart → WhatsApp Orders", basic: true, business: true, premium: true },
-            { name: "Theme customization", basic: "Basic", business: "Premium", premium: "Advanced" },
-            { name: "Storage limit", basic: "5GB", business: "20GB", premium: "100GB" },
-            { name: "Accept UPI / Cards", basic: false, business: true, premium: true },
-            { name: "Custom domain support", basic: false, business: false, premium: true },
-          ].map((row, i) => (
-            <div key={i} className="grid grid-cols-4 p-4 text-sm border-b border-white/5 hover:bg-white/5 items-center">
-              <div className="pl-4 text-gray-300">{row.name}</div>
-              <div className="text-center flex justify-center">
-                {typeof row.basic === 'boolean' ? (row.basic ? <Check className="w-4 h-4 text-primary"/> : <X className="w-4 h-4 text-muted-foreground"/>) : <span className="text-muted-foreground">{row.basic}</span>}
+          {comparisonRows.map((row) => (
+            <div
+              key={row.name}
+              className="grid grid-cols-4 items-center border-b border-white/5 p-4 text-xs md:text-sm hover:bg-white/5"
+            >
+              <div className="pl-4 text-gray-200">{row.name}</div>
+
+              {/* Starter */}
+              <div className="flex justify-center text-center">
+                {typeof row.starter === "boolean" ? (
+                  row.starter ? (
+                    <Check className="h-4 w-4 text-primary" />
+                  ) : (
+                    <X className="h-4 w-4 text-muted-foreground" />
+                  )
+                ) : (
+                  <span className="text-muted-foreground">{row.starter}</span>
+                )}
               </div>
-              <div className="text-center flex justify-center">
-                {typeof row.business === 'boolean' ? (row.business ? <Check className="w-4 h-4 text-primary"/> : <X className="w-4 h-4 text-muted-foreground"/>) : <span className="text-primary">{row.business}</span>}
+
+              {/* Business */}
+              <div className="flex justify-center text-center">
+                {typeof row.business === "boolean" ? (
+                  row.business ? (
+                    <Check className="h-4 w-4 text-primary" />
+                  ) : (
+                    <X className="h-4 w-4 text-muted-foreground" />
+                  )
+                ) : (
+                  <span className="text-primary">{row.business}</span>
+                )}
               </div>
-              <div className="text-center flex justify-center">
-                {typeof row.premium === 'boolean' ? (row.premium ? <Check className="w-4 h-4 text-primary"/> : <X className="w-4 h-4 text-muted-foreground"/>) : <span className="text-primary">{row.premium}</span>}
+
+              {/* Pro */}
+              <div className="flex justify-center text-center">
+                {typeof row.pro === "boolean" ? (
+                  row.pro ? (
+                    <Check className="h-4 w-4 text-primary" />
+                  ) : (
+                    <X className="h-4 w-4 text-muted-foreground" />
+                  )
+                ) : (
+                  <span className="text-primary">{row.pro}</span>
+                )}
               </div>
             </div>
           ))}
         </div>
-      </div>
+      </section>
 
       {/* TRUST SIGNALS */}
-      <div className="container px-6 md:px-12 max-w-5xl mx-auto mb-24 grid md:grid-cols-3 gap-8 text-center">
+      <section className="container mx-auto mb-24 grid max-w-5xl grid-cols-1 gap-8 px-6 text-center md:grid-cols-3 md:px-12">
         {[
-          { icon: ShieldCheck, title: "Secure Payments", desc: "Razorpay/Stripe integration" },
-          { icon: Server, title: "99.9% Uptime", desc: "Reliable hosting guaranteed" },
-          { icon: AlertCircle, title: "Cancel Anytime", desc: "No long-term commitments" }
-        ].map((item, i) => (
-          <div key={i} className="flex flex-col items-center">
-            <div className="w-12 h-12 bg-[#1A1A1A] rounded-full flex items-center justify-center mb-4 border border-white/10 text-primary">
-              <item.icon className="w-6 h-6" />
+          {
+            icon: ShieldCheck,
+            title: "Secure billing",
+            desc: "Payments handled via trusted Indian payment gateways.",
+          },
+          {
+            icon: Server,
+            title: "Managed hosting",
+            desc: "99.9% uptime target for production environments.",
+          },
+          {
+            icon: AlertCircle,
+            title: "Cancel anytime",
+            desc: "No lock-in. Stop your plan from the dashboard.",
+          },
+        ].map((item) => (
+          <div key={item.title} className="flex flex-col items-center">
+            <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full border border-white/10 bg-[#181818] text-primary">
+              <item.icon className="h-6 w-6" />
             </div>
-            <h4 className="font-bold text-white mb-1">{item.title}</h4>
-            <p className="text-xs text-muted-foreground">{item.desc}</p>
+            <h4 className="mb-1 text-sm md:text-base font-semibold text-white">
+              {item.title}
+            </h4>
+            <p className="max-w-xs text-[11px] md:text-xs text-muted-foreground">
+              {item.desc}
+            </p>
           </div>
         ))}
-      </div>
+      </section>
 
       {/* FAQ */}
-      <div className="container px-6 md:px-12 max-w-3xl mx-auto mb-24">
-        <h2 className="text-3xl font-bold text-center mb-12 text-white">Frequently Asked Questions</h2>
+      <section className="container mx-auto mb-24 max-w-3xl px-6 md:px-12">
+        <h2 className="mb-8 text-center text-2xl md:text-3xl font-bold text-white">
+          Frequently asked questions
+        </h2>
         <Accordion type="single" collapsible className="w-full space-y-4">
           {[
-            { q: "Is GST required?", a: "No, you can start without GST. However, for the Business/Premium plans using Razorpay, you might need to verify business details eventually." },
-            { q: "How do customers place orders?", a: "Customers visit your link, add items to cart, and click 'Order on WhatsApp'. This opens their WhatsApp with a pre-filled message containing the order details sent to you." },
-            { q: "Can I upgrade anytime?", a: "Yes! You can switch between plans instantly. The price difference will be adjusted automatically." }
+            {
+              q: "Do I need GST to start?",
+              a: "No. You can start without GST. If you later enable online payments through a payment gateway, you may be asked for business details by that provider.",
+            },
+            {
+              q: "How do customers place orders?",
+              a: "Customers open your shop link, add items to the cart and tap “Order on WhatsApp”. A pre-filled WhatsApp message is generated with a tracking link to the order.",
+            },
+            {
+              q: "Can I change my plan later?",
+              a: "Yes. You can upgrade or downgrade plans from your dashboard. Changes usually apply from your next billing cycle, depending on the payment provider rules.",
+            },
+            {
+              q: "What happens if I cancel?",
+              a: "Your shop can be moved into a lightweight ‘catalog mode’ with limited features so that links you have shared don’t look broken.",
+            },
           ].map((faq, i) => (
-            <AccordionItem key={i} value={`item-${i}`} className="border border-white/10 bg-[#111] rounded-lg px-4 data-[state=open]:border-primary/50">
-              <AccordionTrigger className="text-white hover:no-underline py-4 text-left">
+            <AccordionItem
+              key={faq.q + i}
+              value={`item-${i}`}
+              className="rounded-xl border border-white/10 bg-[#111] px-4 data-[state=open]:border-primary/50"
+            >
+              <AccordionTrigger className="py-4 text-left text-sm md:text-base text-white hover:no-underline">
                 {faq.q}
               </AccordionTrigger>
-              <AccordionContent className="text-muted-foreground pb-4">
+              <AccordionContent className="pb-4 text-xs md:text-sm text-muted-foreground">
                 {faq.a}
               </AccordionContent>
             </AccordionItem>
           ))}
         </Accordion>
-      </div>
+      </section>
 
-      {/* FOOTER CTA */}
-      <div className="container px-6 md:px-12 text-center max-w-4xl mx-auto">
-        <h2 className="text-4xl md:text-5xl font-bold mb-6 text-white">
-          Start Free — Launch your Shop in Minutes
+      {/* FINAL CTA */}
+      <section className="container mx-auto max-w-4xl px-6 text-center md:px-12">
+        <h2 className="mb-4 text-2xl md:text-4xl font-bold text-white">
+          Start free and share your shop link{" "}
+          <span className="text-primary">today</span>
         </h2>
-        <p className="text-lg text-muted-foreground mb-8">
-          Join thousands of businesses already selling on WhatsApp
+        <p className="mb-8 text-sm md:text-lg text-muted-foreground">
+          Create your BizoraPro shop, add a few products and send the link to
+          your best customers on WhatsApp.
         </p>
-        <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+        <div className="flex flex-col items-center justify-center gap-3 sm:flex-row">
           <Link href="/signup">
-            <Button className="h-12 px-8 font-bold text-lg bg-primary text-black hover:bg-primary/90">
-              Start Free Trial
+            <Button className="h-11 px-8 text-sm md:h-12 md:text-lg font-bold bg-primary text-black hover:bg-primary/90">
+              Start free trial
             </Button>
           </Link>
-          <button className="text-primary hover:underline">View Sample Shop</button>
+          <button
+            type="button"
+            className="text-xs md:text-sm font-medium text-primary hover:underline"
+          >
+            View sample shop
+          </button>
         </div>
-      </div>
-
-    </div>
+      </section>
+    </main>
   );
 }

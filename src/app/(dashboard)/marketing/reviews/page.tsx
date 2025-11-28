@@ -2,7 +2,7 @@ import { createClient } from "@/src/lib/supabase/server";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Star, Check, Trash2, MessageSquare } from "lucide-react";
+import { Star, Check, Trash2 } from "lucide-react";
 import { toggleReviewStatusAction } from "@/src/actions/marketing-actions";
 
 export default async function ReviewsPage() {

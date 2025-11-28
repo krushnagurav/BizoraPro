@@ -1,3 +1,5 @@
+// src/app/(storefront)/[slug]/page.tsx
+import type { CSSProperties } from "react";
 import { createClient } from "@/src/lib/supabase/server";
 import { notFound } from "next/navigation";
 import Image from "next/image";
@@ -8,29 +10,31 @@ import { ProductCard } from "@/src/components/storefront/product-card";
 import { CartBar } from "@/src/components/storefront/cart-bar";
 import { ViewTracker } from "@/src/components/storefront/view-tracker";
 import { NewsletterForm } from "@/src/components/storefront/newsletter-form";
-import {
-  ShopSearch,
-  CategoryFilter,
-} from "@/src/components/storefront/search-filter";
+import { ShopSearch } from "@/src/components/storefront/search-filter";
 import { Metadata } from "next";
 import { Star, Store } from "lucide-react";
 import { hexToHsl } from "@/src/lib/utils";
 import { fontMapper } from "@/src/lib/fonts";
+import { ThemeConfig } from "@/src/types/custom";
 
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ slug: string }>;
+  params: { slug: string };
 }): Promise<Metadata> {
-  const { slug } = await params;
+  const { slug } = params;
   const supabase = await createClient();
+
   const { data: shop } = await supabase
     .from("shops")
     .select("name, seo_config, theme_config")
     .eq("slug", slug)
     .single();
+
   if (!shop) return { title: "Shop Not Found" };
+
   const seo = (shop.seo_config as any) || {};
+
   return {
     title: seo.metaTitle || shop.name,
     description: seo.metaDescription || `Welcome to ${shop.name}`,
@@ -41,11 +45,12 @@ export default async function ShopHomePage({
   params,
   searchParams,
 }: {
-  params: Promise<{ slug: string }>;
-  searchParams: Promise<{ q?: string; cat?: string }>;
+  params: { slug: string };
+  searchParams?: { q?: string; cat?: string };
 }) {
   const { slug } = await params;
-  const { q: searchQuery, cat: categoryId } = await searchParams;
+  const { q: searchQuery, cat: categoryId } = await searchParams ?? {};
+
   const supabase = await createClient();
 
   const { data: shop } = await supabase
@@ -53,6 +58,7 @@ export default async function ShopHomePage({
     .select("*")
     .eq("slug", slug)
     .single();
+
   if (!shop) return notFound();
 
   const { data: categories } = await supabase
@@ -68,19 +74,21 @@ export default async function ShopHomePage({
     .is("deleted_at", null)
     .order("created_at", { ascending: false });
 
-  if (searchQuery)
+  if (searchQuery) {
     productQuery = productQuery.ilike("name", `%${searchQuery}%`);
-  if (categoryId) productQuery = productQuery.eq("category_id", categoryId);
+  }
+
+  if (categoryId) {
+    productQuery = productQuery.eq("category_id", categoryId);
+  }
 
   const { data: products } = await productQuery;
 
-  const theme = (shop.theme_config as any) || {};
-  const banner = theme.bannerUrl || "";
-  const primaryColor = theme.primaryColor || "#E6B800";
+const theme = shop.theme_config as unknown as ThemeConfig;  const primaryColor = theme.primaryColor || "#E6B800";
   const primaryColorHsl = hexToHsl(primaryColor);
 
   const fontKey = theme.font || "inter";
-  const fontClass = fontMapper[fontKey as keyof typeof fontMapper]; // e.g., inter.className
+  const fontClass = fontMapper[fontKey as keyof typeof fontMapper];
   const radius = theme.radius || "0.5rem";
 
   let isShopActuallyOpen = shop.is_open;
@@ -102,10 +110,12 @@ export default async function ShopHomePage({
   return (
     <div
       className={`min-h-screen bg-[#F8F9FA] text-slate-900 pb-20 ${fontClass}`}
-      style={{ 
-       "--primary": primaryColorHsl,
-       "--radius": radius
-    } as React.CSSProperties}
+      style={
+        {
+          "--primary": primaryColorHsl,
+          "--radius": radius,
+        } as CSSProperties
+      }
     >
       {/* Header */}
       <ShopHeader shop={shop} />
@@ -125,8 +135,7 @@ export default async function ShopHomePage({
             <Store className="w-16 h-16 opacity-50" />
           </div>
         )}
-        <div className="absolute inset-0 bg-black/30" />{" "}
-        {/* Dark overlay for text readability */}
+        <div className="absolute inset-0 bg-black/30" />
         <div className="absolute bottom-0 left-0 right-0 p-6 container mx-auto">
           <h1 className="text-3xl md:text-5xl font-bold text-white mb-2 drop-shadow-md">
             {shop.name}
@@ -161,7 +170,7 @@ export default async function ShopHomePage({
               <Link key={cat.id} href={`/${slug}?cat=${cat.id}`}>
                 <button
                   className={`px-6 py-2 rounded-full text-sm font-bold transition-all whitespace-nowrap border ${
-                    categoryId === cat.id
+                    categoryId === String(cat.id)
                       ? "bg-slate-900 text-white border-slate-900"
                       : "bg-white text-slate-600 border-slate-200 hover:border-slate-300"
                   }`}
@@ -184,7 +193,7 @@ export default async function ShopHomePage({
                 : "Featured Collection"}
             </h2>
             <span className="text-sm text-slate-500">
-              {products?.length} items
+              {products?.length ?? 0} items
             </span>
           </div>
 
@@ -220,7 +229,7 @@ export default async function ShopHomePage({
       ))}
 
       {!isShopActuallyOpen && (
-        <div className="fixed bottom-0 left-0 right-0 bg-red-600 text-white text-center p-3 font-bold z-50 shadow-lg">
+        <div className="fixed bottom-16 left-0 right-0 bg-red-600 text-white text-center p-3 font-bold z-50 shadow-lg">
           ⛔ Shop is currently closed
         </div>
       )}

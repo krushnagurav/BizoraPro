@@ -13,6 +13,7 @@ export const createProductAction = authAction
   .schema(createProductSchema)
   .action(async ({ parsedInput, ctx: { user, supabase } }) => {
     
+    // ... (Get Shop & Check Limits logic remains the same) ...
     const { data: shop } = await supabase
       .from("shops")
       .select("id, product_limit, onboarding_step")
@@ -31,6 +32,7 @@ export const createProductAction = authAction
       throw new Error(`Limit reached (${shop.product_limit}). Upgrade to Pro.`);
     }
 
+    // Parse JSON
     let variantsData = [], galleryData = [], badgesData = [];
     try {
       if (parsedInput.variants) variantsData = JSON.parse(parsedInput.variants);
@@ -38,12 +40,16 @@ export const createProductAction = authAction
       if (parsedInput.badges) badgesData = JSON.parse(parsedInput.badges);
     } catch (e) { console.error("JSON Parse Error", e); }
 
+    const categoryId = (parsedInput.category && parsedInput.category !== "none" && parsedInput.category !== "") 
+      ? parsedInput.category 
+      : null;
+
     const { error } = await supabase.from("products").insert({
       shop_id: shop.id,
       name: parsedInput.name,
       price: parsedInput.price,
       sale_price: parsedInput.salePrice,
-      category_id: parsedInput.category,
+      category_id: categoryId, // <--- Use the sanitized ID
       description: parsedInput.description,
       image_url: parsedInput.imageUrl || "",
       status: 'active',
@@ -71,6 +77,7 @@ export const updateProductAction = authAction
   .schema(updateProductSchema)
   .action(async ({ parsedInput, ctx: { supabase } }) => {
     
+    // Parse JSON
     let variantsData = [], galleryData = [], badgesData = [];
     try {
       if (parsedInput.variants) variantsData = JSON.parse(parsedInput.variants);
@@ -78,11 +85,16 @@ export const updateProductAction = authAction
       if (parsedInput.badges) badgesData = JSON.parse(parsedInput.badges);
     } catch (e) { console.error(e); }
 
+    // ✅ FIX: Handle Empty Category
+    const categoryId = (parsedInput.category && parsedInput.category !== "none" && parsedInput.category !== "") 
+      ? parsedInput.category 
+      : null;
+
     const updates: any = {
       name: parsedInput.name,
       price: parsedInput.price,
       sale_price: parsedInput.salePrice,
-      category_id: parsedInput.category,
+      category_id: categoryId, // <--- Use the sanitized ID
       description: parsedInput.description,
       variants: variantsData,
       gallery_images: galleryData,
@@ -223,6 +235,10 @@ export async function importProductsAction(products: any[]) {
 
   if (!shop) return { error: "Shop not found" };
 
+  if (shop.plan !== 'pro') {
+  return { error: "Bulk Import is a Pro feature." };
+}
+
   // Check Limit
   const { count } = await supabase
     .from("products")
@@ -248,7 +264,7 @@ export async function importProductsAction(products: any[]) {
 
   const existingNames = new Set(existingProducts?.map(p => p.name.toLowerCase().trim()));
 
-  let { data: existingCats } = await supabase
+  const { data: existingCats } = await supabase
     .from("categories")
     .select("id, name")
     .eq("shop_id", shop.id);

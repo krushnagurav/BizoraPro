@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Slider } from "@/components/ui/slider"; // Ensure shadcn slider is installed: npx shadcn@latest add slider
 import { Checkbox } from "@/components/ui/checkbox";

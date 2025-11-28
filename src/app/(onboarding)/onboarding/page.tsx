@@ -1,7 +1,12 @@
-
 import { redirect } from "next/navigation";
 
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
 import { Step1Form } from "@/src/components/dashboard/onboarding/step1";
 import { Step2Form } from "@/src/components/dashboard/onboarding/step2";
 import { Step3Form } from "@/src/components/dashboard/onboarding/step3";
@@ -9,9 +14,11 @@ import { createClient } from "@/src/lib/supabase/server";
 
 export default async function OnboardingPage() {
   const supabase = await createClient();
-  
+
   // 1. Get User & Shop Status
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
   const { data: shop } = await supabase
@@ -31,15 +38,15 @@ export default async function OnboardingPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-secondary/20">
-      <Card className="w-full max-w-lg border-border/50 bg-card">
-        <CardHeader className="text-center border-b border-border/40 pb-6">
+      <Card className="w-full max-w-lg border-white/10 bg-[#111] shadow-2xl shadow-black">
+        <CardHeader className="text-center border-b border-white/5 pb-6">
           <div className="flex justify-center gap-2 mb-4">
             {[1, 2, 3].map((step) => (
-              <div 
+              <div
                 key={step}
                 className={`h-2 w-12 rounded-full transition-colors ${
                   step <= currentStep ? "bg-primary" : "bg-secondary"
-                }`} 
+                }`}
               />
             ))}
           </div>
@@ -48,11 +55,9 @@ export default async function OnboardingPage() {
             {currentStep === 2 && "Contact & Category"}
             {currentStep === 3 && "Add First Product"}
           </CardTitle>
-          <CardDescription>
-            Step {currentStep} of 3
-          </CardDescription>
+          <CardDescription>Step {currentStep} of 3</CardDescription>
         </CardHeader>
-        
+
         <CardContent className="pt-6">
           {/* Render the correct form based on step */}
           {currentStep === 1 && <Step1Form />}

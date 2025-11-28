@@ -92,7 +92,7 @@ export async function verifyCouponAction(code: string, shopSlug: string, cartTot
     return { error: "Coupon usage limit reached" };
   }
 
-  // 4. Return Discount Details (Don't apply yet, just return info)
+  // 4. Return Discount Details (Don&apos;t apply yet, just return info)
   return { 
     success: true, 
     coupon: {

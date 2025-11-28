@@ -1,3 +1,5 @@
+// src/app/(storefront)/[slug]/about/page.tsx
+import type { CSSProperties } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { ShopFooter } from "@/src/components/storefront/shared/shop-footer";
@@ -7,10 +9,10 @@ import { hexToHsl } from "@/src/lib/utils";
 import { Heart, Hexagon, MessageCircle, Truck } from "lucide-react";
 import { notFound } from "next/navigation";
 
-export default async function ShopAboutPage({ 
+export default async function ShopAboutPage({
   params,
 }: {
-  params: Promise<{ slug: string }>;
+  params: { slug: string };
 }) {
   const { slug } = await params;
   const supabase = await createClient();
@@ -20,6 +22,7 @@ export default async function ShopAboutPage({
     .select("*")
     .eq("slug", slug)
     .single();
+
   if (!shop) return notFound();
 
   const theme = (shop.theme_config as any) || {};
@@ -28,9 +31,8 @@ export default async function ShopAboutPage({
   return (
     <div
       className="min-h-screen bg-[#F8F9FA] pb-24"
-      style={{ "--primary": primaryColorHsl } as React.CSSProperties}
+      style={{ "--primary": primaryColorHsl } as CSSProperties}
     >
-      {/* Header */}
       <ShopHeader shop={shop} />
 
       <div className="max-w-3xl mx-auto px-6 py-12 space-y-16">
@@ -62,21 +64,20 @@ export default async function ShopAboutPage({
                 things in life. Every piece in our collection tells a story.
               </p>
               <p>
-                We believe that luxury is not just about price—it's about the
+                We believe that luxury is not just about price—it&apos;s about the
                 experience, the craftsmanship, and the connection between what
                 you own and who you are.
               </p>
             </div>
           </div>
           <div className="relative aspect-square rounded-2xl overflow-hidden shadow-2xl rotate-2 border-4 border-white">
-            {/* Placeholder for Shop Interior Image */}
             <div className="absolute inset-0 bg-slate-200 flex items-center justify-center text-slate-400">
               Shop Interior Image
             </div>
           </div>
         </div>
 
-        {/* 3. Why Choose Us (Grid) */}
+        {/* 3. Why Choose Us */}
         <div className="space-y-12">
           <div className="text-center space-y-2">
             <span className="text-xs font-bold tracking-widest text-primary uppercase">
@@ -127,23 +128,25 @@ export default async function ShopAboutPage({
         <div className="bg-primary text-white rounded-3xl p-12 text-center space-y-6 shadow-xl relative overflow-hidden">
           <div className="relative z-10">
             <MessageCircle className="w-12 h-12 mx-auto mb-4 text-white/80" />
-            <h3 className="text-3xl font-serif">Let's Connect</h3>
+            <h3 className="text-3xl font-serif">Let&apos;s Connect</h3>
             <p className="text-white/90 max-w-md mx-auto">
-              Have questions? Want to learn more about our products? We're here
+              Have questions? Want to learn more about our products? We&apos;re here
               to help. Reach out via WhatsApp for personalized assistance.
             </p>
-            <a href={`https://wa.me/${shop.whatsapp_number}`} target="_blank">
+            <a
+              href={`https://wa.me/${shop.whatsapp_number}`}
+              target="_blank"
+              rel="noreferrer"
+            >
               <Button className="mt-8 bg-white text-primary hover:bg-slate-100 font-bold h-12 px-8 rounded-full">
                 Chat with us on WhatsApp
               </Button>
             </a>
           </div>
-          {/* Background Pattern */}
           <div className="absolute inset-0 bg-gradient-to-tr from-black/20 to-transparent pointer-events-none" />
         </div>
       </div>
 
-      {/* Footer */}
       <ShopFooter shop={shop} />
     </div>
   );

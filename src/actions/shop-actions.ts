@@ -15,16 +15,16 @@ const step1Schema = z.object({
 
 // --- STEP 2 VALIDATION ---
 const step2Schema = z.object({
-  whatsapp: z.string().min(10, "Invalid Phone Number"), // We'll strip non-digits later
+  whatsapp: z.string().min(10, "Invalid Phone Number"), // we&apos;ll strip non-digits later
   category: z.string().min(2, "Please select a category"),
 });
 
 // --- STEP 3 VALIDATION ---
-const step3Schema = z.object({
-  productName: z.string().min(2),
-  productPrice: z.string().transform((val) => Number(val)),
-  // Image handling happens on client usually, but for MVP we'll handle the text data here
-});
+// const step3Schema = z.object({
+//   productName: z.string().min(2),
+//   productPrice: z.string().transform((val) => Number(val)),
+//   // Image handling happens on client usually, but for MVP we&apos;ll handle the text data here
+// });
 
 // ==========================================
 // ACTION 1: CREATE SHOP (Step 1)
@@ -79,7 +79,7 @@ export async function completeStep2(formData: FormData) {
   const { data: shop } = await supabase.from("shops").select("id").eq("owner_id", user?.id).single();
   if (!shop) return { error: "Shop not found" };
 
-  const { data: newCat, error: catError } = await supabase
+  const { error: catError } = await supabase
     .from("categories")
     .insert({ shop_id: shop.id, name: parsed.data.category })
     .select("id")
@@ -88,10 +88,10 @@ export async function completeStep2(formData: FormData) {
   if (catError) return { error: "Failed to save category" };
 
   // 2. Update Shop with WA number (Using theme_config for now or a metadata column, 
-  // let's assume we save it to a 'contact_phone' column if it exists, 
+  // let&apos;s assume we save it to a 'contact_phone' column if it exists, 
   // OR better: create a 'whatsapp_number' column in shops table if we missed it.
-  // For MVP, let's assume we forgot the column and add it via SQL or store in metadata. 
-  // *QUICK FIX*: Let's run a SQL command later to add 'whatsapp_number' to shops.*
+  // For MVP, let&apos;s assume we forgot the column and add it via SQL or store in metadata. 
+  // *QUICK FIX*: Let&apos;s run a SQL command later to add 'whatsapp_number' to shops.*
   
   // Updating onboarding step
   const { error } = await supabase
@@ -177,27 +177,29 @@ export async function updateShopAppearanceAction(formData: FormData) {
 
 
 export async function updateShopSettingsAction(formData: FormData) {
+  const supabase = await createClient();
   const isOpen = formData.get("isOpen") === "on"; // Checkbox returns "on" if checked
   const minOrder = Number(formData.get("minOrder"));
   const deliveryNote = formData.get("deliveryNote") as string;
-
-  const autoClose = formData.get("autoClose") === "on";
+  const { data: shop } = await supabase.from("shops").select("plan").eq("owner_id", user.id).single();
+const isPro = shop.plan === 'pro';
+const autoClose = isPro ? (formData.get("autoClose") === "on") : false;
   const openingTime = formData.get("openingTime") as string;
   const closingTime = formData.get("closingTime") as string;
 
-  const socialLinks = {
+  const socialLinks = isPro ? {
     instagram: formData.get("instagram") as string,
     facebook: formData.get("facebook") as string,
     youtube: formData.get("youtube") as string,
     twitter: formData.get("twitter") as string,
-  };
+  } : {};
 
   const seoConfig = {
     metaTitle: formData.get("metaTitle") as string,
     metaDescription: formData.get("metaDescription") as string,
   };
 
-  const supabase = await createClient();
+
   const { data: { user } } = await supabase.auth.getUser();
 
   if (!user) return { error: "Login required" };
@@ -273,4 +275,45 @@ export async function updateNotificationPrefsAction(formData: FormData) {
 
   revalidatePath("/settings/notifications");
   return { success: "Preferences updated" };
+}
+
+// UPDATE CUSTOM DOMAIN
+export async function updateCustomDomainAction(formData: FormData) {
+  const domain = formData.get("domain") as string;
+  
+  // Basic cleaning (remove https:// and www.)
+  const cleanDomain = domain
+    .replace("https://", "")
+    .replace("http://", "")
+    .replace("www.", "")
+    .replace(/\/$/, "") // remove trailing slash
+    .toLowerCase();
+
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return { error: "Login required" };
+
+  // Check if domain is taken by another shop
+  const { data: existing } = await supabase
+    .from("shops")
+    .select("id")
+    .eq("custom_domain", cleanDomain)
+    .neq("owner_id", user.id) // Exclude self
+    .single();
+
+  if (existing) return { error: "This domain is already connected to another shop." };
+
+  // Update
+  const { error } = await supabase
+    .from("shops")
+    .update({ 
+      custom_domain: cleanDomain,
+      domain_verified: false // Needs Vercel verification logic later
+    })
+    .eq("owner_id", user.id);
+
+  if (error) return { error: error.message };
+
+  revalidatePath("/settings/domain");
+  return { success: "Domain added! Please configure your DNS." };
 }

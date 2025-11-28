@@ -11,6 +11,10 @@ import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 import { createClient } from "@/src/lib/supabase/client";
 
+function ProBadge() {
+  return <span className="ml-2 text-[10px] bg-yellow-500/20 text-yellow-500 px-1.5 py-0.5 rounded border border-yellow-500/50">PRO</span>;
+}
+
 export default function SettingsPage() {
   const [loading, setLoading] = useState(false);
   const [shop, setShop] = useState<any>(null);
@@ -38,6 +42,8 @@ export default function SettingsPage() {
   };
 
   if (!shop) return <div className="p-8">Loading settings...</div>;
+
+  const isPro = shop.plan === 'pro';
 
   return (
     <div className="p-8 max-w-2xl space-y-6">
@@ -79,9 +85,9 @@ export default function SettingsPage() {
         </Card>
 
         {/* 3. Store Hours */}
-        <Card className="bg-card border-border/50">
+<Card className={`bg-card border-border/50 ${!isPro ? "opacity-70" : ""}`}>
           <CardHeader>
-            <CardTitle>Store Hours</CardTitle>
+            <CardTitle>Store Hours {!isPro && <ProBadge />}</CardTitle>
             <CardDescription>Automatically close shop outside business hours.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
@@ -91,6 +97,7 @@ export default function SettingsPage() {
                  name="autoClose" 
                  defaultChecked={shop.auto_close} 
                  className="h-5 w-5 accent-primary"
+                 disabled={!isPro}
                />
                <Label>Enable Auto-Close Schedule</Label>
             </div>
@@ -102,6 +109,7 @@ export default function SettingsPage() {
                   name="openingTime" 
                   type="time" 
                   defaultValue={shop.opening_time || "09:00"} 
+                  disabled={!isPro}
                 />
               </div>
               <div className="space-y-2">
@@ -110,6 +118,7 @@ export default function SettingsPage() {
                   name="closingTime" 
                   type="time" 
                   defaultValue={shop.closing_time || "21:00"} 
+                  disabled={!isPro}
                 />
               </div>
             </div>
@@ -119,7 +128,7 @@ export default function SettingsPage() {
         {/* 4. Social Media */}
         <Card className="bg-card border-border/50">
           <CardHeader>
-            <CardTitle>Social Profiles</CardTitle>
+            <CardTitle>Social Links {!isPro && <ProBadge />}</CardTitle>
             <CardDescription>Connect your social media to build trust.</CardDescription>
           </CardHeader>
           <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -129,6 +138,7 @@ export default function SettingsPage() {
                 name="instagram" 
                 defaultValue={shop.social_links?.instagram || ""} 
                 placeholder="https://instagram.com/..." 
+                disabled={!isPro}
               />
             </div>
             <div className="space-y-2">
@@ -137,6 +147,7 @@ export default function SettingsPage() {
                 name="facebook" 
                 defaultValue={shop.social_links?.facebook || ""} 
                 placeholder="https://facebook.com/..." 
+                disabled={!isPro}
               />
             </div>
             <div className="space-y-2">
@@ -145,6 +156,7 @@ export default function SettingsPage() {
                 name="youtube" 
                 defaultValue={shop.social_links?.youtube || ""} 
                 placeholder="https://youtube.com/..." 
+                disabled={!isPro}
               />
             </div>
             <div className="space-y-2">
@@ -153,6 +165,7 @@ export default function SettingsPage() {
                 name="twitter" 
                 defaultValue={shop.social_links?.twitter || ""} 
                 placeholder="https://x.com/..." 
+                disabled={!isPro}
               />
             </div>
           </CardContent>

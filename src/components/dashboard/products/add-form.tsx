@@ -23,7 +23,7 @@ import { MultiImageUpload } from "../multi-image-upload";
 import { BadgeSelector } from "./badge-selector";
 
 // Accept categories as a Prop
-export function AddProductForm({ categories }: { categories: any[] }) {
+export function AddProductForm({ categories }: { categories: any[], plan: string }) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   
@@ -85,7 +85,21 @@ export function AddProductForm({ categories }: { categories: any[] }) {
 
           <div className="mt-6 pt-6 border-t border-border">
             <Label className="mb-4 block">Gallery Images (Optional)</Label>
-            <MultiImageUpload value={gallery} onChange={setGallery} />
+            {plan === 'free' && (
+                 <span className="text-[10px] bg-yellow-500/10 text-yellow-500 px-2 py-0.5 rounded border border-yellow-500/20">
+                   PRO Feature
+                 </span>
+               )}
+            {plan === 'pro' ? (
+               <MultiImageUpload value={gallery} onChange={setGallery} />
+            ) : (
+               <div className="bg-secondary/10 border border-border rounded-lg p-6 text-center opacity-60">
+                  <p className="text-sm text-muted-foreground mb-2">Gallery images are available on the <strong>Pro Plan</strong>.</p>
+                  <Button variant="outline" size="sm" onClick={() => window.open('/billing', '_blank')}>
+                    Upgrade to Unlock
+                  </Button>
+               </div>
+            )}
           </div>
         </CardContent>
       </Card>
@@ -134,7 +148,7 @@ export function AddProductForm({ categories }: { categories: any[] }) {
             </Select>
             {categories.length === 0 && (
               <p className="text-xs text-red-400">
-                You haven't created any categories yet. Go to the Categories page first.
+                You haven&apos;t created any categories yet. Go to the Categories page first.
               </p>
             )}
           </div>

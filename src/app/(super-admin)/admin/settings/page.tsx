@@ -28,7 +28,7 @@ export default async function AdminSettingsPage() {
                 <Power className="h-5 w-5" /> Maintenance Mode
               </CardTitle>
               <CardDescription>
-                If enabled, the entire site (except Admin) will show a "Under Maintenance" screen.
+                If enabled, the entire site (except Admin) will show a Under Maintenance screen.
               </CardDescription>
             </CardHeader>
             <CardContent className="flex items-center justify-between bg-red-950/10 p-4 rounded-lg border border-red-900/20">

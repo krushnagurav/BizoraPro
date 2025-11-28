@@ -13,13 +13,12 @@ export function CartBar({ slug }: { slug: string }) {
   const [isMounted, setIsMounted] = useState(false);
 
   // Avoid Hydration Mismatch
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
+// eslint-disable-next-line react-hooks/set-state-in-effect
+useEffect(() => setIsMounted(true), []);
 
   if (!isMounted || cart.items.length === 0) return null;
 
-  // Don't show on Cart or Checkout page (redundant)
+  // Don&apos;t show on Cart or Checkout page (redundant)
   if (pathname.includes("/cart") || pathname.includes("/checkout")) return null;
 
   return (

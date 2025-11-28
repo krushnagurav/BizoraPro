@@ -14,7 +14,7 @@ export default async function EditProductPage({ params }: { params: Promise<{ id
   const { data: { user } } = await supabase.auth.getUser();
 
 // Get Shop & Product
-  const { data: shop } = await supabase.from("shops").select("id").eq("owner_id", user!.id).single();
+  const { data: shop } = await supabase.from("shops").select("id, plan").eq("owner_id", user!.id).single();
   const { data: product } = await supabase.from("products").select("*").eq("id", id).single();
 
   if (!product) notFound();
@@ -33,7 +33,7 @@ export default async function EditProductPage({ params }: { params: Promise<{ id
 
       <h1 className="text-3xl font-bold text-primary mb-8">Edit Product</h1>
 
-      <EditProductForm product={product} categories={categories || []} />
+      <EditProductForm product={product} categories={categories || []} plan={shop?.plan || 'free'} />
     </div>
   );
 }

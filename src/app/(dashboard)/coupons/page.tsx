@@ -3,10 +3,11 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Trash2, TicketPercent } from "lucide-react";
+import { Trash2 } from "lucide-react";
 import { deleteCouponAction } from "@/src/actions/coupon-actions";
 import { AddCouponDialog } from "@/src/components/dashboard/coupons/add-coupon-dialog";
 import { redirect } from "next/navigation";
+import Link from "next/link";
 
 export default async function CouponsPage() {
   const supabase = await createClient();
@@ -30,7 +31,7 @@ export default async function CouponsPage() {
       <div className="p-8 text-center">
         <h1 className="text-2xl font-bold text-red-500">No Shop Found</h1>
         <p className="text-muted-foreground">You need to create a shop to manage coupons.</p>
-        <Button asChild className="mt-4"><a href="/onboarding">Create Shop</a></Button>
+        <Button asChild className="mt-4"><Link href="/onboarding">Create Shop</Link></Button>
       </div>
     );
   }

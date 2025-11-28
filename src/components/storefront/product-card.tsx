@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Plus, Check, ShoppingCart } from "lucide-react";
+import { Plus, Check } from "lucide-react";
 import { useCart } from "@/src/hooks/use-cart";
 import { toast } from "sonner";
 import { useState } from "react";

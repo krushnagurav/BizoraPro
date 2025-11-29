@@ -137,16 +137,19 @@ export async function updateOrderStatusAction(formData: FormData) {
   const newStatus = formData.get("status") as string;
   
   const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
   
+  const { data: shop } = await supabase.from("shops").select("id").eq("owner_id", user?.id).single();
+  if (!shop) return { error: "Unauthorized" };
+
   const { error } = await supabase
     .from("orders")
     .update({ status: newStatus })
-    .eq("id", orderId);
+    .eq("id", orderId)
+    .eq("shop_id", shop.id);
 
   if (error) return { error: error.message };
   
-  revalidatePath("/orders");
   revalidatePath(`/orders/${orderId}`);
-  
-  return { success: "Order status updated" };
+  return { success: `Order marked as ${newStatus}` };
 }

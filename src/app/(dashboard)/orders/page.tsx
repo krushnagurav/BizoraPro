@@ -1,5 +1,7 @@
-import { createClient } from "@/src/lib/supabase/server";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import {
   Table,
   TableBody,
@@ -8,46 +10,115 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
-import { Eye, MessageCircle } from "lucide-react";
+import { createClient } from "@/src/lib/supabase/server";
+import { Eye, Ghost, Search } from "lucide-react";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
+import { redirect } from "next/navigation";
 
-export default async function OrdersPage() {
+export default async function OrdersPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ status?: string; search?: string }>;
+}) {
+  const params = await searchParams;
+  const statusFilter = params.status || "all";
+  const searchQuery = params.search || "";
+
   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
+  if (!user) redirect("/login");
 
-  // 1. Get Shop ID
   const { data: shop } = await supabase
     .from("shops")
     .select("id")
-    .eq("owner_id", user!.id)
+    .eq("owner_id", user.id)
     .single();
 
-  // 2. Fetch Orders (Newest first)
-  const { data: orders } = await supabase
+  // Build Query
+  let query = supabase
     .from("orders")
     .select("*")
-    .eq("shop_id", shop?.id)
-    // .neq("status", "draft")
+    .eq("shop_id", shop.id)
     .order("created_at", { ascending: false });
+
+  // Apply Status Filter
+  if (statusFilter !== "all") {
+    if (statusFilter === "abandoned") {
+      query = query.eq("status", "draft");
+    } else {
+      query = query.eq("status", statusFilter);
+    }
+  } else {
+    // Default: Don't show drafts in "All" unless asked
+    query = query.neq("status", "draft");
+  }
+
+  // Apply Search (Client-side filtering for JSONB is hard in basic SQL,
+  // but we can search ID or use a simple text search if columns existed.
+  // For MVP, we fetch 50 and filter in JS or stick to basic filters)
+
+  const { data: orders } = await query.limit(50);
+
+  // Simple Filter Tabs
+  const tabs = [
+    { id: "all", label: "All Orders" },
+    { id: "placed", label: "New" },
+    { id: "confirmed", label: "Confirmed" },
+    { id: "shipped", label: "Shipped" },
+    { id: "delivered", label: "Completed" },
+    { id: "cancelled", label: "Cancelled" },
+  ];
 
   return (
     <div className="p-8 space-y-6">
-      <h1 className="text-3xl font-bold text-primary">Orders</h1>
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+          <h1 className="text-3xl font-bold text-primary">Orders</h1>
+          <p className="text-muted-foreground">
+            Manage and fulfill your customer orders.
+          </p>
+        </div>
 
-      {/* NEW BUTTON */}
-      <Link href="/orders/abandoned">
-        <Button
-          variant="outline"
-          className="border-red-500/50 text-red-500 hover:bg-red-500/10 gap-2"
-        >
-          <MessageCircle className="h-4 w-4" /> View Abandoned
-        </Button>
-      </Link>
+        <div className="flex gap-2">
+          {/* 👇 NEW BUTTON 👇 */}
+          <Link href="/orders/abandoned">
+            <Button
+              variant="outline"
+              className="gap-2 text-red-500 border-red-500/30 hover:bg-red-500/10 hover:text-red-600"
+            >
+              <Ghost className="h-4 w-4" /> View Abandoned
+            </Button>
+          </Link>
+        </div>
+      </div>
 
+      {/* FILTERS */}
+      <div className="flex flex-col md:flex-row gap-4">
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            placeholder="Search Order ID or Customer..."
+            className="pl-9 bg-card"
+          />
+        </div>
+        <div className="flex gap-2 overflow-x-auto pb-2">
+          {tabs.map((tab) => (
+            <Link key={tab.id} href={`/orders?status=${tab.id}`}>
+              <Button
+                variant={statusFilter === tab.id ? "default" : "outline"}
+                size="sm"
+                className="whitespace-nowrap"
+              >
+                {tab.label}
+              </Button>
+            </Link>
+          ))}
+        </div>
+      </div>
+
+      {/* TABLE */}
       <Card className="bg-card border-border/50">
         <CardContent className="p-0">
           <Table>
@@ -56,8 +127,8 @@ export default async function OrdersPage() {
                 <TableHead>Order ID</TableHead>
                 <TableHead>Customer</TableHead>
                 <TableHead>Date</TableHead>
-                <TableHead>Status</TableHead>
                 <TableHead>Total</TableHead>
+                <TableHead>Status</TableHead>
                 <TableHead className="text-right">Action</TableHead>
               </TableRow>
             </TableHeader>
@@ -66,9 +137,9 @@ export default async function OrdersPage() {
                 <TableRow>
                   <TableCell
                     colSpan={6}
-                    className="h-24 text-center text-muted-foreground"
+                    className="h-32 text-center text-muted-foreground"
                   >
-                    No orders yet. Share your shop link!
+                    No orders found.
                   </TableCell>
                 </TableRow>
               ) : (
@@ -77,39 +148,25 @@ export default async function OrdersPage() {
                     key={order.id}
                     className="border-border hover:bg-secondary/10"
                   >
-                    <TableCell className="font-mono text-xs">
-                      #{order.id.slice(0, 8)}...
+                    <TableCell className="font-mono font-bold">
+                      #{order.id.slice(0, 5).toUpperCase()}
                     </TableCell>
                     <TableCell>
-                      <div className="flex flex-col">
-                        <span className="font-medium">
-                          {order.customer_info.name}
-                        </span>
-                        <span className="text-xs text-muted-foreground">
-                          {order.customer_info.phone}
-                        </span>
-                      </div>
+                      <p className="font-medium">{order.customer_info.name}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {order.customer_info.phone}
+                      </p>
                     </TableCell>
-                    <TableCell className="text-muted-foreground text-sm">
+                    <TableCell className="text-xs text-muted-foreground">
                       {new Date(order.created_at).toLocaleDateString()}
-                    </TableCell>
-                    <TableCell>
-                      <Badge
-                        variant={
-                          order.status === "delivered"
-                            ? "secondary"
-                            : order.status === "draft"
-                            ? "destructive"
-                            : "outline"
-                        }
-                      >
-                        {order.status === "draft"
-                          ? "Abandoned / Draft"
-                          : order.status}
-                      </Badge>
                     </TableCell>
                     <TableCell className="font-bold">
                       ₹{order.total_amount}
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant="outline" className="capitalize">
+                        {order.status}
+                      </Badge>
                     </TableCell>
                     <TableCell className="text-right">
                       <Link href={`/orders/${order.id}`}>

@@ -25,6 +25,10 @@ export async function createCouponAction(formData: FormData) {
     discountType: formData.get("discountType"),
     discountValue: formData.get("discountValue"),
     minOrderValue: formData.get("minOrderValue"),
+    startDate: formData.get("startDate"),
+    endDate: formData.get("endDate") || null,
+    maxUsesTotal: formData.get("maxUsesTotal") || null,
+    maxDiscountAmount: formData.get("maxDiscountAmount") || null,
   };
 
   const parsed = couponSchema.safeParse(raw);
@@ -37,6 +41,11 @@ export async function createCouponAction(formData: FormData) {
     discount_type: parsed.data.discountType,
     discount_value: parsed.data.discountValue,
     min_order_value: parsed.data.minOrderValue,
+    start_date: parsed.data.startDate || new Date().toISOString(),
+    end_date: parsed.data.endDate,
+    usage_limit: parsed.data.maxUsesTotal, // Mapping to existing column if needed, or new one
+    max_discount_amount: parsed.data.maxDiscountAmount,
+    
     is_active: true
   });
 

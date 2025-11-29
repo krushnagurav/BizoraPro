@@ -188,19 +188,6 @@ export const createCategoryAction = authAction
     return { success: true };
   });
 
-export const deleteCategoryAction = authAction
-  .schema(categoryIdSchema)
-  .action(async ({ parsedInput, ctx: { supabase } }) => {
-    const { error } = await supabase
-      .from("categories")
-      .delete()
-      .eq("id", parsedInput.id);
-
-    if (error) throw new Error(error.message);
-    revalidatePath("/categories");
-    return { success: true };
-  });
-
 
 // ==========================================
 // 5. DATA FETCHER (Read Only - Standard Async)

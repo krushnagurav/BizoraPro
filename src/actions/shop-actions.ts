@@ -317,3 +317,23 @@ export async function updateCustomDomainAction(formData: FormData) {
   revalidatePath("/settings/domain");
   return { success: "Domain added! Please configure your DNS." };
 }
+
+// REMOVE CUSTOM DOMAIN
+export async function removeCustomDomainAction() {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return { error: "Login required" };
+
+  const { error } = await supabase
+    .from("shops")
+    .update({ 
+      custom_domain: null,
+      domain_verified: false 
+    })
+    .eq("owner_id", user.id);
+
+  if (error) return { error: error.message };
+
+  revalidatePath("/settings/domain");
+  return { success: "Domain disconnected successfully." };
+}

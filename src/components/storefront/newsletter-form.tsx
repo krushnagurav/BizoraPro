@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { toast } from "sonner";
 import { submitLeadAction } from "@/src/actions/marketing-actions";
+import { Loader2 } from "lucide-react";
+import { useState } from "react";
+import { toast } from "sonner";
 
 export function NewsletterForm({ shopId }: { shopId: string }) {
   const [loading, setLoading] = useState(false);
@@ -20,19 +21,24 @@ export function NewsletterForm({ shopId }: { shopId: string }) {
 
     if (res?.error) toast.error(res.error);
     else {
-      toast.success("Subscribed!");
+      toast.success("Subscribed successfully!");
       (e.target as HTMLFormElement).reset();
     }
   };
 
   return (
-    <div className="bg-secondary/20 p-6 rounded-xl mt-12 text-center">
-      <h3 className="font-bold text-lg mb-2">Get Exclusive Offers</h3>
-      <p className="text-sm text-muted-foreground mb-4">Join our WhatsApp list for discounts.</p>
+    <div className="bg-white border border-slate-200 p-8 rounded-3xl text-center shadow-sm">
+      <h3 className="font-bold text-xl text-slate-900 mb-2">Get Exclusive Offers</h3>
+      <p className="text-sm text-slate-500 mb-6">Join our WhatsApp list for discounts and new arrivals.</p>
       
-      <form onSubmit={handleSubmit} className="flex gap-2">
-        <Input name="phone" placeholder="WhatsApp Number" required className="bg-background" />
-        <Button disabled={loading}>Join</Button>
+      <form onSubmit={handleSubmit} className="flex flex-col gap-3 max-w-sm mx-auto">
+        <Input name="name" placeholder="Your Name (Optional)" className="h-12 bg-slate-50 border-slate-200" />
+        <div className="flex gap-2">
+           <Input name="phone" placeholder="WhatsApp Number" required className="h-12 bg-slate-50 border-slate-200" />
+           <Button disabled={loading} className="h-12 px-6 bg-slate-900 text-white hover:bg-slate-800 font-bold">
+             {loading ? <Loader2 className="animate-spin" /> : "Join"}
+           </Button>
+        </div>
       </form>
     </div>
   );

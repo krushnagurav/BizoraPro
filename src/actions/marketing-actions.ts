@@ -74,17 +74,22 @@ export async function toggleReviewStatusAction(formData: FormData) {
 export async function submitLeadAction(formData: FormData) {
   const shopId = formData.get("shopId") as string;
   const phone = formData.get("phone") as string;
+  const name = formData.get("name") as string; // New field
 
   const supabase = await createClient();
   
   const { error } = await supabase.from("leads").insert({
     shop_id: shopId,
-    name: "Guest", // Or add name input
-    phone: phone, // or email, based on what you collect
-    // You might need to add an 'email' column to 'leads' table if not there
+    name: name || "Guest",
+    phone: phone,
+    source: "storefront"
   });
 
-  if (error) return { error: error.message };
+  if (error) {
+    // Handle duplicate phone gracefully
+    if (error.code === '23505') return { error: "You are already subscribed!" };
+    return { error: error.message };
+  }
   return { success: "Subscribed successfully!" };
 }
 
@@ -220,4 +225,11 @@ export async function incrementTemplateUsageAction(id: string) {
   }
 
   revalidatePath("/marketing/templates");
+}
+
+// 12. LOG LEAD CONTACT (Admin)
+export async function logLeadContactAction(leadId: string) {
+  const supabase = await createClient();
+  await supabase.from("leads").update({ last_contacted_at: new Date().toISOString() }).eq("id", leadId);
+  revalidatePath("/marketing/leads");
 }

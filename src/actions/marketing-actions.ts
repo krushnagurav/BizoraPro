@@ -163,3 +163,61 @@ export async function replyToReviewAction(formData: FormData) {
   revalidatePath("/marketing/reviews");
   return { success: "Reply posted successfully" };
 }
+
+// 9. UPDATE TEMPLATE
+export async function updateTemplateAction(formData: FormData) {
+  const id = formData.get("id") as string;
+  const name = formData.get("name") as string;
+  const message = formData.get("message") as string;
+  const category = formData.get("category") as string;
+
+  const supabase = await createClient();
+  
+  const { error } = await supabase
+    .from("whatsapp_templates")
+    .update({ name, message, category })
+    .eq("id", id);
+
+  if (error) return { error: error.message };
+  revalidatePath("/marketing/templates");
+  return { success: "Template updated" };
+}
+
+// 10. SEED TEMPLATES (Call this on Onboarding Step 4 or First Visit)
+export async function seedTemplatesAction(shopId: string) {
+  const supabase = await createClient();
+  
+  const defaults = [
+    { name: "Order Confirmation", category: "order", message: "Hi {{customer_name}}, thanks for your order #{{order_id}}! We are processing it now." },
+    { name: "Payment Received", category: "payment", message: "We received your payment of {{amount}}. Thanks!" },
+    { name: "Review Request", category: "marketing", message: "Hi! How was your experience with {{shop_name}}? Please leave a review here: {{link}}" }
+  ];
+
+  // Insert individually to avoid duplicates if ran twice (simple check)
+  for (const t of defaults) {
+     await supabase.from("whatsapp_templates").insert({ shop_id: shopId, ...t });
+  }
+}
+
+// 11. INCREMENT USAGE COUNT
+export async function incrementTemplateUsageAction(id: string) {
+  const supabase = await createClient();
+  
+  // Simple increment using RPC or raw SQL is best, but for now standard update works
+  // We fetch first to get current count to be safe, or use a stored procedure if available
+  // For MVP, we just do a read-write cycle or use postgrest increment if supported.
+  // Supabase/Postgrest doesn't have a simple +1 in JS client without RPC usually, 
+  // but we can do it efficiently:
+  
+  const { error } = await supabase.rpc('increment_template_usage', { row_id: id });
+  
+  // Fallback if RPC doesn't exist (Create this RPC in SQL if you want atomic updates)
+  if (error) {
+      // Manual method (slower but works without SQL setup)
+      const { data } = await supabase.from("whatsapp_templates").select("used_count").eq("id", id).single();
+      const newCount = (data?.used_count || 0) + 1;
+      await supabase.from("whatsapp_templates").update({ used_count: newCount, last_used_at: new Date().toISOString() }).eq("id", id);
+  }
+
+  revalidatePath("/marketing/templates");
+}

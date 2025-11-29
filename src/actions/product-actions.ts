@@ -13,7 +13,6 @@ export const createProductAction = authAction
   .schema(createProductSchema)
   .action(async ({ parsedInput, ctx: { user, supabase } }) => {
     
-    // ... (Get Shop & Check Limits logic remains the same) ...
     const { data: shop } = await supabase
       .from("shops")
       .select("id, product_limit, onboarding_step")
@@ -32,13 +31,22 @@ export const createProductAction = authAction
       throw new Error(`Limit reached (${shop.product_limit}). Upgrade to Pro.`);
     }
 
-    // Parse JSON
-    let variantsData = [], galleryData = [], badgesData = [];
+    // 1. Parse JSON Fields
+    let variantsData = [], galleryData = [], badgesData = [], skusData: any[] = [];
     try {
       if (parsedInput.variants) variantsData = JSON.parse(parsedInput.variants);
       if (parsedInput.galleryImages) galleryData = JSON.parse(parsedInput.galleryImages);
       if (parsedInput.badges) badgesData = JSON.parse(parsedInput.badges);
+      // 👇 RE-ADDED: SKU Parsing
+      if (parsedInput.productSkus) skusData = JSON.parse(parsedInput.productSkus);
     } catch (e) { console.error("JSON Parse Error", e); }
+
+    // 2. 🧠 SMART STOCK LOGIC
+    // If variants exist, calculate total stock from SKUs. Otherwise use simple stock input.
+    let finalStock = parsedInput.stock || 0; 
+    if (skusData.length > 0) {
+       finalStock = skusData.reduce((acc: number, sku: any) => acc + Number(sku.stock || 0), 0);
+    }
 
     const categoryId = (parsedInput.category && parsedInput.category !== "none" && parsedInput.category !== "") 
       ? parsedInput.category 
@@ -49,13 +57,15 @@ export const createProductAction = authAction
       name: parsedInput.name,
       price: parsedInput.price,
       sale_price: parsedInput.salePrice,
-      category_id: categoryId, // <--- Use the sanitized ID
+      category_id: categoryId,
       description: parsedInput.description,
       image_url: parsedInput.imageUrl || "",
       status: 'active',
       variants: variantsData,
       gallery_images: galleryData,
-      badges: badgesData
+      badges: badgesData,
+      product_skus: skusData, // <--- SAVE SKUs
+      stock_count: finalStock // <--- SAVE CALCULATED STOCK
     });
 
     if (error) throw new Error(error.message);
@@ -77,15 +87,22 @@ export const updateProductAction = authAction
   .schema(updateProductSchema)
   .action(async ({ parsedInput, ctx: { supabase } }) => {
     
-    // Parse JSON
-    let variantsData = [], galleryData = [], badgesData = [];
+    // 1. Parse JSON
+    let variantsData = [], galleryData = [], badgesData = [], skusData: any[] = [];
     try {
       if (parsedInput.variants) variantsData = JSON.parse(parsedInput.variants);
       if (parsedInput.galleryImages) galleryData = JSON.parse(parsedInput.galleryImages);
       if (parsedInput.badges) badgesData = JSON.parse(parsedInput.badges);
+      // 👇 RE-ADDED: SKU Parsing
+      if (parsedInput.productSkus) skusData = JSON.parse(parsedInput.productSkus);
     } catch (e) { console.error(e); }
 
-    // ✅ FIX: Handle Empty Category
+    // 2. 🧠 SMART STOCK LOGIC
+    let finalStock = parsedInput.stock || 0;
+    if (skusData.length > 0) {
+       finalStock = skusData.reduce((acc: number, sku: any) => acc + Number(sku.stock || 0), 0);
+    }
+
     const categoryId = (parsedInput.category && parsedInput.category !== "none" && parsedInput.category !== "") 
       ? parsedInput.category 
       : null;
@@ -94,11 +111,13 @@ export const updateProductAction = authAction
       name: parsedInput.name,
       price: parsedInput.price,
       sale_price: parsedInput.salePrice,
-      category_id: categoryId, // <--- Use the sanitized ID
+      category_id: categoryId,
       description: parsedInput.description,
       variants: variantsData,
       gallery_images: galleryData,
-      badges: badgesData
+      badges: badgesData,
+      product_skus: skusData, // <--- SAVE SKUs
+      stock_count: finalStock // <--- SAVE CALCULATED STOCK
     };
 
     if (parsedInput.imageUrl) updates.image_url = parsedInput.imageUrl;
@@ -193,7 +212,7 @@ export async function getProductsAction(
 
   let dbQuery = supabase
     .from("products")
-    .select("*", { count: "exact" })
+    .select("*, categories(name)", { count: "exact" })
     .eq("shop_id", shopId)
     .is("deleted_at", null)
     .order("created_at", { ascending: false })
@@ -226,20 +245,18 @@ export async function importProductsAction(products: any[]) {
   
   if (!user) return { error: "Login required" };
 
-  // A. Get Shop & Limits
   const { data: shop } = await supabase
     .from("shops")
-    .select("id, product_limit")
+    .select("id, product_limit, plan")
     .eq("owner_id", user.id)
     .single();
 
   if (!shop) return { error: "Shop not found" };
 
   if (shop.plan !== 'pro') {
-  return { error: "Bulk Import is a Pro feature." };
-}
+    return { error: "Bulk Import is a Pro feature." };
+  }
 
-  // Check Limit
   const { count } = await supabase
     .from("products")
     .select("*", { count: 'exact', head: true })
@@ -255,7 +272,6 @@ export async function importProductsAction(products: any[]) {
     };
   }
 
-  // B. Fetch Data for Deduplication & Category Mapping
   const { data: existingProducts } = await supabase
     .from("products")
     .select("name")
@@ -264,7 +280,7 @@ export async function importProductsAction(products: any[]) {
 
   const existingNames = new Set(existingProducts?.map(p => p.name.toLowerCase().trim()));
 
-  const { data: existingCats } = await supabase
+  let { data: existingCats } = await supabase
     .from("categories")
     .select("id, name")
     .eq("shop_id", shop.id);
@@ -272,7 +288,6 @@ export async function importProductsAction(products: any[]) {
   const categoryMap = new Map<string, string>();
   existingCats?.forEach(c => categoryMap.set(c.name.toLowerCase(), c.id));
 
-  // C. Process Rows
   const toInsert = [];
   let skippedCount = 0;
   let newCategoriesCount = 0;
@@ -295,7 +310,6 @@ export async function importProductsAction(products: any[]) {
       continue;
     }
 
-    // Category Logic
     let categoryId = null;
     if (item.Category) {
       const cleanCatName = item.Category.trim();

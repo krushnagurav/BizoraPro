@@ -22,7 +22,7 @@ export async function generateMetadata({
 }: {
   params: { slug: string };
 }): Promise<Metadata> {
-  const { slug } = params;
+  const { slug } = await params;
   const supabase = await createClient();
 
   const { data: shop } = await supabase
@@ -49,7 +49,7 @@ export default async function ShopHomePage({
   searchParams?: { q?: string; cat?: string };
 }) {
   const { slug } = await params;
-  const { q: searchQuery, cat: categoryId } = await searchParams ?? {};
+  const { q: searchQuery, cat: categoryId } = (await searchParams) ?? {};
 
   const supabase = await createClient();
 
@@ -84,7 +84,8 @@ export default async function ShopHomePage({
 
   const { data: products } = await productQuery;
 
-const theme = shop.theme_config as unknown as ThemeConfig;  const primaryColor = theme.primaryColor || "#E6B800";
+  const theme = shop.theme_config as unknown as ThemeConfig;
+  const primaryColor = theme.primaryColor || "#E6B800";
   const primaryColorHsl = hexToHsl(primaryColor);
 
   const fontKey = theme.font || "inter";
@@ -106,6 +107,8 @@ const theme = shop.theme_config as unknown as ThemeConfig;  const primaryColor =
       isShopActuallyOpen = false;
     }
   }
+
+  const banner = theme.bannerUrl || "";
 
   return (
     <div

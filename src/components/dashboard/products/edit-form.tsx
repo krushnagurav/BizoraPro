@@ -21,10 +21,12 @@ import { Loader2 } from "lucide-react";
 import { VariantBuilder } from "./variant-builder";
 import { MultiImageUpload } from "../multi-image-upload";
 import { BadgeSelector } from "./badge-selector";
+import { SkuManager } from "./sku-manager";
 
 export function EditProductForm({
   product,
   categories,
+  plan,
 }: {
   product: any;
   categories: any[];
@@ -32,12 +34,17 @@ export function EditProductForm({
 }) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
-  
+
   // 1. INITIALIZE STATE (Handle nulls safely)
   const [imageUrl, setImageUrl] = useState(product.image_url || "");
   const [variants, setVariants] = useState<any[]>(product.variants || []);
-  const [gallery, setGallery] = useState<string[]>(product.gallery_images || []);
+  const [gallery, setGallery] = useState<string[]>(
+    product.gallery_images || []
+  );
   const [badges, setBadges] = useState<string[]>(product.badges || []);
+  const [price, setPrice] = useState(product.price);
+  const [skus, setSkus] = useState<any[]>(product.skus || []);
+  const [stock, setStock] = useState(product?.stock_count || 0);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -50,15 +57,19 @@ export function EditProductForm({
       id: product.id, // Critical
       name: formData.get("name") as string,
       price: Number(formData.get("price")),
-      salePrice: formData.get("salePrice") ? Number(formData.get("salePrice")) : null,
+      salePrice: formData.get("salePrice")
+        ? Number(formData.get("salePrice"))
+        : null,
       category: formData.get("category") as string,
       description: formData.get("description") as string,
-      
+
       // State variables
       imageUrl: imageUrl,
       variants: JSON.stringify(variants),
+      productSkus: JSON.stringify(skus),
       galleryImages: JSON.stringify(gallery),
       badges: JSON.stringify(badges),
+      stock: stock.toString(),
     };
 
     // 3. CALL SERVER ACTION
@@ -68,42 +79,47 @@ export function EditProductForm({
 
     // 4. HANDLE RESPONSE
     if (result?.serverError) {
-       toast.error("Server Error: " + result.serverError);
+      toast.error("Server Error: " + result.serverError);
     } else if (result?.validationErrors) {
-       const firstError = Object.values(result.validationErrors)[0];
-       toast.error(firstError ? String(firstError) : "Validation Failed");
+      const firstError = Object.values(result.validationErrors)[0];
+      toast.error(firstError ? String(firstError) : "Validation Failed");
     } else if (result?.data?.success) {
-       toast.success("Product updated successfully!");
-       router.push("/products");
-       router.refresh();
+      toast.success("Product updated successfully!");
+      router.push("/products");
+      router.refresh();
     }
   };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-8">
-      
       {/* Image Section */}
       <Card className="bg-card border-border/50">
         <CardContent className="pt-6">
           <Label className="mb-4 block">Main Image</Label>
           <ImageUpload value={imageUrl} onChange={setImageUrl} />
-          
+
           <div className="mt-6 pt-6 border-t border-border">
             <Label className="mb-4 block">Gallery Images (Optional)</Label>
-            {plan === 'free' && (
-                 <span className="text-[10px] bg-yellow-500/10 text-yellow-500 px-2 py-0.5 rounded border border-yellow-500/20">
-                   PRO Feature
-                 </span>
-               )}
-            {plan === 'pro' ? (
-               <MultiImageUpload value={gallery} onChange={setGallery} />
+            {plan === "free" && (
+              <span className="text-[10px] bg-yellow-500/10 text-yellow-500 px-2 py-0.5 rounded border border-yellow-500/20">
+                PRO Feature
+              </span>
+            )}
+            {plan === "pro" ? (
+              <MultiImageUpload value={gallery} onChange={setGallery} />
             ) : (
-               <div className="bg-secondary/10 border border-border rounded-lg p-6 text-center opacity-60">
-                  <p className="text-sm text-muted-foreground mb-2">Gallery images are available on the <strong>Pro Plan</strong>.</p>
-                  <Button variant="outline" size="sm" onClick={() => window.open('/billing', '_blank')}>
-                    Upgrade to Unlock
-                  </Button>
-               </div>
+              <div className="bg-secondary/10 border border-border rounded-lg p-6 text-center opacity-60">
+                <p className="text-sm text-muted-foreground mb-2">
+                  Gallery images are available on the <strong>Pro Plan</strong>.
+                </p>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => window.open("/billing", "_blank")}
+                >
+                  Upgrade to Unlock
+                </Button>
+              </div>
             )}
           </div>
         </CardContent>
@@ -112,7 +128,6 @@ export function EditProductForm({
       {/* Details Section */}
       <Card className="bg-card border-border/50">
         <CardContent className="pt-6 space-y-4">
-          
           <div className="space-y-2">
             <Label>Product Name</Label>
             <Input name="name" defaultValue={product.name} required />
@@ -124,7 +139,8 @@ export function EditProductForm({
               <Input
                 name="price"
                 type="number"
-                defaultValue={product.price}
+                value={price}
+                onChange={(e) => setPrice(Number(e.target.value))}
                 required
               />
             </div>
@@ -142,10 +158,32 @@ export function EditProductForm({
             <VariantBuilder value={variants} onChange={setVariants} />
           </div>
 
+          {variants.length === 0 && (
+            <div className="space-y-2">
+              <Label>Stock Quantity</Label>
+              <Input
+                name="stock"
+                type="number"
+                placeholder="10"
+                value={stock}
+                onChange={(e) => setStock(Number(e.target.value))}
+              />
+            </div>
+          )}
+
+          <div className="mt-4">
+            <SkuManager
+              variants={variants}
+              value={skus}
+              onChange={setSkus}
+              defaultPrice={Number(price) || 0} // Pass main price as default
+            />
+          </div>
+
           <div className="space-y-2">
             <Label>Category</Label>
-            <Select 
-              name="category" 
+            <Select
+              name="category"
               defaultValue={product.category_id || undefined}
             >
               <SelectTrigger>
@@ -169,12 +207,11 @@ export function EditProductForm({
               rows={4}
             />
           </div>
-          
+
           <div className="space-y-2">
             <Label>Promotion Labels</Label>
             <BadgeSelector value={badges} onChange={setBadges} />
           </div>
-
         </CardContent>
       </Card>
 

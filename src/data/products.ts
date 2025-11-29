@@ -9,21 +9,18 @@ export async function getProducts(
 ) {
   const supabase = await createClient();
 
-  // 1. Calculate Range (Pagination Logic)
   const from = (page - 1) * ITEMS_PER_PAGE;
   const to = from + ITEMS_PER_PAGE - 1;
 
   try {
-    // 2. Build Query
     let dbQuery = supabase
       .from("products")
-      .select("*", { count: "exact" }) // Get total count
+      .select("*, categories(name)", { count: "exact" }) 
       .eq("shop_id", shopId)
-      .is("deleted_at", null) // Only Active Products
+      .is("deleted_at", null)
       .order("created_at", { ascending: false })
       .range(from, to);
 
-    // 3. Apply Search
     if (query) {
       dbQuery = dbQuery.ilike("name", `%${query}%`);
     }
@@ -32,12 +29,13 @@ export async function getProducts(
 
     if (error) {
       console.error("DAL Error:", error);
-      return { data: [], metadata: { totalPages: 0, totalItems: 0, hasNext: false, hasPrev: false } };
+      // Return empty typed array
+      return { data: [] as Product[], metadata: { totalPages: 0, totalItems: 0, hasNextPage: false, hasPrevPage: false, page, limit: ITEMS_PER_PAGE } };
     }
 
-    // 4. Return Data + Metadata
     return {
-      data: data || [],
+      // Cast the response to your strict type
+      data: (data as unknown as Product[]) || [],
       metadata: {
         page,
         limit: ITEMS_PER_PAGE,
@@ -49,6 +47,6 @@ export async function getProducts(
     };
   } catch (error) {
     console.error("System Error:", error);
-    return { data: [], metadata: { totalPages: 0, totalItems: 0, hasNext: false, hasPrev: false } };
+    return { data: [] as Product[], metadata: { totalPages: 0, totalItems: 0, hasNextPage: false, hasPrevPage: false, page, limit: ITEMS_PER_PAGE } };
   }
 }

@@ -44,18 +44,36 @@ export interface Shop {
   plan: 'free' | 'pro';
 }
 
+export interface ProductVariant {
+  name: string;
+  values: string[];
+}
+
+export interface ProductSku {
+  code: string;
+  attributes: Record<string, string>;
+  stock: number;
+  price: number;
+}
+
 export interface Product {
   id: string;
   shop_id: string;
+  category_id?: string | null;
   name: string;
+  description?: string;
   price: number;
   sale_price?: number | null;
   image_url?: string;
-  description?: string;
   status: 'active' | 'draft' | 'archived';
-  variants?: any[];
-  gallery_images?: string[];
-  badges?: string[];
-  // Joins
-  categories?: { name: string };
+  stock_count: number;
+  deleted_at?: string | null;
+  created_at: string;
+  variants: ProductVariant[];
+  gallery_images: string[];
+  badges: string[];
+  product_skus: ProductSku[];
+  categories?: {
+    name: string;
+  } | null;
 }

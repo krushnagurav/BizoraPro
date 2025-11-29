@@ -21,17 +21,26 @@ import { Loader2 } from "lucide-react";
 import { VariantBuilder } from "./variant-builder";
 import { MultiImageUpload } from "../multi-image-upload";
 import { BadgeSelector } from "./badge-selector";
+import { SkuManager } from "./sku-manager";
 
-// Accept categories as a Prop
-export function AddProductForm({ categories }: { categories: any[], plan: string }) {
+export function AddProductForm({
+  categories,
+  plan,
+}: {
+  categories: any[];
+  plan: string;
+}) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
-  
+
   // Client State
   const [imageUrl, setImageUrl] = useState("");
+  const [price, setPrice] = useState(""); // 👈 Added State for Price
   const [variants, setVariants] = useState<any[]>([]);
   const [gallery, setGallery] = useState<string[]>([]);
   const [badges, setBadges] = useState<string[]>([]);
+  const [skus, setSkus] = useState<any[]>([]);
+  const [stock, setStock] = useState(0);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -39,40 +48,38 @@ export function AddProductForm({ categories }: { categories: any[], plan: string
 
     const formData = new FormData(event.currentTarget);
 
-    // 1. Prepare Raw Data Object (Matching Zod Schema)
-    // Note: safe-action expects a plain object, NOT FormData directly
     const rawData = {
       name: formData.get("name") as string,
       price: Number(formData.get("price")),
-      salePrice: formData.get("salePrice") ? Number(formData.get("salePrice")) : null,
+      salePrice: formData.get("salePrice")
+        ? Number(formData.get("salePrice"))
+        : null,
       category: formData.get("category") as string,
       description: formData.get("description") as string,
-      
-      // Client State Variables
+
       imageUrl: imageUrl,
       variants: JSON.stringify(variants),
+      productSkus: JSON.stringify(skus),
       galleryImages: JSON.stringify(gallery),
       badges: JSON.stringify(badges),
+      stock: stock.toString(),
     };
 
-    // 2. Call Safe Action
     const result = await createProductAction(rawData);
 
     setLoading(false);
 
-    // 3. Handle Response
     if (result?.serverError) {
-       toast.error("Server Error: " + result.serverError);
+      toast.error("Server Error: " + result.serverError);
     } else if (result?.validationErrors) {
-       // Show first validation error
-       const firstError = Object.values(result.validationErrors)[0];
-       toast.error(firstError ? String(firstError) : "Validation Failed");
+      const firstError = Object.values(result.validationErrors)[0];
+      toast.error(firstError ? String(firstError) : "Validation Failed");
     } else if (result?.data?.success) {
-       toast.success("Product created!");
-       if (result.data.redirect) {
-           router.push(result.data.redirect);
-           router.refresh();
-       }
+      toast.success("Product created!");
+      if (result.data.redirect) {
+        router.push(result.data.redirect);
+        router.refresh();
+      }
     }
   };
 
@@ -85,20 +92,26 @@ export function AddProductForm({ categories }: { categories: any[], plan: string
 
           <div className="mt-6 pt-6 border-t border-border">
             <Label className="mb-4 block">Gallery Images (Optional)</Label>
-            {plan === 'free' && (
-                 <span className="text-[10px] bg-yellow-500/10 text-yellow-500 px-2 py-0.5 rounded border border-yellow-500/20">
-                   PRO Feature
-                 </span>
-               )}
-            {plan === 'pro' ? (
-               <MultiImageUpload value={gallery} onChange={setGallery} />
+            {plan === "free" && (
+              <span className="text-[10px] bg-yellow-500/10 text-yellow-500 px-2 py-0.5 rounded border border-yellow-500/20">
+                PRO Feature
+              </span>
+            )}
+            {plan === "pro" ? (
+              <MultiImageUpload value={gallery} onChange={setGallery} />
             ) : (
-               <div className="bg-secondary/10 border border-border rounded-lg p-6 text-center opacity-60">
-                  <p className="text-sm text-muted-foreground mb-2">Gallery images are available on the <strong>Pro Plan</strong>.</p>
-                  <Button variant="outline" size="sm" onClick={() => window.open('/billing', '_blank')}>
-                    Upgrade to Unlock
-                  </Button>
-               </div>
+              <div className="bg-secondary/10 border border-border rounded-lg p-6 text-center opacity-60">
+                <p className="text-sm text-muted-foreground mb-2">
+                  Gallery images are available on the <strong>Pro Plan</strong>.
+                </p>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => window.open("/billing", "_blank")}
+                >
+                  Upgrade to Unlock
+                </Button>
+              </div>
             )}
           </div>
         </CardContent>
@@ -114,7 +127,14 @@ export function AddProductForm({ categories }: { categories: any[], plan: string
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label>Price (₹)</Label>
-              <Input name="price" type="number" placeholder="999" required />
+              <Input
+                name="price"
+                type="number"
+                placeholder="999"
+                value={price}
+                onChange={(e) => setPrice(e.target.value)}
+                required
+              />
             </div>
             <div className="space-y-2">
               <Label>Original Price</Label>
@@ -124,6 +144,28 @@ export function AddProductForm({ categories }: { categories: any[], plan: string
 
           <div className="pt-4 border-t border-border">
             <VariantBuilder value={variants} onChange={setVariants} />
+          </div>
+
+          {variants.length === 0 && (
+            <div className="space-y-2">
+              <Label>Stock Quantity</Label>
+              <Input
+                name="stock"
+                type="number"
+                placeholder="10"
+                value={stock}
+                onChange={(e) => setStock(Number(e.target.value))}
+              />
+            </div>
+          )}
+
+          <div className="mt-4">
+            <SkuManager
+              variants={variants}
+              value={skus}
+              onChange={setSkus}
+              defaultPrice={Number(price) || 0}
+            />
           </div>
 
           <div className="space-y-2">
@@ -146,18 +188,13 @@ export function AddProductForm({ categories }: { categories: any[], plan: string
                 )}
               </SelectContent>
             </Select>
-            {categories.length === 0 && (
-              <p className="text-xs text-red-400">
-                You haven&apos;t created any categories yet. Go to the Categories page first.
-              </p>
-            )}
           </div>
 
           <div className="space-y-2">
             <Label>Description</Label>
             <Textarea name="description" placeholder="Details..." rows={4} />
           </div>
-          
+
           <div className="space-y-2">
             <Label>Promotion Labels</Label>
             <BadgeSelector value={badges} onChange={setBadges} />

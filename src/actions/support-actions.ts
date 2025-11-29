@@ -12,14 +12,16 @@ export async function createTicketAction(formData: FormData) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
+  if (!user) return { error: "Unauthorized" };
+
   // Get Shop ID
-  const { data: shop } = await supabase.from("shops").select("id").eq("owner_id", user?.id).single();
+  const { data: shop } = await supabase.from("shops").select("id").eq("owner_id", user.id).single();
   if (!shop) return { error: "Shop not found" };
 
   // Create Ticket
   const { data: ticket, error } = await supabase
     .from("support_tickets")
-    .insert({ shop_id: shop.id, subject, priority })
+    .insert({ shop_id: shop.id, subject, priority, status: 'open' })
     .select("id")
     .single();
 
@@ -28,33 +30,46 @@ export async function createTicketAction(formData: FormData) {
   // Add First Message
   await supabase.from("ticket_messages").insert({
     ticket_id: ticket.id,
-    sender_role: "seller",
+    sender_role: "owner", // Consistent role name
     message: message
   });
 
-  revalidatePath("/support");
+  revalidatePath("/dashboard/support");
   return { success: "Ticket created" };
 }
 
-// 2. SEND REPLY (Shared)
-export async function sendReplyAction(formData: FormData) {
+// 2. REPLY TO TICKET (Unified Function)
+// Note: Use this for BOTH Admin and Seller forms.
+export async function replyToTicketAction(formData: FormData) {
   const ticketId = formData.get("ticketId") as string;
   const message = formData.get("message") as string;
-  const role = formData.get("role") as string; // 'admin' or 'seller'
+  const role = formData.get("role") as string; // 'admin' or 'owner'
 
   const supabase = await createClient();
   
-  await supabase.from("ticket_messages").insert({
+  const { error } = await supabase.from("ticket_messages").insert({
     ticket_id: ticketId,
     sender_role: role,
     message: message
   });
 
-  // Update timestamp
-  await supabase.from("support_tickets").update({ updated_at: new Date() }).eq("id", ticketId);
+  if (error) return { error: error.message };
 
-  revalidatePath(`/support`);
-  revalidatePath(`/admin/support`);
+  // Update timestamp and status
+  await supabase
+    .from("support_tickets")
+    .update({ updated_at: new Date().toISOString() })
+    .eq("id", ticketId);
+
+  // 🔄 REVALIDATE EVERYTHING (To be safe)
+  // Admin Paths
+  revalidatePath("/admin/support");
+  revalidatePath(`/admin/support/${ticketId}`);
+  // User Dashboard Paths
+  revalidatePath("/dashboard/support");
+  revalidatePath(`/dashboard/support/${ticketId}`);
+
+  return { success: "Reply sent" };
 }
 
 // 3. UPDATE TICKET STATUS (Admin)
@@ -71,7 +86,11 @@ export async function updateTicketStatusAction(formData: FormData) {
 
   if (error) return { error: error.message };
 
-  revalidatePath(`/admin/support/${ticketId}`);
+  // Revalidate lists and details
   revalidatePath("/admin/support");
+  revalidatePath(`/admin/support/${ticketId}`);
+  revalidatePath("/dashboard/support");
+  revalidatePath(`/dashboard/support/${ticketId}`);
+  
   return { success: "Status updated" };
 }

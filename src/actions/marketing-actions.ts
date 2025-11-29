@@ -97,22 +97,42 @@ export async function submitLeadAction(formData: FormData) {
 export async function createUpsellAction(formData: FormData) {
   const triggerId = formData.get("triggerId") as string;
   const suggestedId = formData.get("suggestedId") as string;
+  const isReciprocal = formData.get("reciprocal") === "on";
 
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
   // Get Shop
-  const { data: shop } = await supabase.from("shops").select("id").eq("owner_id", user?.id).single();
+  const { data: shop } = await supabase
+    .from("shops")
+    .select("id")
+    .eq("owner_id", user?.id)
+    .single();
   if (!shop) return { error: "Shop not found" };
 
-  // Validate: Can&apos;t upsell the same product
-  if (triggerId === suggestedId) return { error: "Cannot suggest the same product" };
+  // Validate: Can't upsell the same product
+  if (triggerId === suggestedId)
+    return { error: "Cannot suggest the same product" };
 
-  const { error } = await supabase.from("upsells").insert({
-    shop_id: shop.id,
-    trigger_product_id: triggerId,
-    suggested_product_id: suggestedId
-  });
+  const payload = [
+    {
+      shop_id: shop.id,
+      trigger_product_id: triggerId,
+      suggested_product_id: suggestedId,
+    },
+  ];
+
+  if (isReciprocal) {
+    payload.push({
+      shop_id: shop.id,
+      trigger_product_id: suggestedId,
+      suggested_product_id: triggerId,
+    });
+  }
+
+  const { error } = await supabase.from("upsells").insert(payload);
 
   if (error) return { error: error.message };
 

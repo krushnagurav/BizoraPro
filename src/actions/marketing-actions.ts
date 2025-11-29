@@ -123,8 +123,6 @@ export async function deleteUpsellAction(formData: FormData) {
   revalidatePath("/marketing/upsells");
 }
 
-// ... existing imports
-
 // 7. UPDATE INSTAGRAM FEED (Seller)
 export async function updateInstagramFeedAction(formData: FormData) {
   const feedRaw = formData.get("feed") as string;
@@ -144,4 +142,24 @@ export async function updateInstagramFeedAction(formData: FormData) {
 
   revalidatePath("/marketing/instagram");
   return { success: "Instagram feed updated successfully" };
+}
+
+// 8. REPLY TO REVIEW
+export async function replyToReviewAction(formData: FormData) {
+  const id = formData.get("id") as string;
+  const reply = formData.get("reply") as string;
+
+  const supabase = await createClient();
+  
+  const { error } = await supabase
+    .from("product_reviews")
+    .update({ 
+      reply: reply,
+      replied_at: new Date().toISOString()
+    })
+    .eq("id", id);
+
+  if (error) return { error: error.message };
+  revalidatePath("/marketing/reviews");
+  return { success: "Reply posted successfully" };
 }

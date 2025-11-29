@@ -15,7 +15,7 @@ export function FeatureLock({
 }) {
   // If PRO, show the real feature
   // We treat 'undefined' as 'free' for safety
-  if (plan === 'pro') {
+  if (plan !== 'pro') {
     return <>{children}</>;
   }
 

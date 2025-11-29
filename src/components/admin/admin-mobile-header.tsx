@@ -97,7 +97,7 @@ export function AdminMobileHeader() {
                         variant="ghost"
                         className={cn(
                           "w-full justify-start text-sm font-normal h-10 mb-1",
-                          pathname === item.href 
+                          (pathname === item.href || pathname.startsWith(`${item.href}/`)) 
                             ? "bg-primary/20 text-primary font-bold" 
                             : "text-gray-400 hover:text-white hover:bg-white/5"
                         )}

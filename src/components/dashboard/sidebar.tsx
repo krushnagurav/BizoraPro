@@ -25,6 +25,7 @@ import {
   Instagram,
   BellRing,
   Globe,
+  CreditCard,
 } from "lucide-react";
 import { logoutAction } from "@/src/actions/auth-actions";
 
@@ -61,6 +62,7 @@ const navGroups = [
     label: "Settings",
     items: [
       { name: "Appearance", href: "/settings/appearance", icon: Settings },
+      { name: "Billing", href: "/billing", icon: CreditCard },
       { name: "Policies", href: "/settings/policies", icon: ShieldCheck },
       { name: "Profile", href: "/settings/profile", icon: User },
       { name: "Alerts", href: "/settings/notifications", icon: BellRing },
@@ -95,7 +97,7 @@ export function Sidebar() {
                     variant="ghost"
                     className={cn(
                       "w-full justify-start text-sm font-normal h-9",
-                      pathname === item.href
+                      (pathname === item.href || pathname.startsWith(`${item.href}/`))
                         ? "bg-secondary text-primary font-medium"
                         : "text-muted-foreground hover:text-foreground"
                     )}

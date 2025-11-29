@@ -60,12 +60,14 @@ export const createProductAction = authAction
       category_id: categoryId,
       description: parsedInput.description,
       image_url: parsedInput.imageUrl || "",
-      status: 'active',
+      status: parsedInput.status,
+      seo_title: parsedInput.seoTitle,
+      seo_description: parsedInput.seoDescription,
       variants: variantsData,
       gallery_images: galleryData,
       badges: badgesData,
-      product_skus: skusData, // <--- SAVE SKUs
-      stock_count: finalStock // <--- SAVE CALCULATED STOCK
+      product_skus: skusData,
+      stock_count: finalStock
     });
 
     if (error) throw new Error(error.message);
@@ -113,11 +115,14 @@ export const updateProductAction = authAction
       sale_price: parsedInput.salePrice,
       category_id: categoryId,
       description: parsedInput.description,
+      status: parsedInput.status,
+      seo_title: parsedInput.seoTitle,
+      seo_description: parsedInput.seoDescription,
       variants: variantsData,
       gallery_images: galleryData,
       badges: badgesData,
-      product_skus: skusData, // <--- SAVE SKUs
-      stock_count: finalStock // <--- SAVE CALCULATED STOCK
+      product_skus: skusData,
+      stock_count: finalStock
     };
 
     if (parsedInput.imageUrl) updates.image_url = parsedInput.imageUrl;
@@ -356,4 +361,35 @@ export async function importProductsAction(products: any[]) {
   return { 
     success: `Imported ${toInsert.length} products! (${skippedCount} skipped, ${newCategoriesCount} new categories)` 
   };
+}
+
+// ==========================================
+// 7. DUPLICATE PRODUCT
+// ==========================================
+export async function duplicateProductAction(formData: FormData) {
+  const id = formData.get("id") as string;
+  const supabase = await createClient();
+  
+  // 1. Fetch Original
+  const { data: original } = await supabase.from("products").select("*").eq("id", id).single();
+  if (!original) return { error: "Product not found" };
+
+  // 2. Create Copy Payload (Remove unique IDs)
+  // We append "(Copy)" to the name so user knows
+  const { id: _, created_at: __, ...rest } = original;
+  
+  const payload = {
+    ...rest,
+    name: `${original.name} (Copy)`,
+    status: 'draft', // Safety Net: Always draft first
+    stock_count: 0 // Reset stock for safety
+  };
+
+  // 3. Insert
+  const { error } = await supabase.from("products").insert(payload);
+
+  if (error) return { error: error.message };
+
+  revalidatePath("/products");
+  return { success: "Product duplicated!" };
 }

@@ -1,10 +1,11 @@
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
@@ -16,34 +17,45 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { deleteProductAction } from "@/src/actions/product-actions";
+import {
+  deleteProductAction,
+  duplicateProductAction,
+} from "@/src/actions/product-actions";
+import { ProductFilters } from "@/src/components/dashboard/products/product-filters"; // Import Filters
 import { getProducts } from "@/src/data/products";
 import { createClient } from "@/src/lib/supabase/server";
 import {
-  Badge,
   ChevronLeft,
   ChevronRight,
+  Copy,
   FileSpreadsheet,
+  ImageIcon,
   MoreHorizontal,
   Pencil,
   Plus,
   Search,
   Trash2,
 } from "lucide-react";
+import Image from "next/image"; // Use Next Image
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
 export default async function ProductsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ page?: string; search?: string }>;
+  searchParams: Promise<{
+    page?: string;
+    search?: string;
+    category?: string;
+    status?: string;
+  }>;
 }) {
-  // 1. Parse URL Params
   const params = await searchParams;
   const currentPage = Number(params.page) || 1;
   const searchQuery = params.search || "";
+  const categoryId = params.category || "all";
+  const status = params.status || "all";
 
-  // 2. Auth Check
   const supabase = await createClient();
   const {
     data: { user },
@@ -57,9 +69,21 @@ export default async function ProductsPage({
     .single();
   if (!shop) redirect("/onboarding");
 
-  // 3. Fetch Data via DAL
-const { data: products, metadata } = await getProducts(shop.id, currentPage, searchQuery);
-console.log("products:", products);
+  // Fetch Categories for Filter
+  const { data: categories } = await supabase
+    .from("categories")
+    .select("id, name")
+    .eq("shop_id", shop.id);
+
+  // Fetch Data via DAL (Updated)
+  const { data: products, metadata } = await getProducts(
+    shop.id,
+    currentPage,
+    searchQuery,
+    categoryId,
+    status
+  );
+
   return (
     <div className="p-8 space-y-6">
       {/* Header */}
@@ -67,7 +91,7 @@ console.log("products:", products);
         <div>
           <h1 className="text-3xl font-bold text-primary">Products</h1>
           <p className="text-muted-foreground">
-            Manage your inventory ({metadata.totalItems} items)
+            Manage inventory ({metadata.totalItems})
           </p>
         </div>
         <div className="flex gap-2">
@@ -84,18 +108,29 @@ console.log("products:", products);
         </div>
       </div>
 
-      {/* Search Bar */}
-      <div className="relative w-full max-w-sm">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-        {/* Server-Side Search Form */}
-        <form action="/products" method="GET">
-          <Input
-            name="search"
-            placeholder="Search products..."
-            className="pl-9 bg-card"
-            defaultValue={searchQuery}
-          />
-        </form>
+      {/* Search & Filters Toolbar */}
+      <div className="flex flex-col sm:flex-row gap-4">
+        <div className="relative flex-1 max-w-sm">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <form action="/products" method="GET">
+            <Input
+              name="search"
+              placeholder="Search products..."
+              className="pl-9 bg-card"
+              defaultValue={searchQuery}
+            />
+            {/* Preserve filters when searching */}
+            {categoryId !== "all" && (
+              <input type="hidden" name="category" value={categoryId} />
+            )}
+            {status !== "all" && (
+              <input type="hidden" name="status" value={status} />
+            )}
+          </form>
+        </div>
+
+        {/* Client Filter Component */}
+        <ProductFilters categories={categories || []} />
       </div>
 
       {/* Table */}
@@ -104,12 +139,12 @@ console.log("products:", products);
           <Table>
             <TableHeader>
               <TableRow className="hover:bg-transparent border-border">
-                <TableHead className="w-[80px]">Image</TableHead>
+                <TableHead className="w-[60px]">Image</TableHead>
                 <TableHead>Name</TableHead>
-                <TableHead>Price</TableHead>
                 <TableHead>Category</TableHead>
-                <TableHead>Status</TableHead>
+                <TableHead>Price</TableHead>
                 <TableHead>Stock</TableHead>
+                <TableHead>Status</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
@@ -117,12 +152,10 @@ console.log("products:", products);
               {products.length === 0 ? (
                 <TableRow>
                   <TableCell
-                    colSpan={5}
+                    colSpan={7}
                     className="h-32 text-center text-muted-foreground"
                   >
-                    {searchQuery
-                      ? `No matches for "${searchQuery}"`
-                      : "No products yet."}
+                    No products found.
                   </TableCell>
                 </TableRow>
               ) : (
@@ -132,31 +165,36 @@ console.log("products:", products);
                     className="border-border hover:bg-secondary/10"
                   >
                     <TableCell>
-                      <Avatar className="h-10 w-10 rounded-md border border-border">
-                        <AvatarImage
-                          src={product.image_url}
-                          className="object-cover"
-                        />
-                        <AvatarFallback>IMG</AvatarFallback>
-                      </Avatar>
+                      <div className="relative h-10 w-10 rounded-md overflow-hidden border border-border bg-secondary flex items-center justify-center">
+                        {product.image_url ? (
+                          <Image
+                            src={product.image_url}
+                            alt={product.name}
+                            fill
+                            className="object-cover"
+                            sizes="40px"
+                          />
+                        ) : (
+                          <ImageIcon className="h-4 w-4 text-muted-foreground" />
+                        )}
+                      </div>
                     </TableCell>
                     <TableCell className="font-medium">
                       {product.name}
                     </TableCell>
+                    <TableCell>
+                      {product.categories?.name || (
+                        <span className="text-muted-foreground text-xs">
+                          --
+                        </span>
+                      )}
+                    </TableCell>
                     <TableCell>₹{product.price}</TableCell>
                     <TableCell>
-                      {product.categories?.name || "Uncategorized"}
-                    </TableCell>
-                    <TableCell>
-                      <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-500/10 text-green-500 capitalize">
-                        {product.status}
-                      </span>
-                    </TableCell>
-                    <TableCell>
-                      {product.variants && product.variants.length > 0 ? (
-                        <span className="text-xs">
-                          {product.stock_count} (Total)
-                        </span>
+                      {product.product_skus?.length ? (
+                        <Badge variant="outline" className="text-[10px]">
+                          Variants
+                        </Badge>
                       ) : (
                         <span
                           className={
@@ -168,6 +206,18 @@ console.log("products:", products);
                           {product.stock_count}
                         </span>
                       )}
+                    </TableCell>
+                    <TableCell>
+                      <Badge
+                        variant="outline"
+                        className={`capitalize ${
+                          product.status === "active"
+                            ? "text-green-500 border-green-500/20"
+                            : "text-yellow-500 border-yellow-500/20"
+                        }`}
+                      >
+                        {product.status}
+                      </Badge>
                     </TableCell>
                     <TableCell className="text-right">
                       <DropdownMenu>
@@ -182,6 +232,18 @@ console.log("products:", products);
                               <Pencil className="mr-2 h-4 w-4" /> Edit
                             </DropdownMenuItem>
                           </Link>
+
+                          <form action={duplicateProductAction}>
+                            <input type="hidden" name="id" value={product.id} />
+                            <button className="w-full">
+                              <DropdownMenuItem>
+                                <Copy className="mr-2 h-4 w-4" /> Duplicate
+                              </DropdownMenuItem>
+                            </button>
+                          </form>
+
+                          <DropdownMenuSeparator />
+
                           <form action={deleteProductAction}>
                             <input type="hidden" name="id" value={product.id} />
                             <button className="w-full">
@@ -201,11 +263,13 @@ console.log("products:", products);
         </CardContent>
       </Card>
 
-      {/* Pagination Controls */}
+      {/* Pagination */}
       {metadata.totalPages > 1 && (
         <div className="flex items-center justify-end gap-2">
           <Link
-            href={`/products?page=${currentPage - 1}&search=${searchQuery}`}
+            href={`/products?page=${
+              currentPage - 1
+            }&search=${searchQuery}&category=${categoryId}&status=${status}`}
           >
             <Button
               variant="outline"
@@ -219,7 +283,9 @@ console.log("products:", products);
             Page {metadata.page} of {metadata.totalPages}
           </span>
           <Link
-            href={`/products?page=${currentPage + 1}&search=${searchQuery}`}
+            href={`/products?page=${
+              currentPage + 1
+            }&search=${searchQuery}&category=${categoryId}&status=${status}`}
           >
             <Button
               variant="outline"

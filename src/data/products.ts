@@ -1,11 +1,14 @@
 import { createClient } from "@/src/lib/supabase/server";
+import { Product } from "@/src/types/custom";
 
 export const ITEMS_PER_PAGE = 10;
 
 export async function getProducts(
   shopId: string,
   page: number = 1,
-  query: string = ""
+  query: string = "",
+  categoryId: string = "all",
+  status: string = "all"     
 ) {
   const supabase = await createClient();
 
@@ -23,6 +26,14 @@ export async function getProducts(
 
     if (query) {
       dbQuery = dbQuery.ilike("name", `%${query}%`);
+    }
+    
+    if (categoryId && categoryId !== "all") {
+      dbQuery = dbQuery.eq("category_id", categoryId);
+    }
+    
+    if (status && status !== "all") {
+      dbQuery = dbQuery.eq("status", status);
     }
 
     const { data, count, error } = await dbQuery;

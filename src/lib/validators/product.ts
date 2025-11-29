@@ -9,10 +9,13 @@ export const productSchema = z.object({
   category: z.string().optional(),
   description: z.string().optional(),
   imageUrl: z.string().optional().or(z.literal("")).nullable(),
-  variants: z.string().optional(), 
-  galleryImages: z.string().optional(), 
+  variants: z.string().optional(),
+  galleryImages: z.string().optional(),
   badges: z.string().optional(),
   productSkus: z.string().optional(),
+  seoTitle: z.string().optional(),
+  seoDescription: z.string().optional(),
+  status: z.enum(["active", "draft", "archived"]).default("active"),
 });
 
 // Derived Schemas

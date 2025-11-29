@@ -15,9 +15,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
-import { Loader2 } from "lucide-react";
+import { Loader2, Save, FileText } from "lucide-react";
 import { VariantBuilder } from "./variant-builder";
 import { MultiImageUpload } from "../multi-image-upload";
 import { BadgeSelector } from "./badge-selector";
@@ -35,180 +35,264 @@ export function AddProductForm({
 
   // Client State
   const [imageUrl, setImageUrl] = useState("");
-  const [price, setPrice] = useState(""); // 👈 Added State for Price
+  const [price, setPrice] = useState("");
   const [variants, setVariants] = useState<any[]>([]);
   const [gallery, setGallery] = useState<string[]>([]);
   const [badges, setBadges] = useState<string[]>([]);
   const [skus, setSkus] = useState<any[]>([]);
   const [stock, setStock] = useState(0);
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+  // 👇 Handle Submit with specific Status
+  const handleSave = async (status: "active" | "draft") => {
     setLoading(true);
 
-    const formData = new FormData(event.currentTarget);
-
-    const rawData = {
-      name: formData.get("name") as string,
-      price: Number(formData.get("price")),
-      salePrice: formData.get("salePrice")
-        ? Number(formData.get("salePrice"))
-        : null,
-      category: formData.get("category") as string,
-      description: formData.get("description") as string,
-
-      imageUrl: imageUrl,
-      variants: JSON.stringify(variants),
-      productSkus: JSON.stringify(skus),
-      galleryImages: JSON.stringify(gallery),
-      badges: JSON.stringify(badges),
-      stock: stock.toString(),
-    };
-
-    const result = await createProductAction(rawData);
-
-    setLoading(false);
-
-    if (result?.serverError) {
-      toast.error("Server Error: " + result.serverError);
-    } else if (result?.validationErrors) {
-      const firstError = Object.values(result.validationErrors)[0];
-      toast.error(firstError ? String(firstError) : "Validation Failed");
-    } else if (result?.data?.success) {
-      toast.success("Product created!");
-      if (result.data.redirect) {
-        router.push(result.data.redirect);
-        router.refresh();
-      }
-    }
+    // We need to grab values from the DOM form elements manually or use a ref,
+    // BUT since we have controlled components for some complex parts, we can mix them.
+    // Best way for Button Click handlers without wrapping in <form onSubmit>:
+    // Use new FormData(formRef.current) if we had a ref.
+    // OR simpler: Just stick to form submission and use a hidden input for status.
+    // Let's use the Hidden Input trick.
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-8">
-      <Card className="bg-card border-border/50">
-        <CardContent className="pt-6">
-          <Label className="mb-4 block">Main Image</Label>
-          <ImageUpload value={imageUrl} onChange={setImageUrl} />
+    <form
+      action={async (formData) => {
+        setLoading(true);
+        // Get status from the clicked button
+        // We will handle this by appending status manually in the action call below
+        // ACTUALLY: Better pattern ->
+        // We extract data here.
 
-          <div className="mt-6 pt-6 border-t border-border">
-            <Label className="mb-4 block">Gallery Images (Optional)</Label>
-            {plan === "free" && (
-              <span className="text-[10px] bg-yellow-500/10 text-yellow-500 px-2 py-0.5 rounded border border-yellow-500/20">
-                PRO Feature
-              </span>
-            )}
-            {plan === "pro" ? (
-              <MultiImageUpload value={gallery} onChange={setGallery} />
-            ) : (
-              <div className="bg-secondary/10 border border-border rounded-lg p-6 text-center opacity-60">
-                <p className="text-sm text-muted-foreground mb-2">
-                  Gallery images are available on the <strong>Pro Plan</strong>.
-                </p>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => window.open("/billing", "_blank")}
-                >
-                  Upgrade to Unlock
-                </Button>
+        const status = formData.get("status") as "active" | "draft"; // Gets value from clicked button
+
+        const rawData = {
+          name: formData.get("name") as string,
+          price: Number(formData.get("price")),
+          salePrice: formData.get("salePrice")
+            ? Number(formData.get("salePrice"))
+            : null,
+          category: formData.get("category") as string,
+          description: formData.get("description") as string,
+
+          // NEW SEO Fields
+          seoTitle: formData.get("seoTitle") as string,
+          seoDescription: formData.get("seoDescription") as string,
+          status: status, // Pass status
+
+          imageUrl: imageUrl,
+          variants: JSON.stringify(variants),
+          productSkus: JSON.stringify(skus),
+          galleryImages: JSON.stringify(gallery),
+          badges: JSON.stringify(badges),
+          stock: stock.toString(),
+        };
+
+        const result = await createProductAction(rawData);
+        setLoading(false);
+
+        if (result?.serverError) {
+          toast.error(result.serverError);
+        } else if (result?.validationErrors) {
+          const firstError = Object.values(result.validationErrors)[0];
+          toast.error(firstError ? String(firstError) : "Validation Failed");
+        } else if (result?.data?.success) {
+          toast.success(
+            status === "draft" ? "Draft Saved!" : "Product Published!"
+          );
+          if (result.data.redirect) {
+            router.push(result.data.redirect);
+            router.refresh();
+          }
+        }
+      }}
+    >
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* LEFT COLUMN: MAIN INFO */}
+        <div className="lg:col-span-2 space-y-8">
+          <Card className="bg-card border-border/50">
+            <CardContent className="pt-6 space-y-4">
+              <div className="space-y-2">
+                <Label>Product Name</Label>
+                <Input
+                  name="name"
+                  placeholder="e.g. Red Cotton Saree"
+                  required
+                />
               </div>
-            )}
-          </div>
-        </CardContent>
-      </Card>
+              <div className="space-y-2">
+                <Label>Description</Label>
+                <Textarea
+                  name="description"
+                  placeholder="Product details..."
+                  rows={4}
+                />
+              </div>
+            </CardContent>
+          </Card>
 
-      <Card className="bg-card border-border/50">
-        <CardContent className="pt-6 space-y-4">
-          <div className="space-y-2">
-            <Label>Product Name</Label>
-            <Input name="name" placeholder="e.g. Red Cotton Saree" required />
-          </div>
+          <Card className="bg-card border-border/50">
+            <CardHeader>
+              <CardTitle>Media</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Label className="mb-4 block">Main Image</Label>
+              <ImageUpload value={imageUrl} onChange={setImageUrl} />
 
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label>Price (₹)</Label>
-              <Input
-                name="price"
-                type="number"
-                placeholder="999"
-                value={price}
-                onChange={(e) => setPrice(e.target.value)}
-                required
-              />
-            </div>
-            <div className="space-y-2">
-              <Label>Original Price</Label>
-              <Input name="salePrice" type="number" placeholder="1299" />
-            </div>
-          </div>
-
-          <div className="pt-4 border-t border-border">
-            <VariantBuilder value={variants} onChange={setVariants} />
-          </div>
-
-          {variants.length === 0 && (
-            <div className="space-y-2">
-              <Label>Stock Quantity</Label>
-              <Input
-                name="stock"
-                type="number"
-                placeholder="10"
-                value={stock}
-                onChange={(e) => setStock(Number(e.target.value))}
-              />
-            </div>
-          )}
-
-          <div className="mt-4">
-            <SkuManager
-              variants={variants}
-              value={skus}
-              onChange={setSkus}
-              defaultPrice={Number(price) || 0}
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label>Category</Label>
-            <Select name="category">
-              <SelectTrigger>
-                <SelectValue placeholder="Select Category" />
-              </SelectTrigger>
-              <SelectContent>
-                {categories.length > 0 ? (
-                  categories.map((cat) => (
-                    <SelectItem key={cat.id} value={cat.id}>
-                      {cat.name}
-                    </SelectItem>
-                  ))
+              <div className="mt-6 pt-6 border-t border-border">
+                <Label className="mb-4 block">Gallery Images (Pro)</Label>
+                {plan === "pro" ? (
+                  <MultiImageUpload value={gallery} onChange={setGallery} />
                 ) : (
-                  <SelectItem value="none" disabled>
-                    No categories created
-                  </SelectItem>
+                  <div className="text-xs text-muted-foreground p-4 bg-secondary/10 rounded">
+                    Upgrade to add more images.
+                  </div>
                 )}
-              </SelectContent>
-            </Select>
-          </div>
+              </div>
+            </CardContent>
+          </Card>
 
-          <div className="space-y-2">
-            <Label>Description</Label>
-            <Textarea name="description" placeholder="Details..." rows={4} />
-          </div>
+          <Card className="bg-card border-border/50">
+            <CardHeader>
+              <CardTitle>Inventory & Variants</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label>Price (₹)</Label>
+                  <Input
+                    name="price"
+                    type="number"
+                    value={price}
+                    onChange={(e) => setPrice(e.target.value)}
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>Original Price</Label>
+                  <Input name="salePrice" type="number" />
+                </div>
+              </div>
 
-          <div className="space-y-2">
-            <Label>Promotion Labels</Label>
-            <BadgeSelector value={badges} onChange={setBadges} />
-          </div>
-        </CardContent>
-      </Card>
+              <VariantBuilder value={variants} onChange={setVariants} />
 
-      <div className="flex justify-end gap-4">
-        <Button type="button" variant="outline" onClick={() => router.back()}>
-          Cancel
-        </Button>
-        <Button type="submit" className="font-bold" disabled={loading}>
-          {loading ? <Loader2 className="animate-spin mr-2" /> : "Save Product"}
-        </Button>
+              <div className="mt-4">
+                <SkuManager
+                  variants={variants}
+                  value={skus}
+                  onChange={setSkus}
+                  defaultPrice={Number(price) || 0}
+                />
+              </div>
+
+              {variants.length === 0 && (
+                <div className="space-y-2">
+                  <Label>Stock Quantity</Label>
+                  <Input
+                    name="stock"
+                    type="number"
+                    value={stock}
+                    onChange={(e) => setStock(Number(e.target.value))}
+                  />
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* 👇 NEW: SEO SECTION 👇 */}
+          <Card className="bg-card border-border/50">
+            <CardHeader>
+              <CardTitle>Search Engine Optimization (SEO)</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <Label>SEO Title</Label>
+                <Input name="seoTitle" placeholder="Product Name - Shop Name" />
+                <p className="text-xs text-muted-foreground">
+                  Leave blank to use default.
+                </p>
+              </div>
+              <div className="space-y-2">
+                <Label>SEO Description</Label>
+                <Textarea
+                  name="seoDescription"
+                  placeholder="Short description for Google..."
+                  rows={2}
+                />
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* RIGHT COLUMN: SIDEBAR */}
+        <div className="space-y-6">
+          <Card className="bg-card border-border/50">
+            <CardHeader>
+              <CardTitle>Organization</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="space-y-2">
+                <Label>Category</Label>
+                <Select name="category">
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {categories.length > 0 ? (
+                      categories.map((c) => (
+                        <SelectItem key={c.id} value={c.id}>
+                          {c.name}
+                        </SelectItem>
+                      ))
+                    ) : (
+                      <SelectItem value="none" disabled>
+                        No categories
+                      </SelectItem>
+                    )}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label>Badges</Label>
+                <BadgeSelector value={badges} onChange={setBadges} />
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* 👇 ACTIONS CARD 👇 */}
+          <Card className="bg-card border-border/50">
+            <CardHeader>
+              <CardTitle>Publish</CardTitle>
+            </CardHeader>
+            <CardContent className="flex flex-col gap-3">
+              <Button
+                type="submit"
+                name="status"
+                value="active"
+                className="w-full font-bold"
+                disabled={loading}
+              >
+                {loading ? (
+                  <Loader2 className="animate-spin mr-2" />
+                ) : (
+                  <>
+                    <Save className="w-4 h-4 mr-2" /> Save & Publish
+                  </>
+                )}
+              </Button>
+
+              <Button
+                type="submit"
+                name="status"
+                value="draft"
+                variant="outline"
+                className="w-full"
+                disabled={loading}
+              >
+                <FileText className="w-4 h-4 mr-2" /> Save as Draft
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </form>
   );

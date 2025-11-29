@@ -70,6 +70,7 @@ const navGroups = [
   {
     label: "Settings",
     items: [
+      {name: "Store Settings", href: "/settings", icon: Store },
       { name: "Appearance", href: "/settings/appearance", icon: Settings },
       { name: "Billing", href: "/billing", icon: CreditCard },
       { name: "Policies", href: "/settings/policies", icon: ShieldCheck },

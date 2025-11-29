@@ -1,30 +1,30 @@
 import { createClient } from "@/src/lib/supabase/server";
-import { Card, CardContent } from "@/components/ui/card";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Download, FileText } from "lucide-react";
 import { PlanManager } from "@/src/components/dashboard/billing/plan-manager";
+import { InvoiceList } from "@/src/components/dashboard/billing/invoice-list";
+import { CreditCard, Receipt, AlertCircle } from "lucide-react";
+import { redirect } from "next/navigation";
 
 export default async function BillingPage() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
+  
+  if (!user) redirect("/login");
 
-  // 1. Fetch Shop Info
+  // 1. Fetch Shop & Plan
   const { data: shop } = await supabase
     .from("shops")
     .select("id, plan, product_limit")
-    .eq("owner_id", user!.id)
+    .eq("owner_id", user.id)
     .single();
 
-  // 2. Fetch Product Count
+  // 2. Fetch Product Usage
   const { count } = await supabase
     .from("products")
     .select("*", { count: 'exact', head: true })
     .eq("shop_id", shop?.id)
     .is("deleted_at", null);
 
-  // 3. Fetch Invoices (Payments)
+  // 3. Fetch Invoices (Payments Table)
   const { data: invoices } = await supabase
     .from("payments")
     .select("*")
@@ -32,72 +32,39 @@ export default async function BillingPage() {
     .order("created_at", { ascending: false });
 
   return (
-    <div className="p-8 max-w-5xl mx-auto space-y-10">
+    <div className="p-8 space-y-10 max-w-6xl mx-auto">
       <div>
-        <h1 className="text-3xl font-bold text-primary">Billing & Subscription</h1>
-        <p className="text-muted-foreground">Manage your plan and view invoices.</p>
+        <h1 className="text-3xl font-bold text-primary flex items-center gap-2">
+          <CreditCard className="h-8 w-8" /> Billing & Subscription
+        </h1>
+        <p className="text-muted-foreground">Manage your plan, payment methods, and invoices.</p>
       </div>
 
-      {/* UPGRADE SECTION */}
+      {/* PLAN MANAGER (Upgrade UI) */}
       <PlanManager 
         currentPlan={shop?.plan || 'free'} 
         productCount={count || 0}
         productLimit={shop?.product_limit || 10}
       />
 
-      {/* INVOICES SECTION */}
+      {/* INVOICE SECTION */}
       <div className="space-y-4">
-        <h2 className="text-xl font-bold flex items-center gap-2">
-          <FileText className="h-5 w-5" /> Invoice History
-        </h2>
-        
-        <Card className="bg-card border-border/50">
-          <CardContent className="p-0">
-            <Table>
-              <TableHeader>
-                <TableRow className="hover:bg-transparent border-border">
-                  <TableHead>Date</TableHead>
-                  <TableHead>Amount</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Method</TableHead>
-                  <TableHead className="text-right">Download</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {invoices?.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={5} className="h-24 text-center text-muted-foreground">
-                      No invoices found. You are on the Free plan.
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  invoices?.map((inv) => (
-                    <TableRow key={inv.id} className="border-border hover:bg-secondary/10">
-                      <TableCell className="text-muted-foreground">
-                        {new Date(inv.created_at).toLocaleDateString()}
-                      </TableCell>
-                      <TableCell className="font-bold">₹{inv.amount}</TableCell>
-                      <TableCell>
-                        <Badge variant="outline" className={
-                          inv.status === 'succeeded' ? "text-green-500 border-green-500/50" : "text-red-500 border-red-500/50"
-                        }>
-                          {inv.status === 'succeeded' ? 'Paid' : inv.status}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="capitalize text-xs">{inv.payment_method}</TableCell>
-                      <TableCell className="text-right">
-                        <Button size="sm" variant="ghost" className="h-8 w-8 p-0">
-                          <Download className="h-4 w-4" />
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </Table>
-          </CardContent>
-        </Card>
+         <h2 className="text-xl font-bold flex items-center gap-2">
+            <Receipt className="h-5 w-5 text-primary" /> Billing History
+         </h2>
+         
+         <InvoiceList invoices={invoices || []} />
       </div>
+      
+      {/* HELPER TEXT */}
+      <div className="flex gap-3 items-start p-4 bg-blue-500/10 border border-blue-500/20 rounded-xl text-sm text-muted-foreground">
+         <AlertCircle className="h-5 w-5 text-blue-500 shrink-0" />
+         <div>
+            <p className="text-white font-bold mb-1">Need help with billing?</p>
+            <p>If you have questions about your invoice or want to cancel your subscription, please contact <span className="text-primary underline cursor-pointer">Support</span>.</p>
+         </div>
+      </div>
+
     </div>
   );
 }

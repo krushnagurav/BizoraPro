@@ -24,44 +24,85 @@ import {
   Facebook,
   Instagram,
   Lightbulb,
+  Loader2,
   MessageCircle,
   Printer,
   Share2,
-  TrendingUp,
+  TrendingUp
 } from "lucide-react";
 import Link from "next/link";
 import { QRCodeSVG } from "qrcode.react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
+// Define Type
+interface Shop {
+  id: string;
+  slug: string;
+  name: string;
+  owner_id: string;
+}
+
 export default function ShareStorePage() {
-  const [shop, setShop] = useState<any>(null);
+  const [shop, setShop] = useState<Shop | null>(null);
   const [shopUrl, setShopUrl] = useState("");
   const [qrFormat, setQrFormat] = useState("png");
   const [loading, setLoading] = useState(true);
 
-  // Mock Analytics for Preview (Replace with real data fetch if available)
-  const stats = { views: 42, clicks: 9 };
+  // Real Stats State
+  const [stats, setStats] = useState({ views: 0, clicks: 0 });
 
   useEffect(() => {
-    const fetchShop = async () => {
+    const fetchData = async () => {
       const supabase = createClient();
       const {
         data: { user },
       } = await supabase.auth.getUser();
+
       if (user) {
-        const { data } = await supabase
+        // 1. Fetch Shop
+        const { data: shopData } = await supabase
           .from("shops")
           .select("*")
           .eq("owner_id", user.id)
           .single();
-        setShop(data);
-        const baseUrl = window.location.origin;
-        setShopUrl(`${baseUrl}/${data.slug}`);
+
+        if (shopData) {
+          setShop(shopData);
+          if (typeof window !== "undefined") {
+            const baseUrl = window.location.origin;
+            setShopUrl(`${baseUrl}/${shopData.slug}`);
+          }
+
+          // 2. Fetch Real Analytics (Last 7 Days)
+          const sevenDaysAgo = new Date();
+          sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+          const isoDate = sevenDaysAgo.toISOString();
+
+          const [viewsResult, clicksResult] = await Promise.all([
+            supabase
+              .from("analytics")
+              .select("*", { count: "exact", head: true })
+              .eq("shop_id", shopData.id)
+              .eq("event_type", "view_shop")
+              .gte("created_at", isoDate),
+            supabase
+              .from("analytics")
+              .select("*", { count: "exact", head: true })
+              .eq("shop_id", shopData.id)
+              .eq("event_type", "click_whatsapp")
+              .gte("created_at", isoDate),
+          ]);
+
+          setStats({
+            views: viewsResult.count || 0,
+            clicks: clicksResult.count || 0,
+          });
+        }
       }
       setLoading(false);
     };
-    fetchShop();
+    fetchData();
   }, []);
 
   const handleCopy = () => {
@@ -71,39 +112,52 @@ export default function ShareStorePage() {
 
   const handleDownloadQR = () => {
     const svg = document.getElementById("shop-qr");
-    if (!svg) return;
+    if (!svg || !shop) return;
 
     const svgData = new XMLSerializer().serializeToString(svg);
     const canvas = document.createElement("canvas");
     const ctx = canvas.getContext("2d");
     const img = new Image();
 
-    // Set dimensions based on format
-    const width = qrFormat === "story" ? 1080 : 1000;
-    const height = qrFormat === "story" ? 1920 : 1000;
+    // Dimensions
+    const width = qrFormat === "story" ? 1080 : 1200;
+    const height = qrFormat === "story" ? 1920 : 1400; // Extra height for branding
 
     img.onload = () => {
       canvas.width = width;
       canvas.height = height;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) return;
 
-      // For Story, add background
-      if (qrFormat === "story") {
-        ctx!.fillStyle = "#000000";
-        ctx!.fillRect(0, 0, width, height);
-        ctx!.drawImage(img, (width - 500) / 2, (height - 500) / 2, 500, 500); // Center QR
-      } else {
-        ctx?.drawImage(img, 0, 0);
-      }
+      // Background
+      ctx.fillStyle = qrFormat === "story" ? "#000000" : "#FFFFFF";
+      ctx.fillRect(0, 0, width, height);
+
+      // Draw QR
+      const qrSize = qrFormat === "story" ? 600 : 800;
+      const x = (width - qrSize) / 2;
+      const y = (height - qrSize) / 2 - 100; // Move up slightly
+      ctx.drawImage(img, x, y, qrSize, qrSize);
+
+      // Add Branding Text
+      ctx.font = "bold 30px sans-serif";
+      ctx.fillStyle = qrFormat === "story" ? "#888888" : "#555555";
+      ctx.textAlign = "center";
+      ctx.fillText(`Scan to visit ${shop.name}`, width / 2, y + qrSize + 60);
+
+      ctx.font = "20px sans-serif";
+      ctx.fillStyle = qrFormat === "story" ? "#444444" : "#AAAAAA";
+      ctx.fillText("Powered by BizoraPro", width / 2, height - 50);
 
       const pngFile = canvas.toDataURL("image/png");
       const downloadLink = document.createElement("a");
       downloadLink.download = `${shop.slug}-qrcode-${qrFormat}.png`;
       downloadLink.href = pngFile;
       downloadLink.click();
+      toast.success(`QR Code (${qrFormat}) downloaded!`);
     };
 
     img.src = "data:image/svg+xml;base64," + btoa(svgData);
-    toast.success(`QR Code (${qrFormat}) downloaded!`);
   };
 
   const handleShare = (platform: string) => {
@@ -127,7 +181,12 @@ export default function ShareStorePage() {
     window.open(url, "_blank");
   };
 
-  if (loading) return <div className="p-8">Loading...</div>;
+  if (loading)
+    return (
+      <div className="p-8 flex justify-center">
+        <Loader2 className="animate-spin" />
+      </div>
+    );
   if (!shop) return <div className="p-8">Shop not found</div>;
 
   return (
@@ -141,7 +200,6 @@ export default function ShareStorePage() {
         </p>
       </div>
 
-      {/* 💡 SMART TIP BANNER (Pro Tip) */}
       <div className="bg-yellow-500/10 border border-yellow-500/20 p-4 rounded-xl flex gap-3 items-start">
         <Lightbulb className="h-5 w-5 text-yellow-500 mt-0.5 shrink-0" />
         <div>
@@ -152,8 +210,8 @@ export default function ShareStorePage() {
       </div>
 
       <div className="grid md:grid-cols-2 gap-8">
-        {/* LEFT: Link Sharing & Socials */}
         <div className="space-y-6">
+          {/* Link Card */}
           <Card className="bg-card border-border/50">
             <CardHeader>
               <CardTitle>Your Shop Link</CardTitle>
@@ -162,7 +220,6 @@ export default function ShareStorePage() {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
-              {/* Link Box */}
               <div className="flex gap-2 bg-secondary/20 p-2 rounded-lg border border-border/50">
                 <div className="flex-1 px-3 py-2 font-mono text-sm truncate text-primary">
                   {shopUrl}
@@ -177,7 +234,6 @@ export default function ShareStorePage() {
                 </Button>
               </div>
 
-              {/* Share Buttons */}
               <div className="space-y-2">
                 <h4 className="text-sm font-medium text-muted-foreground">
                   Share Directly
@@ -191,7 +247,7 @@ export default function ShareStorePage() {
                     <div className="p-2 bg-green-500/20 rounded-full">
                       <MessageCircle className="w-5 h-5" />
                     </div>
-                    <span className="text-xs">Share on WhatsApp</span>
+                    <span className="text-xs">WhatsApp</span>
                   </Button>
                   <Button
                     variant="outline"
@@ -201,7 +257,7 @@ export default function ShareStorePage() {
                     <div className="p-2 bg-pink-500/20 rounded-full">
                       <Instagram className="w-5 h-5" />
                     </div>
-                    <span className="text-xs">Share on Instagram</span>
+                    <span className="text-xs">Instagram</span>
                   </Button>
                   <Button
                     variant="outline"
@@ -211,7 +267,7 @@ export default function ShareStorePage() {
                     <div className="p-2 bg-blue-500/20 rounded-full">
                       <Facebook className="w-5 h-5" />
                     </div>
-                    <span className="text-xs">Share on Facebook</span>
+                    <span className="text-xs">Facebook</span>
                   </Button>
                 </div>
               </div>
@@ -271,7 +327,7 @@ export default function ShareStorePage() {
             </CardContent>
           </Card>
 
-          {/* 3. MICRO ANALYTICS (Preview) */}
+          {/* Analytics Preview (Real Data) */}
           <div className="bg-secondary/10 border border-border/50 p-4 rounded-xl flex items-center justify-between">
             <div className="flex items-center gap-4">
               <div className="p-3 bg-secondary rounded-lg">
@@ -282,7 +338,12 @@ export default function ShareStorePage() {
                 <p className="text-lg font-bold">
                   <span className="text-white">{stats.views}</span>{" "}
                   <span className="text-sm font-normal text-muted-foreground">
-                    Link Views
+                    Views
+                  </span>
+                  <span className="mx-2 text-muted-foreground/30">|</span>
+                  <span className="text-white">{stats.clicks}</span>{" "}
+                  <span className="text-sm font-normal text-muted-foreground">
+                    Clicks
                   </span>
                 </p>
               </div>
@@ -291,7 +352,7 @@ export default function ShareStorePage() {
               href="/dashboard"
               className="text-sm font-medium text-[#E6B800] hover:underline flex items-center gap-1"
             >
-              View full analytics <ArrowRight className="w-3 h-3" />
+              Analytics <ArrowRight className="w-3 h-3" />
             </Link>
           </div>
         </div>
@@ -314,25 +375,14 @@ export default function ShareStorePage() {
                 />
               </div>
 
-              <div className="text-center space-y-2">
-                <p className="text-sm text-muted-foreground">
-                  Print this QR code for your shop board, packaging, menus,
-                  visiting card, etc.
-                </p>
-              </div>
-
-              {/* Format Selection */}
               <div className="w-full space-y-3">
                 <Select value={qrFormat} onValueChange={setQrFormat}>
                   <SelectTrigger>
                     <SelectValue placeholder="Format" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="png">PNG Format</SelectItem>
-                    <SelectItem value="story">
-                      Instagram Story (Portrait)
-                    </SelectItem>
-                    <SelectItem value="sticker">Sticker Sheet</SelectItem>
+                    <SelectItem value="png">PNG (Print)</SelectItem>
+                    <SelectItem value="story">Instagram Story</SelectItem>
                   </SelectContent>
                 </Select>
 
@@ -351,9 +401,6 @@ export default function ShareStorePage() {
                 >
                   <ExternalLink className="h-4 w-4" /> View My Shop
                 </Button>
-                <p className="text-center text-[10px] text-muted-foreground mt-2">
-                  See how customers view your shop
-                </p>
               </Link>
             </CardContent>
           </Card>

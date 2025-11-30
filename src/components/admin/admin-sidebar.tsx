@@ -84,7 +84,7 @@ export function AdminSidebar() {
                     variant="ghost"
                     className={cn(
                       "w-full justify-start text-sm font-normal h-9",
-                      (pathname === item.href || pathname.startsWith(`${item.href}/`)) 
+                      pathname === item.href 
                         ? "bg-primary/20 text-primary font-bold" 
                         : "text-gray-400 hover:text-white hover:bg-white/5"
                     )}

@@ -10,6 +10,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { OrderRowActions } from "@/src/components/dashboard/orders/order-row-actions";
 import { createClient } from "@/src/lib/supabase/server";
 import { Eye, Ghost, Search } from "lucide-react";
 import Link from "next/link";
@@ -168,12 +169,15 @@ export default async function OrdersPage({
                         {order.status}
                       </Badge>
                     </TableCell>
-                    <TableCell className="text-right">
-                      <Link href={`/orders/${order.id}`}>
-                        <Button size="sm" variant="ghost">
-                          <Eye className="h-4 w-4" />
-                        </Button>
-                      </Link>
+                    <TableCell className="text-right" colSpan={2}>
+                      <div className="flex justify-end items-center gap-2">
+                        <OrderRowActions order={order} />
+                        <Link href={`/orders/${order.id}`}>
+                          <Button size="icon" variant="ghost">
+                            <Eye className="h-4 w-4" />
+                          </Button>
+                        </Link>
+                      </div>
                     </TableCell>
                   </TableRow>
                 ))

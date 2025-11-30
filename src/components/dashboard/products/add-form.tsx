@@ -22,6 +22,12 @@ import { VariantBuilder } from "./variant-builder";
 import { MultiImageUpload } from "../multi-image-upload";
 import { BadgeSelector } from "./badge-selector";
 import { SkuManager } from "./sku-manager";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 
 export function AddProductForm({
   categories,
@@ -198,28 +204,36 @@ export function AddProductForm({
             </CardContent>
           </Card>
 
-          {/* 👇 NEW: SEO SECTION 👇 */}
-          <Card className="bg-card border-border/50">
-            <CardHeader>
-              <CardTitle>Search Engine Optimization (SEO)</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label>SEO Title</Label>
-                <Input name="seoTitle" placeholder="Product Name - Shop Name" />
-                <p className="text-xs text-muted-foreground">
-                  Leave blank to use default.
-                </p>
-              </div>
-              <div className="space-y-2">
-                <Label>SEO Description</Label>
-                <Textarea
-                  name="seoDescription"
-                  placeholder="Short description for Google..."
-                  rows={2}
-                />
-              </div>
-            </CardContent>
+          <Card className="bg-card border-border/50 overflow-hidden">
+            <Accordion type="single" collapsible>
+              <AccordionItem value="seo" className="border-0">
+                <AccordionTrigger className="px-6 hover:no-underline py-4">
+                  <span className="font-bold text-lg">
+                    Search Engine Optimization (SEO)
+                  </span>
+                </AccordionTrigger>
+                <AccordionContent className="px-6 pb-6 pt-0 space-y-4">
+                  <div className="space-y-2">
+                    <Label>SEO Title</Label>
+                    <Input
+                      name="seoTitle"
+                      placeholder="Product Name - Shop Name"
+                    />
+                    <p className="text-xs text-muted-foreground">
+                      Leave blank to use default.
+                    </p>
+                  </div>
+                  <div className="space-y-2">
+                    <Label>SEO Description</Label>
+                    <Textarea
+                      name="seoDescription"
+                      placeholder="Short description..."
+                      rows={2}
+                    />
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
           </Card>
         </div>
 
@@ -294,6 +308,25 @@ export function AddProductForm({
           </Card>
         </div>
       </div>
+      <div className="fixed bottom-0 left-0 right-0 p-4 bg-[#0A0A0A] border-t border-border/50 lg:hidden z-50 flex gap-3">
+        <Button
+          type="button"
+          variant="outline"
+          className="flex-1"
+          onClick={() => router.back()}
+        >
+          Cancel
+        </Button>
+        <Button
+          type="submit"
+          className="flex-1 font-bold bg-primary text-black"
+          disabled={loading}
+        >
+          {loading ? <Loader2 className="animate-spin mr-2" /> : "Save Product"}
+        </Button>
+      </div>
+
+      <div className="h-20 lg:hidden" />
     </form>
   );
 }

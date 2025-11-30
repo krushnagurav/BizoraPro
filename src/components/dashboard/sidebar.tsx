@@ -98,7 +98,7 @@ export function Sidebar() {
                     variant="ghost"
                     className={cn(
                       "w-full justify-start text-sm font-normal h-9",
-                      (pathname === item.href || pathname.startsWith(`${item.href}/`))
+                      pathname === item.href
                         ? "bg-secondary text-primary font-medium"
                         : "text-muted-foreground hover:text-foreground"
                     )}

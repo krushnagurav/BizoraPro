@@ -1,7 +1,11 @@
 "use server";
 
 import { authAction } from "@/src/lib/safe-action";
-import { createProductSchema, updateProductSchema, productIdSchema } from "@/src/lib/validators/product";
+import {
+  createProductSchema,
+  updateProductSchema,
+  productIdSchema,
+} from "@/src/lib/validators/product";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/src/lib/supabase/server";
 import { z } from "zod";
@@ -12,7 +16,7 @@ import { z } from "zod";
 export const createProductAction = authAction
   .schema(createProductSchema)
   .action(async ({ parsedInput, ctx: { user, supabase } }) => {
-    
+    // 1. Get Shop & Check Limits
     const { data: shop } = await supabase
       .from("shops")
       .select("id, product_limit, onboarding_step")
@@ -23,7 +27,7 @@ export const createProductAction = authAction
 
     const { count } = await supabase
       .from("products")
-      .select("*", { count: 'exact', head: true })
+      .select("*", { count: "exact", head: true })
       .eq("shop_id", shop.id)
       .is("deleted_at", null);
 
@@ -31,27 +35,42 @@ export const createProductAction = authAction
       throw new Error(`Limit reached (${shop.product_limit}). Upgrade to Pro.`);
     }
 
-    // 1. Parse JSON Fields
-    let variantsData = [], galleryData = [], badgesData = [], skusData: any[] = [];
+    // 2. Parse JSON Fields
+    let variantsData = [],
+      galleryData = [],
+      badgesData = [],
+      skusData: any[] = [];
     try {
       if (parsedInput.variants) variantsData = JSON.parse(parsedInput.variants);
-      if (parsedInput.galleryImages) galleryData = JSON.parse(parsedInput.galleryImages);
+      if (parsedInput.galleryImages)
+        galleryData = JSON.parse(parsedInput.galleryImages);
       if (parsedInput.badges) badgesData = JSON.parse(parsedInput.badges);
-      // 👇 RE-ADDED: SKU Parsing
-      if (parsedInput.productSkus) skusData = JSON.parse(parsedInput.productSkus);
-    } catch (e) { console.error("JSON Parse Error", e); }
-
-    // 2. 🧠 SMART STOCK LOGIC
-    // If variants exist, calculate total stock from SKUs. Otherwise use simple stock input.
-    let finalStock = parsedInput.stock || 0; 
-    if (skusData.length > 0) {
-       finalStock = skusData.reduce((acc: number, sku: any) => acc + Number(sku.stock || 0), 0);
+      // Parse SKUs
+      if (parsedInput.productSkus)
+        skusData = JSON.parse(parsedInput.productSkus);
+    } catch (e) {
+      console.error("JSON Parse Error", e);
     }
 
-    const categoryId = (parsedInput.category && parsedInput.category !== "none" && parsedInput.category !== "") 
-      ? parsedInput.category 
-      : null;
+    // 3. Smart Stock Calculation
+    // If variants exist, calculate total stock from SKUs. Otherwise use simple stock input.
+    let finalStock = parsedInput.stock || 0;
+    if (skusData.length > 0) {
+      finalStock = skusData.reduce(
+        (acc: number, sku: any) => acc + Number(sku.stock || 0),
+        0
+      );
+    }
 
+    // 4. Handle Category (Convert "" to null)
+    const categoryId =
+      parsedInput.category &&
+      parsedInput.category !== "none" &&
+      parsedInput.category !== ""
+        ? parsedInput.category
+        : null;
+
+    // 5. Insert
     const { error } = await supabase.from("products").insert({
       shop_id: shop.id,
       name: parsedInput.name,
@@ -60,21 +79,29 @@ export const createProductAction = authAction
       category_id: categoryId,
       description: parsedInput.description,
       image_url: parsedInput.imageUrl || "",
-      status: parsedInput.status,
+      status: parsedInput.status || "active",
+
+      // SEO Fields
       seo_title: parsedInput.seoTitle,
       seo_description: parsedInput.seoDescription,
+
+      // Complex Data
       variants: variantsData,
       gallery_images: galleryData,
       badges: badgesData,
       product_skus: skusData,
-      stock_count: finalStock
+      stock_count: finalStock,
     });
 
     if (error) throw new Error(error.message);
 
+    // Handle Onboarding Redirect
     let redirectTo = "/products";
     if (shop.onboarding_step < 4) {
-      await supabase.from("shops").update({ onboarding_step: 4 }).eq("id", shop.id);
+      await supabase
+        .from("shops")
+        .update({ onboarding_step: 4 })
+        .eq("id", shop.id);
       redirectTo = "/dashboard";
     }
 
@@ -88,26 +115,36 @@ export const createProductAction = authAction
 export const updateProductAction = authAction
   .schema(updateProductSchema)
   .action(async ({ parsedInput, ctx: { supabase } }) => {
-    
-    // 1. Parse JSON
-    let variantsData = [], galleryData = [], badgesData = [], skusData: any[] = [];
+    let variantsData = [],
+      galleryData = [],
+      badgesData = [],
+      skusData: any[] = [];
     try {
       if (parsedInput.variants) variantsData = JSON.parse(parsedInput.variants);
-      if (parsedInput.galleryImages) galleryData = JSON.parse(parsedInput.galleryImages);
+      if (parsedInput.galleryImages)
+        galleryData = JSON.parse(parsedInput.galleryImages);
       if (parsedInput.badges) badgesData = JSON.parse(parsedInput.badges);
-      // 👇 RE-ADDED: SKU Parsing
-      if (parsedInput.productSkus) skusData = JSON.parse(parsedInput.productSkus);
-    } catch (e) { console.error(e); }
-
-    // 2. 🧠 SMART STOCK LOGIC
-    let finalStock = parsedInput.stock || 0;
-    if (skusData.length > 0) {
-       finalStock = skusData.reduce((acc: number, sku: any) => acc + Number(sku.stock || 0), 0);
+      if (parsedInput.productSkus)
+        skusData = JSON.parse(parsedInput.productSkus);
+    } catch (e) {
+      console.error(e);
     }
 
-    const categoryId = (parsedInput.category && parsedInput.category !== "none" && parsedInput.category !== "") 
-      ? parsedInput.category 
-      : null;
+    // Smart Stock Calc
+    let finalStock = parsedInput.stock || 0;
+    if (skusData.length > 0) {
+      finalStock = skusData.reduce(
+        (acc: number, sku: any) => acc + Number(sku.stock || 0),
+        0
+      );
+    }
+
+    const categoryId =
+      parsedInput.category &&
+      parsedInput.category !== "none" &&
+      parsedInput.category !== ""
+        ? parsedInput.category
+        : null;
 
     const updates: any = {
       name: parsedInput.name,
@@ -115,14 +152,16 @@ export const updateProductAction = authAction
       sale_price: parsedInput.salePrice,
       category_id: categoryId,
       description: parsedInput.description,
-      status: parsedInput.status,
+      status: parsedInput.status, // Allow updating status
+
       seo_title: parsedInput.seoTitle,
       seo_description: parsedInput.seoDescription,
+
       variants: variantsData,
       gallery_images: galleryData,
       badges: badgesData,
       product_skus: skusData,
-      stock_count: finalStock
+      stock_count: finalStock,
     };
 
     if (parsedInput.imageUrl) updates.image_url = parsedInput.imageUrl;
@@ -176,7 +215,11 @@ const categoryIdSchema = z.object({ id: z.string().uuid() });
 export const createCategoryAction = authAction
   .schema(categorySchema)
   .action(async ({ parsedInput, ctx: { user, supabase } }) => {
-    const { data: shop } = await supabase.from("shops").select("id").eq("owner_id", user.id).single();
+    const { data: shop } = await supabase
+      .from("shops")
+      .select("id")
+      .eq("owner_id", user.id)
+      .single();
     if (!shop) throw new Error("Shop not found");
 
     const { error } = await supabase
@@ -188,15 +231,29 @@ export const createCategoryAction = authAction
     return { success: true };
   });
 
+export const deleteCategoryAction = authAction
+  .schema(categoryIdSchema)
+  .action(async ({ parsedInput, ctx: { supabase } }) => {
+    const { error } = await supabase
+      .from("categories")
+      .delete()
+      .eq("id", parsedInput.id);
+
+    if (error) throw new Error(error.message);
+    revalidatePath("/categories");
+    return { success: true };
+  });
 
 // ==========================================
-// 5. DATA FETCHER (Read Only - Standard Async)
+// 5. DATA FETCHING (Standard Async - For Reading)
 // ==========================================
 export async function getProductsAction(
-  shopId: string, 
-  page: number = 1, 
+  shopId: string,
+  page: number = 1,
   limit: number = 10,
-  query: string = ""
+  query: string = "",
+  categoryId: string = "all",
+  status: string = "all"
 ) {
   const supabase = await createClient();
   const from = (page - 1) * limit;
@@ -214,6 +271,14 @@ export async function getProductsAction(
     dbQuery = dbQuery.ilike("name", `%${query}%`);
   }
 
+  // Apply Filters
+  if (categoryId && categoryId !== "all") {
+    dbQuery = dbQuery.eq("category_id", categoryId);
+  }
+  if (status && status !== "all") {
+    dbQuery = dbQuery.eq("status", status);
+  }
+
   const { data, count, error } = await dbQuery;
 
   if (error) {
@@ -224,19 +289,22 @@ export async function getProductsAction(
   return {
     data,
     totalPages: Math.ceil((count || 0) / limit),
-    totalItems: count
+    totalItems: count,
   };
 }
 
 // ==========================================
-// 6. SMART BULK IMPORT (Standard Async)
+// 6. SMART BULK IMPORT (Standard Async - Robust)
 // ==========================================
 export async function importProductsAction(products: any[]) {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
   if (!user) return { error: "Login required" };
 
+  // 1. Get Shop & Limits (With Plan)
   const { data: shop } = await supabase
     .from("shops")
     .select("id, product_limit, plan")
@@ -245,77 +313,97 @@ export async function importProductsAction(products: any[]) {
 
   if (!shop) return { error: "Shop not found" };
 
-  if (shop.plan !== 'pro') {
+  // Pro Check
+  if (shop.plan !== "pro") {
     return { error: "Bulk Import is a Pro feature." };
   }
 
+  // Limit Check
   const { count } = await supabase
     .from("products")
-    .select("*", { count: 'exact', head: true })
+    .select("*", { count: "exact", head: true })
     .eq("shop_id", shop.id)
     .is("deleted_at", null);
 
   const currentCount = count || 0;
-  const newCount = currentCount + products.length;
-
-  if (newCount > shop.product_limit) {
-    return { 
-      error: `Import failed. Limit exceeded. You can add ${shop.product_limit - currentCount} more.` 
+  if (currentCount + products.length > shop.product_limit) {
+    return {
+      error: `Import limit exceeded. You can add ${
+        shop.product_limit - currentCount
+      } more.`,
     };
   }
 
+  // 2. Prepare Deduplication
   const { data: existingProducts } = await supabase
     .from("products")
     .select("name")
     .eq("shop_id", shop.id)
     .is("deleted_at", null);
-
-  const existingNames = new Set(existingProducts?.map(p => p.name.toLowerCase().trim()));
+  const existingNames = new Set(
+    existingProducts?.map((p) => p.name.toLowerCase().trim())
+  );
 
   let { data: existingCats } = await supabase
     .from("categories")
     .select("id, name")
     .eq("shop_id", shop.id);
-
   const categoryMap = new Map<string, string>();
-  existingCats?.forEach(c => categoryMap.set(c.name.toLowerCase(), c.id));
+  existingCats?.forEach((c) => categoryMap.set(c.name.toLowerCase(), c.id));
 
+  // 3. Process Rows (Normalization Logic)
   const toInsert = [];
   let skippedCount = 0;
   let newCategoriesCount = 0;
 
   for (const item of products) {
-    if (!item.Name || !item.Price) {
+    // Normalize Keys (Handle "Name", "name", "Product Name")
+    const safeItem: any = {};
+    Object.keys(item).forEach((k) => {
+      safeItem[k.toLowerCase().replace(/[^a-z]/g, "")] = item[k];
+    });
+
+    // Extract Fields safely
+    const rawName = safeItem.name || safeItem.productname || safeItem.title;
+    const rawPrice = safeItem.price || safeItem.sellingprice || safeItem.mrp;
+    const rawDesc = safeItem.description || safeItem.desc || "";
+    const rawCat = safeItem.category || safeItem.categoryname;
+
+    // Validate
+    if (!rawName || !rawPrice) {
       skippedCount++;
       continue;
     }
 
-    const cleanName = item.Name.trim();
+    const cleanName = String(rawName).trim();
+    const cleanPrice = Number(String(rawPrice).replace(/[^0-9.]/g, ""));
+
+    if (!cleanName || isNaN(cleanPrice)) {
+      skippedCount++;
+      continue;
+    }
+
     if (existingNames.has(cleanName.toLowerCase())) {
       skippedCount++;
       continue;
     }
 
-    const cleanPrice = Number(item.Price.toString().replace(/[^0-9.]/g, ""));
-    if (isNaN(cleanPrice)) {
-      skippedCount++;
-      continue;
-    }
-
+    // Category Logic
     let categoryId = null;
-    if (item.Category) {
-      const cleanCatName = item.Category.trim();
+    if (rawCat) {
+      const cleanCatName = String(rawCat).trim();
       const lowerCatName = cleanCatName.toLowerCase();
 
       if (categoryMap.has(lowerCatName)) {
         categoryId = categoryMap.get(lowerCatName);
       } else {
+        // Create Category on the fly
         const { data: newCat } = await supabase
           .from("categories")
           .insert({ shop_id: shop.id, name: cleanCatName })
           .select("id")
           .single();
-        
+
         if (newCat) {
           categoryMap.set(lowerCatName, newCat.id);
           categoryId = newCat.id;
@@ -328,12 +416,13 @@ export async function importProductsAction(products: any[]) {
       shop_id: shop.id,
       name: cleanName,
       price: cleanPrice,
-      description: item.Description || "",
+      description: rawDesc,
       category_id: categoryId,
-      status: 'active',
-      image_url: "" 
+      status: "active",
+      stock_count: 10, // Default stock for imports
+      image_url: "",
     });
-    
+
     existingNames.add(cleanName.toLowerCase());
   }
 
@@ -345,8 +434,8 @@ export async function importProductsAction(products: any[]) {
   if (error) return { error: error.message };
 
   revalidatePath("/products");
-  return { 
-    success: `Imported ${toInsert.length} products! (${skippedCount} skipped, ${newCategoriesCount} new categories)` 
+  return {
+    success: `Imported ${toInsert.length} products! (${skippedCount} skipped)`,
   };
 }
 
@@ -356,20 +445,27 @@ export async function importProductsAction(products: any[]) {
 export async function duplicateProductAction(formData: FormData) {
   const id = formData.get("id") as string;
   const supabase = await createClient();
-  
+
   // 1. Fetch Original
-  const { data: original } = await supabase.from("products").select("*").eq("id", id).single();
+  const { data: original } = await supabase
+    .from("products")
+    .select("*")
+    .eq("id", id)
+    .single();
   if (!original) return { error: "Product not found" };
 
-  // 2. Create Copy Payload (Remove unique IDs)
-  // We append "(Copy)" to the name so user knows
+  // 2. Create Copy Payload
+  // Remove ID and system fields
   const { id: _, created_at: __, ...rest } = original;
-  
+
   const payload = {
     ...rest,
     name: `${original.name} (Copy)`,
-    status: 'draft', // Safety Net: Always draft first
-    stock_count: 0 // Reset stock for safety
+    status: "draft",
+    stock_count: 0,
+    // Ensure no nulls break constraints
+    seo_title: original.seo_title || null,
+    seo_description: original.seo_description || null,
   };
 
   // 3. Insert
@@ -379,4 +475,67 @@ export async function duplicateProductAction(formData: FormData) {
 
   revalidatePath("/products");
   return { success: "Product duplicated!" };
+}
+
+// ==========================================
+// 8. BULK PRICE UPDATE (Admin Tool)
+// ==========================================
+export async function bulkPriceUpdateAction(formData: FormData) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { error: "Unauthorized" };
+
+  const { data: shop } = await supabase
+    .from("shops")
+    .select("id")
+    .eq("owner_id", user.id)
+    .single();
+  if (!shop) return { error: "Shop not found" };
+
+  const operation = formData.get("operation") as "increase" | "decrease";
+  const type = formData.get("type") as "percent" | "flat";
+  const value = Number(formData.get("value"));
+  const categoryId = formData.get("categoryId") as string;
+
+  if (value <= 0) return { error: "Value must be positive" };
+
+  let query = supabase
+    .from("products")
+    .select("id, price, name")
+    .eq("shop_id", shop.id)
+    .is("deleted_at", null);
+
+  if (categoryId && categoryId !== "all") {
+    query = query.eq("category_id", categoryId);
+  }
+
+  const { data: products } = await query;
+
+  if (!products || products.length === 0)
+    return { error: "No products found." };
+
+  const updates = products.map((p) => {
+    let newPrice = Number(p.price);
+    const change = type === "percent" ? (newPrice * value) / 100 : value;
+
+    if (operation === "increase") newPrice += change;
+    else newPrice = Math.max(0, newPrice - change);
+
+    return {
+      id: p.id,
+      name: p.name,
+      price: Math.round(newPrice),
+      shop_id: shop.id,
+      // Updated_at handled by DB default usually, or explicit if needed
+    };
+  });
+
+  const { error } = await supabase.from("products").upsert(updates);
+
+  if (error) return { error: error.message };
+
+  revalidatePath("/products");
+  return { success: `Updated prices for ${updates.length} products!` };
 }

@@ -1,32 +1,30 @@
 "use client";
 
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { categorySchema, CategoryFormValues } from "@/src/lib/validators/category";
+import { upsertCategoryAction } from "@/src/actions/category-actions";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { upsertCategoryAction } from "@/src/actions/category-actions";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { ImageUpload } from "@/src/components/dashboard/image-upload";
-import { CategoryFormValues, categorySchema } from "@/src/lib/validators/category";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2, Pencil, Plus } from "lucide-react";
-import { useState } from "react";
-import { useForm } from "react-hook-form";
 import { toast } from "sonner";
+import { Loader2, Plus, Pencil } from "lucide-react";
 
-// Slugify Utility
 const slugify = (text: string) =>
   text
     .toString()
     .toLowerCase()
     .trim()
-    .replace(/\s+/g, "-")     // Replace spaces with -
-    .replace(/[^\w\-]+/g, "") // Remove all non-word chars
-    .replace(/\-\-+/g, "-");  // Replace multiple - with single -
+    .replace(/\s+/g, "-")
+    .replace(/[^\w\-]+/g, "")
+    .replace(/\-\-+/g, "-");
 
 export function CategoryForm({ initialData }: { initialData?: any }) {
   const [open, setOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
   const [imageUrl, setImageUrl] = useState(initialData?.image_url || "");
 
   const form = useForm<CategoryFormValues>({
@@ -40,7 +38,7 @@ export function CategoryForm({ initialData }: { initialData?: any }) {
     },
   });
 
-  // Auto-generate slug from name (only if creating new)
+  // Auto-generate slug
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const name = e.target.value;
     form.setValue("name", name);
@@ -50,20 +48,20 @@ export function CategoryForm({ initialData }: { initialData?: any }) {
   };
 
   const onSubmit = async (data: CategoryFormValues) => {
-    setLoading(true);
-    
-    // Attach image state to data
+    // Attach image state
     data.imageUrl = imageUrl;
 
     const res = await upsertCategoryAction(data);
-    setLoading(false);
 
     if (res?.serverError) {
       toast.error(res.serverError);
     } else if (res?.data?.success) {
       toast.success(res.data.message);
       setOpen(false);
-      if(!initialData) form.reset(); // Reset only on create
+      if(!initialData) {
+          form.reset();
+          setImageUrl("");
+      }
     }
   };
 
@@ -83,13 +81,11 @@ export function CategoryForm({ initialData }: { initialData?: any }) {
         
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 mt-4">
           
-          {/* Image */}
           <div className="space-y-2">
-             <Label>Category Image (Optional)</Label>
+             <Label>Category Image</Label>
              <ImageUpload value={imageUrl} onChange={setImageUrl} />
           </div>
 
-          {/* Name */}
           <div className="space-y-2">
             <Label>Name</Label>
             <Input 
@@ -100,7 +96,6 @@ export function CategoryForm({ initialData }: { initialData?: any }) {
             {form.formState.errors.name && <p className="text-xs text-red-500">{form.formState.errors.name.message}</p>}
           </div>
 
-          {/* Slug */}
           <div className="space-y-2">
             <Label>URL Slug</Label>
             <div className="flex">
@@ -116,7 +111,6 @@ export function CategoryForm({ initialData }: { initialData?: any }) {
             {form.formState.errors.slug && <p className="text-xs text-red-500">{form.formState.errors.slug.message}</p>}
           </div>
 
-          {/* Status */}
           <div className="space-y-2">
              <Label>Status</Label>
              <Select 
@@ -125,15 +119,15 @@ export function CategoryForm({ initialData }: { initialData?: any }) {
              >
                <SelectTrigger><SelectValue /></SelectTrigger>
                <SelectContent>
-                 <SelectItem value="active">Active (Visible)</SelectItem>
-                 <SelectItem value="hidden">Hidden (Draft)</SelectItem>
+                 <SelectItem value="active">Active</SelectItem>
+                 <SelectItem value="hidden">Hidden</SelectItem>
                </SelectContent>
              </Select>
           </div>
 
           <div className="flex justify-end pt-4">
-            <Button type="submit" disabled={loading}>
-              {loading ? <Loader2 className="animate-spin mr-2" /> : (initialData ? "Update" : "Create")}
+            <Button type="submit" disabled={form.formState.isSubmitting}>
+              {form.formState.isSubmitting ? <Loader2 className="animate-spin mr-2" /> : (initialData ? "Update" : "Create")}
             </Button>
           </div>
 

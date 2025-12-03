@@ -48,18 +48,6 @@ export function AddProductForm({
   const [skus, setSkus] = useState<any[]>([]);
   const [stock, setStock] = useState(0);
 
-  // 👇 Handle Submit with specific Status
-  const handleSave = async (status: "active" | "draft") => {
-    setLoading(true);
-
-    // We need to grab values from the DOM form elements manually or use a ref,
-    // BUT since we have controlled components for some complex parts, we can mix them.
-    // Best way for Button Click handlers without wrapping in <form onSubmit>:
-    // Use new FormData(formRef.current) if we had a ref.
-    // OR simpler: Just stick to form submission and use a hidden input for status.
-    // Let's use the Hidden Input trick.
-  };
-
   return (
     <form
       action={async (formData) => {

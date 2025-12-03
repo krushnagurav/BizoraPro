@@ -1,47 +1,19 @@
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import {
-  deleteProductAction,
-  duplicateProductAction,
-} from "@/src/actions/product-actions";
 import { BulkPriceDialog } from "@/src/components/dashboard/products/bulk-price-dialog";
 import { ProductFilters } from "@/src/components/dashboard/products/product-filters"; // Import Filters
-import { ProductShareButton } from "@/src/components/dashboard/products/product-share-button";
+import { ProductListTable } from "@/src/components/dashboard/products/product-list-table";
 import { getProducts } from "@/src/data/products";
 import { createClient } from "@/src/lib/supabase/server";
 import {
   ChevronLeft,
   ChevronRight,
-  Copy,
   FileSpreadsheet,
-  ImageIcon,
-  MoreHorizontal,
-  Pencil,
   Plus,
-  Search,
-  Trash2,
+  Search
 } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { ProductListTable } from "@/src/components/dashboard/products/product-list-table";
 
 export default async function ProductsPage({
   searchParams,

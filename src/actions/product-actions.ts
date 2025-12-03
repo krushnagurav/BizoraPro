@@ -172,9 +172,25 @@ export const updateProductAction = authAction
       .eq("id", parsedInput.id);
 
     if (error) throw new Error(error.message);
+    // choose redirect: published -> product page, draft -> listing
+    let redirectTo: string | undefined;
+    try {
+      // parsedInput.id should be the product id being updated
+      const productId = parsedInput.id as string | undefined;
+      if (parsedInput.status === "active" && productId) {
+        redirectTo = `/products/${productId}`;
+      } else {
+        redirectTo = "/products";
+      }
+    } catch (e) {
+      // fallback: no redirect
+      redirectTo = undefined;
+    }
 
     revalidatePath("/products");
-    return { success: true };
+
+    // return an object with optional redirect to match createProductAction's shape
+    return { success: true, redirect: redirectTo };
   });
 
 // ==========================================
@@ -344,7 +360,7 @@ export async function importProductsAction(products: any[]) {
     existingProducts?.map((p) => p.name.toLowerCase().trim())
   );
 
-  let { data: existingCats } = await supabase
+  const { data: existingCats } = await supabase
     .from("categories")
     .select("id, name")
     .eq("shop_id", shop.id);
@@ -354,7 +370,6 @@ export async function importProductsAction(products: any[]) {
   // 3. Process Rows (Normalization Logic)
   const toInsert = [];
   let skippedCount = 0;
-  let newCategoriesCount = 0;
 
   for (const item of products) {
     // Normalize Keys (Handle "Name", "name", "Product Name")
@@ -407,7 +422,6 @@ export async function importProductsAction(products: any[]) {
         if (newCat) {
           categoryMap.set(lowerCatName, newCat.id);
           categoryId = newCat.id;
-          newCategoriesCount++;
         }
       }
     }

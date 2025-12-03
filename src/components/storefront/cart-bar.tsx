@@ -1,3 +1,4 @@
+// src\components\storefront\cart-bar.tsx
 "use client";
 
 import { useCart } from "@/src/hooks/use-cart";

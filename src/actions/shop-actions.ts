@@ -1,3 +1,4 @@
+// src/actions/shop-actions.ts
 "use server";
 
 
@@ -37,8 +38,9 @@ export async function completeStep1(formData: FormData) {
   const raw = { name: formData.get("name"), slug: formData.get("slug") };
   const parsed = step1Schema.safeParse(raw);
   
-  if (!parsed.success) return { error: parsed.error.errors[0].message };
-
+  if (!parsed.success) {
+    return { error: parsed.error.issues[0]?.message ?? "Invalid shop details" };
+  }
   // Check slug uniqueness
   const { data: exists } = await supabase.from("shops").select("id").eq("slug", parsed.data.slug).single();
   if (exists) return { error: "URL already taken" };
@@ -68,8 +70,9 @@ export async function completeStep2(formData: FormData) {
     category: formData.get("category") 
   };
   const parsed = step2Schema.safeParse(raw);
-  if (!parsed.success) return { error: parsed.error.errors[0].message };
-
+  if (!parsed.success) {
+    return { error: parsed.error.issues[0]?.message ?? "Invalid details" };
+  }
   const category = parsed.data.category;
   
   // 1. Get Preset based on Category (or default to Other)
@@ -120,28 +123,35 @@ export async function completeStep2(formData: FormData) {
 export async function completeStep3(formData: FormData) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
-  
+
+  if (!user) return { error: "Login required" };
+
   // Get Shop
-  const { data: shop } = await supabase.from("shops").select("id").eq("owner_id", user?.id).single();
-  
+  const { data: shop } = await supabase
+    .from("shops")
+    .select("id")
+    .eq("owner_id", user.id)
+    .single();
+
+  if (!shop) return { error: "Shop not found" };
+
   const name = formData.get("productName") as string;
   const price = Number(formData.get("productPrice"));
-  // Note: Image upload logic usually requires client-side handling or a separate bucket upload.
-  // For this "Speed Run", we will skip the image upload in this specific action 
-  // and just create a placeholder product.
 
   const { error } = await supabase.from("products").insert({
     shop_id: shop.id,
-    name: name,
-    price: price,
-    status: 'active',
-    image_url: "" // Empty for now
+    name,
+    price,
+    status: "active",
+    image_url: ""
   });
 
   if (error) return { error: error.message };
 
-  // FINISH ONBOARDING
-  await supabase.from("shops").update({ onboarding_step: 4 }).eq("id", shop.id);
+  await supabase
+    .from("shops")
+    .update({ onboarding_step: 4 })
+    .eq("id", shop.id);
 
   redirect("/dashboard");
 }
@@ -178,32 +188,47 @@ export async function updateShopAppearanceAction(formData: FormData) {
 
 export async function updateShopSettingsAction(formData: FormData) {
   const supabase = await createClient();
-  const isOpen = formData.get("isOpen") === "on"; // Checkbox returns "on" if checked
+
+  // 1) Get user first
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) return { error: "Login required" };
+
+  // 2) Basic fields
+  const isOpen = formData.get("isOpen") === "on";
   const minOrder = Number(formData.get("minOrder"));
   const deliveryNote = formData.get("deliveryNote") as string;
-  const { data: shop } = await supabase.from("shops").select("plan").eq("owner_id", user.id).single();
-const isPro = shop.plan === 'pro';
-const autoClose = isPro ? (formData.get("autoClose") === "on") : false;
+
+  // 3) Get shop plan
+  const { data: shop } = await supabase
+    .from("shops")
+    .select("plan")
+    .eq("owner_id", user.id)
+    .single();
+
+  const isPro = shop?.plan === "pro";
+
+  const autoClose = isPro ? formData.get("autoClose") === "on" : false;
   const openingTime = formData.get("openingTime") as string;
   const closingTime = formData.get("closingTime") as string;
 
-  const socialLinks = isPro ? {
-    instagram: formData.get("instagram") as string,
-    facebook: formData.get("facebook") as string,
-    youtube: formData.get("youtube") as string,
-    twitter: formData.get("twitter") as string,
-  } : {};
+  const socialLinks = isPro
+    ? {
+        instagram: formData.get("instagram") as string,
+        facebook: formData.get("facebook") as string,
+        youtube: formData.get("youtube") as string,
+        twitter: formData.get("twitter") as string,
+      }
+    : {};
 
   const seoConfig = {
     metaTitle: formData.get("metaTitle") as string,
     metaDescription: formData.get("metaDescription") as string,
   };
 
-
-  const { data: { user } } = await supabase.auth.getUser();
-
-  if (!user) return { error: "Login required" };
-
+  // 4) Update shop
   const { error } = await supabase
     .from("shops")
     .update({
@@ -214,7 +239,7 @@ const autoClose = isPro ? (formData.get("autoClose") === "on") : false;
       opening_time: openingTime,
       closing_time: closingTime,
       social_links: socialLinks,
-      seo_config: seoConfig
+      seo_config: seoConfig,
     })
     .eq("owner_id", user.id);
 

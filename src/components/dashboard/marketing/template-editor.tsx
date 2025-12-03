@@ -25,7 +25,7 @@ export function TemplateEditor({ initialData, onClose }: { initialData?: any, on
   const [message, setMessage] = useState(initialData?.message || "");
 
   const insertVariable = (val: string) => {
-    setMessage((prev) => prev + " " + val);
+    setMessage((prev: string) => `${prev} ${val}`.trim());
   };
 
   // Reset when initialData changes (for switching between templates)

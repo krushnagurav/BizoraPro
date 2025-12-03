@@ -68,7 +68,7 @@ export default function AppearancePage() {
         <h1 className="text-3xl font-bold text-primary flex items-center gap-2">
            Appearance
         </h1>
-        <p className="text-muted-foreground">Customize your shop's look.</p>
+        <p className="text-muted-foreground">Customize your shop&apos;s look.</p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">

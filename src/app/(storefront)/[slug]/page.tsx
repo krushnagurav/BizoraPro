@@ -2,20 +2,20 @@
 import type { CSSProperties } from "react";
 import { createClient } from "@/src/lib/supabase/server";
 import { notFound } from "next/navigation";
-import Image from "next/image";
-import Link from "next/link";
+import { Metadata } from "next";
+
 import { ShopHeader } from "@/src/components/storefront/shared/shop-header";
 import { ShopFooter } from "@/src/components/storefront/shared/shop-footer";
-import { ProductCard } from "@/src/components/storefront/product-card";
 import { CartBar } from "@/src/components/storefront/cart-bar";
-import { ViewTracker } from "@/src/components/storefront/view-tracker";
 import { NewsletterForm } from "@/src/components/storefront/newsletter-form";
-import { ShopSearch } from "@/src/components/storefront/search-filter";
-import { Metadata } from "next";
-import { Star, Store } from "lucide-react";
+import { HeroBanner } from "@/src/components/storefront/sections/hero-banner";
+import { CategoryCard } from "@/src/components/storefront/category-card";
+import { FeaturedProducts } from "@/src/components/storefront/sections/featured-products";
+
 import { hexToHsl } from "@/src/lib/utils";
 import { fontMapper } from "@/src/lib/fonts";
-import { ThemeConfig } from "@/src/types/custom";
+import type { ThemeConfig } from "@/src/types/custom";
+import Link from "next/link";
 
 export async function generateMetadata({
   params,
@@ -43,14 +43,10 @@ export async function generateMetadata({
 
 export default async function ShopHomePage({
   params,
-  searchParams,
 }: {
   params: { slug: string };
-  searchParams?: { q?: string; cat?: string };
 }) {
   const { slug } = await params;
-  const { q: searchQuery, cat: categoryId } = (await searchParams) ?? {};
-
   const supabase = await createClient();
 
   const { data: shop } = await supabase
@@ -63,26 +59,17 @@ export default async function ShopHomePage({
 
   const { data: categories } = await supabase
     .from("categories")
-    .select("id, name")
+    .select("id, name, image_url")
     .eq("shop_id", shop.id);
 
-  let productQuery = supabase
+  const { data: featuredProducts } = await supabase
     .from("products")
-    .select("*, categories(name)")
+    .select("*")
     .eq("shop_id", shop.id)
     .eq("status", "active")
     .is("deleted_at", null)
-    .order("created_at", { ascending: false });
-
-  if (searchQuery) {
-    productQuery = productQuery.ilike("name", `%${searchQuery}%`);
-  }
-
-  if (categoryId) {
-    productQuery = productQuery.eq("category_id", categoryId);
-  }
-
-  const { data: products } = await productQuery;
+    .order("created_at", { ascending: false })
+    .limit(6);
 
   const theme = shop.theme_config as unknown as ThemeConfig;
   const primaryColor = theme.primaryColor || "#E6B800";
@@ -108,11 +95,9 @@ export default async function ShopHomePage({
     }
   }
 
-  const banner = theme.bannerUrl || "";
-
   return (
     <div
-      className={`min-h-screen bg-[#F8F9FA] text-slate-900 pb-20 ${fontClass}`}
+      className={`min-h-screen bg-[#F8F9FA] text-slate-900 ${fontClass}`}
       style={
         {
           "--primary": primaryColorHsl,
@@ -120,116 +105,74 @@ export default async function ShopHomePage({
         } as CSSProperties
       }
     >
-      {/* Header */}
-      <ShopHeader shop={shop} />
+      <ShopHeader shop={shop} isOpen={isShopActuallyOpen} />
 
-      {/* Shop Banner */}
-      <div className="relative w-full h-64 md:h-80 bg-slate-100 overflow-hidden shadow-sm">
-        {banner ? (
-          <Image
-            src={banner}
-            alt="Shop Banner"
-            fill
-            className="object-cover"
-            unoptimized
-          />
-        ) : (
-          <div className="absolute inset-0 flex items-center justify-center text-slate-300">
-            <Store className="w-16 h-16 opacity-50" />
-          </div>
-        )}
-        <div className="absolute inset-0 bg-black/30" />
-        <div className="absolute bottom-0 left-0 right-0 p-6 container mx-auto">
-          <h1 className="text-3xl md:text-5xl font-bold text-white mb-2 drop-shadow-md">
-            {shop.name}
-          </h1>
-          <div className="flex items-center gap-2 text-sm text-white/90 font-medium">
-            <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-            <span>Trusted Business</span>
-          </div>
-        </div>
-      </div>
+      <HeroBanner shop={shop} />
 
-      <div className="container mx-auto px-4 py-8 space-y-8">
-        {/* Search & Filters */}
-        <div className="space-y-4">
-          <div className="p-1 bg-white border border-slate-200 rounded-xl shadow-sm">
-            <ShopSearch slug={slug} />
-          </div>
-
-          <div className="flex gap-2 overflow-x-auto pb-2 no-scrollbar">
-            <Link href={`/${slug}`}>
-              <button
-                className={`px-6 py-2 rounded-full text-sm font-bold transition-all border ${
-                  !categoryId
-                    ? "bg-slate-900 text-white border-slate-900"
-                    : "bg-white text-slate-600 border-slate-200 hover:border-slate-300"
-                }`}
+      <main className="container mx-auto px-4 py-10 space-y-12">
+        {/* Categories */}
+        {categories && categories.length > 0 && (
+          <section className="space-y-4">
+            <div className="flex items-center justify-between">
+              <h2 className="text-xl font-bold">Shop by Category</h2>
+              <Link
+                href={`/${slug}/shop`}
+                className="text-sm font-semibold text-[hsl(var(--primary))]"
               >
-                All Products
-              </button>
-            </Link>
-            {categories?.map((cat) => (
-              <Link key={cat.id} href={`/${slug}?cat=${cat.id}`}>
-                <button
-                  className={`px-6 py-2 rounded-full text-sm font-bold transition-all whitespace-nowrap border ${
-                    categoryId === String(cat.id)
-                      ? "bg-slate-900 text-white border-slate-900"
-                      : "bg-white text-slate-600 border-slate-200 hover:border-slate-300"
-                  }`}
-                >
-                  {cat.name}
-                </button>
+                View all products →
               </Link>
-            ))}
-          </div>
-        </div>
+            </div>
 
-        {/* Products Grid */}
-        <div>
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-bold text-slate-900">
-              {searchQuery
-                ? `Results for "${searchQuery}"`
-                : categoryId
-                ? "Category Results"
-                : "Featured Collection"}
-            </h2>
-            <span className="text-sm text-slate-500">
-              {products?.length ?? 0} items
-            </span>
-          </div>
-
-          {products && products.length > 0 ? (
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
-              {products.map((product) => (
-                <Link href={`/${slug}/p/${product.id}`} key={product.id}>
-                  <ProductCard
-                    product={product}
-                    isShopOpen={isShopActuallyOpen}
-                  />
-                </Link>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              {categories.map((cat) => (
+                <CategoryCard key={cat.id} category={cat} slug={slug} />
               ))}
             </div>
-          ) : (
-            <div className="text-center py-20 text-slate-400">
-              <p>No products found in this collection.</p>
-            </div>
-          )}
-        </div>
+          </section>
+        )}
 
-        {/* Newsletter */}
-        <div className="mt-12">
+        {/* Featured products */}
+        <FeaturedProducts
+          slug={slug}
+          products={featuredProducts || []}
+          isShopOpen={isShopActuallyOpen}
+        />
+
+        {/* WhatsApp CTA strip */}
+        {shop.whatsapp_number && (
+          <section className="bg-[hsl(var(--primary))]/10 border border-[hsl(var(--primary))]/25 rounded-2xl p-6 flex flex-col md:flex-row items-center justify-between gap-4">
+            <div className="text-center md:text-left space-y-1">
+              <p className="text-sm font-medium text-slate-700">
+                Prefer WhatsApp?
+              </p>
+              <p className="text-lg font-bold text-slate-800">
+                Order directly on WhatsApp in one tap
+              </p>
+              <p className="text-sm text-slate-600">
+                Faster checkout than cart — no app download needed.
+              </p>
+            </div>
+            <Link
+              href={`https://wa.me/${shop.whatsapp_number.replace(
+                /\D/g,
+                ""
+              )}?text=${encodeURIComponent(
+                `Hi! I want to order from ${shop.name}.`
+              )}`}
+              className="inline-flex items-center justify-center px-6 py-3 rounded-xl bg-[hsl(var(--primary))] text-black font-semibold text-sm shadow-sm hover:bg-[hsl(var(--primary))]/90 transition"
+            >
+              Chat on WhatsApp
+            </Link>
+          </section>
+        )}
+
+        <section className="mt-16">
           <NewsletterForm shopId={shop.id} />
-        </div>
-      </div>
+        </section>
+      </main>
 
       <ShopFooter shop={shop} />
       <CartBar slug={slug} />
-
-      {products?.map((p) => (
-        <ViewTracker key={p.id} shopId={shop.id} productId={p.id} />
-      ))}
 
       {!isShopActuallyOpen && (
         <div className="fixed bottom-16 left-0 right-0 bg-red-600 text-white text-center p-3 font-bold z-50 shadow-lg">

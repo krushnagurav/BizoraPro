@@ -204,7 +204,7 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
                   {customer.note && (
                     <div className="bg-yellow-500/10 p-3 rounded-lg border border-yellow-500/20 text-sm">
                        <span className="font-bold text-yellow-500 block mb-1">Note:</span>
-                       "{customer.note}"
+                       {customer.note}
                     </div>
                   )}
                </CardContent>

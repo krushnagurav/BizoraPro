@@ -1,3 +1,4 @@
+// src/components/dashboard/onboarding/step1.tsx
 "use client";
 import { completeStep1 } from "@/src/actions/shop-actions";
 import { Button } from "@/components/ui/button";

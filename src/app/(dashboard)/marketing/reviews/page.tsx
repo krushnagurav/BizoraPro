@@ -131,13 +131,13 @@ export default async function ReviewsPage({ searchParams }: { searchParams: Prom
 
               <div className="ml-14">
                   <p className="text-sm text-foreground bg-secondary/10 p-3 rounded-lg border border-border/50">
-                      "{review.comment}"
+                      {review.comment}
                   </p>
 
                   {review.reply && (
                     <div className="mt-3 pl-3 border-l-2 border-primary/50">
                         <p className="text-xs font-bold text-primary mb-1">Your Reply:</p>
-                        <p className="text-sm text-muted-foreground">"{review.reply}"</p>
+                        <p className="text-sm text-muted-foreground">{review.reply}</p>
                     </div>
                   )}
               </div>

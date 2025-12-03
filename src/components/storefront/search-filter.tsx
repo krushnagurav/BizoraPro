@@ -1,3 +1,4 @@
+// src\components\storefront\search-filter.tsx
 "use client";
 
 import { Input } from "@/components/ui/input";
@@ -21,6 +22,8 @@ export function ShopSearch({ slug }: { slug: string }) {
   const searchParams = useSearchParams();
   const [text, setText] = useState(searchParams.get("q") || "");
   const debouncedText = useDebounceValue(text, 500);
+
+  console.log(slug);
 
   useEffect(() => {
     const params = new URLSearchParams(searchParams.toString());
@@ -61,7 +64,7 @@ export function CategoryFilter({ categories, slug }: { categories: any[], slug: 
   const pathname = usePathname(); // Use here too
   const searchParams = useSearchParams();
   const activeCat = searchParams.get("cat");
-
+console.log(slug);
   const toggleCat = (catId: string) => {
     const params = new URLSearchParams(searchParams.toString());
     if (activeCat === catId) {

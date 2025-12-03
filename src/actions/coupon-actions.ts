@@ -56,45 +56,56 @@ export async function createCouponAction(formData: FormData) {
 }
 
 // 2. DELETE
-export async function deleteCouponAction(formData: FormData) {
+export async function deleteCouponAction(formData: FormData): Promise<void> {
   const id = formData.get("id") as string;
   const supabase = await createClient();
-  
+
   const { error } = await supabase.from("coupons").delete().eq("id", id);
-  if (error) return { error: error.message };
-  
+  if (error) {
+    console.error("Failed to delete coupon:", error.message);
+    return;
+  }
+
   revalidatePath("/coupons");
 }
 
 // 3. DUPLICATE (NEW)
-export async function duplicateCouponAction(formData: FormData) {
+export async function duplicateCouponAction(formData: FormData): Promise<void> {
   const id = formData.get("id") as string;
   const supabase = await createClient();
-  
-  // Fetch Original
-  const { data: original } = await supabase.from("coupons").select("*").eq("id", id).single();
-  if (!original) return { error: "Coupon not found" };
 
-  // Create Copy Payload
-  // We append "_COPY" + random number to ensure uniqueness
+  // Fetch Original
+  const { data: original, error: fetchError } = await supabase
+    .from("coupons")
+    .select("*")
+    .eq("id", id)
+    .single();
+
+  if (fetchError || !original) {
+    console.error("Coupon not found:", fetchError?.message);
+    return;
+  }
+
   const random = Math.floor(Math.random() * 1000);
-  const newCode = `${original.code}_COPY${random}`.slice(0, 15); // Limit length
+  const newCode = `${original.code}_COPY${random}`.slice(0, 15);
 
   const { id: _, created_at: __, ...rest } = original;
-  
+
   const payload = {
     ...rest,
     code: newCode,
-    used_count: 0, // Reset usage
-    is_active: false // Start as draft/inactive so they can edit dates
+    used_count: 0,
+    is_active: false,
   };
 
   const { error } = await supabase.from("coupons").insert(payload);
 
-  if (error) return { error: error.message };
+  if (error) {
+    console.error("Failed to duplicate coupon:", error.message);
+    return;
+  }
 
   revalidatePath("/coupons");
-  return { success: `Coupon duplicated as ${newCode}` };
 }
 
 // 4. VERIFY (Public)

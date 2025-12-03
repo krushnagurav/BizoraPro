@@ -1,3 +1,4 @@
+// src\actions\auth-actions.ts
 "use server";
 
 import { redirect } from "next/navigation";
@@ -25,7 +26,7 @@ export async function loginAction(formData: FormData) {
   // Validate Input
   const parsed = loginSchema.safeParse(data);
   if (!parsed.success) {
-    return { error: parsed.error.errors[0].message };
+    return { error: parsed.error.issues[0]?.message ?? "Invalid login data" };
   }
 
   const supabase = await createClient();
@@ -55,7 +56,7 @@ export async function signupAction(formData: FormData) {
   // Validate Input
   const parsed = signupSchema.safeParse(data);
   if (!parsed.success) {
-    return { error: parsed.error.errors[0].message };
+    return { error: parsed.error.issues[0]?.message ?? "Invalid signup data" };
   }
   const supabase = await createClient();
 

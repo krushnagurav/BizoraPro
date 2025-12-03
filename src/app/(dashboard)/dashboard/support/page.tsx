@@ -1,11 +1,10 @@
-import { createClient } from "@/src/lib/supabase/server";
-import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Headphones, Clock, CheckCircle2, AlertCircle, MessageSquare } from "lucide-react";
-import Link from "next/link";
 import { CreateTicketDialog } from "@/src/components/dashboard/support/create-ticket-dialog";
+import { createClient } from "@/src/lib/supabase/server";
+import { CheckCircle2, Clock, Headphones, MessageSquare } from "lucide-react";
+import Link from "next/link";
 import { redirect } from "next/navigation";
 
 export default async function SupportPage() {

@@ -28,7 +28,7 @@ export function CategoryForm({ initialData }: { initialData?: any }) {
   const [imageUrl, setImageUrl] = useState(initialData?.image_url || "");
 
   const form = useForm<CategoryFormValues>({
-    resolver: zodResolver(categorySchema),
+    resolver: zodResolver(categorySchema) as any,
     defaultValues: {
       id: initialData?.id,
       name: initialData?.name || "",

@@ -213,12 +213,13 @@ export async function placeOrderAction(formData: FormData) {
 // ----------------------------
 // 2. UPDATE ORDER STATUS (Dashboard)
 // ----------------------------
-export async function updateOrderStatusAction(formData: FormData) {
+export async function updateOrderStatusAction(formData: FormData): Promise<void> {
   const orderId = formData.get("orderId") as string | null;
-  const newStatus = formData.get("status") as string | null; // 'confirmed', 'shipped', 'delivered', 'cancelled', etc.
+  const newStatus = formData.get("status") as string | null;
 
   if (!orderId || !newStatus) {
-    return { error: "Invalid request" };
+    console.error("Invalid request");
+    return;
   }
 
   const supabase = await createClient();
@@ -229,7 +230,8 @@ export async function updateOrderStatusAction(formData: FormData) {
   } = await supabase.auth.getUser();
 
   if (!user) {
-    return { error: "Unauthorized" };
+    console.error("Unauthorized");
+    return;
   }
 
   // Get shop of this owner
@@ -240,7 +242,8 @@ export async function updateOrderStatusAction(formData: FormData) {
     .single();
 
   if (shopError || !shop) {
-    return { error: "Unauthorized" };
+    console.error("Shop not found / unauthorized");
+    return;
   }
 
   // Fetch order scoped to this shop
@@ -252,7 +255,8 @@ export async function updateOrderStatusAction(formData: FormData) {
     .single();
 
   if (orderError || !order) {
-    return { error: "Order not found" };
+    console.error("Order not found");
+    return;
   }
 
   // If cancelling, restore stock (only once)
@@ -290,11 +294,10 @@ export async function updateOrderStatusAction(formData: FormData) {
     .eq("shop_id", shop.id);
 
   if (updateError) {
-    return { error: updateError.message };
+    console.error(updateError.message);
+    return;
   }
 
   revalidatePath("/orders");
   revalidatePath(`/orders/${orderId}`);
-
-  return { success: `Order marked as ${newStatus}` };
 }

@@ -1,3 +1,4 @@
+// src/app/(onboarding)/layout.tsx
 import Link from "next/link";
 import { Store } from "lucide-react";
 

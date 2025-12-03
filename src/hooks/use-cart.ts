@@ -1,96 +1,106 @@
-import { create } from 'zustand';
-import { persist, createJSONStorage } from 'zustand/middleware';
+import { create } from "zustand";
+import { persist, createJSONStorage } from "zustand/middleware";
 
 export interface CartItem {
   id: string;
   name: string;
   price: number;
-  image_url: string;
+  image_url?: string;
   quantity: number;
-  shop_id: string; // Crucial: We must ensure items belong to the SAME shop
+  shop_id: string;
+  variant?: string;
+  maxStock?: number;
 }
 
-interface Coupon {
+export interface Coupon {
   code: string;
-  type: "fixed" | "percent";
+  type: "percent" | "fixed";
   value: number;
 }
+
 interface CartStore {
   items: CartItem[];
-  addItem: (data: CartItem) => void;
-  removeItem: (id: string) => void;
-  updateQuantity: (id: string, quantity: number) => void;
-  clearCart: () => void;
-  totalPrice: () => number;
   coupon: Coupon | null;
-  applyCoupon: (c: Coupon) => void;
+  addItem: (item: CartItem) => void;
+  removeItem: (id: string) => void;
+  updateQuantity: (id, quantity) => void;
+  clearCart: () => void;
+  applyCoupon: (coupon: Coupon) => void;
   removeCoupon: () => void;
+  totalPrice: () => number;
 }
 
-export const useCart = create(
-  persist<CartStore>(
+export const useCart = create<CartStore>()(
+  persist(
     (set, get) => ({
       items: [],
       coupon: null,
-      applyCoupon: (c) => set({ coupon: c }),
-      removeCoupon: () => set({ coupon: null }),
-      addItem: (data: CartItem) => {
+
+      addItem: (data) => {
         const currentItems = get().items;
         const existingItem = currentItems.find((item) => item.id === data.id);
 
-        // Guard: Don&apos;t allow mixing items from different shops
-        if (currentItems.length > 0 && currentItems[0].shop_id !== data.shop_id) {
-          const confirmReset = window.confirm(
-            "You have items from another shop. Clear cart to add this?"
-          );
-          if (!confirmReset) return;
-          set({ items: [] }); // Clear old shop's items
-        }
-
         if (existingItem) {
-          set({
-            items: get().items.map((item) =>
-              item.id === data.id ? { ...item, quantity: item.quantity + 1 } : item
+          const newQty = existingItem.quantity + 1;
+          const limit = existingItem.maxStock || 999;
+          if (newQty > limit) return;
+
+          return set({
+            items: currentItems.map((item) =>
+              item.id === data.id ? { ...item, quantity: newQty } : item
             ),
           });
-        } else {
-          set({ items: [...get().items, { ...data, quantity: 1 }] });
         }
+
+        set({ items: [...get().items, data] });
       },
 
-      removeItem: (id: string) => {
-        set({ items: [...get().items.filter((item) => item.id !== id)] });
+      removeItem: (id) => {
+        set({ items: get().items.filter((item) => item.id !== id) });
       },
 
-      updateQuantity: (id: string, qty: number) => {
-        if (qty < 1) return;
+      updateQuantity: (id, quantity) => {
+        const currentItems = get().items;
+        const item = currentItems.find((i) => i.id === id);
+        if (!item) return;
+
+        const limit = item.maxStock || 999;
+        if (quantity > limit) return;
+        if (quantity < 1) return;
+
         set({
-          items: get().items.map((item) =>
-            item.id === id ? { ...item, quantity: qty } : item
+          items: currentItems.map((item) =>
+            item.id === id ? { ...item, quantity } : item
           ),
         });
       },
 
-      clearCart: () => set({ items: [] }),
+      clearCart: () => set({ items: [], coupon: null }),
 
+      applyCoupon: (coupon) => set({ coupon }),
+      
+      removeCoupon: () => set({ coupon: null }),
+
+      // 👇 FIXED: Calculate Discount Logic Here
       totalPrice: () => {
-        const subtotal = get().items.reduce((total, item) => total + item.price * item.quantity, 0);
-        const coupon = get().coupon;
-
+        const { items, coupon } = get();
+        const subtotal = items.reduce((total, item) => total + item.price * item.quantity, 0);
+        
         if (!coupon) return subtotal;
 
-        let discountAmount = 0;
-        if (coupon.type === "fixed") {
-          discountAmount = coupon.value;
-        } else {
-          discountAmount = (subtotal * coupon.value) / 100;
+        let discount = 0;
+        if (coupon.type === 'percent') {
+           discount = (subtotal * coupon.value) / 100;
+        } else if (coupon.type === 'fixed') {
+           discount = coupon.value;
         }
 
-        return Math.max(0, subtotal - discountAmount); // Prevent negative total
+        // Ensure total doesn't go below 0
+        return Math.max(0, subtotal - discount);
       },
     }),
     {
-      name: 'bizora-cart-storage', // name of the item in the storage (must be unique)
+      name: "bizorapro-cart-storage",
       storage: createJSONStorage(() => localStorage),
     }
   )

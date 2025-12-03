@@ -3,8 +3,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Trash2, Copy, Calendar } from "lucide-react"; // Import Copy icon
-import { deleteCouponAction, duplicateCouponAction } from "@/src/actions/coupon-actions"; // Import Duplicate
+import { Trash2, Copy, Calendar } from "lucide-react";
+import { deleteCouponAction, duplicateCouponAction } from "@/src/actions/coupon-actions";
 import { AddCouponDialog } from "@/src/components/dashboard/coupons/add-coupon-dialog";
 import { redirect } from "next/navigation";
 import Link from "next/link";

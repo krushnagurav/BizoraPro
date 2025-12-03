@@ -30,21 +30,25 @@ export default async function UpsellPage() {
     .single();
 
   // Fetch products (with stock_count + price)
-  const { data: products = [] } = await supabase
+  const { data: productsData  = [] } = await supabase
     .from("products")
     .select("id, name, image_url, price, stock_count")
     .eq("shop_id", shop?.id)
     .eq("status", "active");
 
-  const { data: upsells = [] } = await supabase
+  const { data: upsellsData = [] } = await supabase
     .from("upsells")
     .select(
       "*, trigger:trigger_product_id(name, image_url), suggested:suggested_product_id(name, image_url)"
     )
     .eq("shop_id", shop?.id);
 
+  const upsells = upsellsData ?? [];
   const totalRevenue =
     upsells?.reduce((acc: number, u: any) => acc + (u.revenue_generated || 0), 0) || 0;
+
+  const products = productsData ?? [];
+
 
   return (
     <div className="p-8 space-y-8 max-w-5xl mx-auto">

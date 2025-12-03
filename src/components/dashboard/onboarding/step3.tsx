@@ -1,3 +1,4 @@
+// src/components/dashboard/onboarding/step3.tsx
 "use client";
 
 import { useState } from "react";

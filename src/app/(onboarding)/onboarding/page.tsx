@@ -1,3 +1,4 @@
+// src/app/(onboarding)/onboarding/page.tsx
 import { redirect } from "next/navigation";
 
 import {

@@ -1,11 +1,10 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Textarea } from "@/components/ui/textarea";
-import { replyToTicketAction, updateTicketStatusAction } from "@/src/actions/support-actions";
+import { updateTicketStatusAction } from "@/src/actions/support-actions";
 import { TicketReplyForm } from "@/src/components/dashboard/support/ticket-reply-form";
 import { createClient } from "@/src/lib/supabase/server";
-import { ArrowLeft, Box, CheckCircle2, DollarSign, Send } from "lucide-react";
+import { ArrowLeft, Box, CheckCircle2, DollarSign } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 

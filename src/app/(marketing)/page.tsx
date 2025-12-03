@@ -1,5 +1,6 @@
 // src/app/(marketing)/page.tsx
 import Link from "next/link";
+import type { Metadata } from "next";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import {
@@ -15,12 +16,25 @@ import {
   ImageIcon,
 } from "lucide-react";
 
+export const metadata: Metadata = {
+  title: "BizoraPro – Premium WhatsApp Website for Indian Small Businesses",
+  description:
+    "Create a premium online shop for your WhatsApp business in under 5 minutes. Clean product catalog, WhatsApp cart checkout and mobile-first UI built for Indian sellers.",
+  openGraph: {
+    title: "BizoraPro – Premium Website for Your WhatsApp Business",
+    description:
+      "Showcase your catalogue, accept cart-based orders on WhatsApp and build trust with a premium online shop.",
+    type: "website",
+  },
+};
+
 export default function LandingPage() {
   return (
     <>
       {/* HERO SECTION */}
       <section
         id="home"
+        aria-labelledby="hero-heading"
         className="relative pt-20 pb-20 md:pt-28 md:pb-28 overflow-hidden"
       >
         {/* Glow background */}
@@ -36,7 +50,10 @@ export default function LandingPage() {
               WhatsApp Commerce · Made Premium
             </span>
 
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.05]">
+            <h1
+              id="hero-heading"
+              className="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.05]"
+            >
               A Premium Website
               <br />
               for Your{" "}
@@ -48,24 +65,25 @@ export default function LandingPage() {
 
             <p className="text-base md:text-lg text-muted-foreground max-w-xl mx-auto md:mx-0 leading-relaxed">
               Showcase your catalogue beautifully, accept cart-based orders on
-              WhatsApp, and give your business a trusted online home in under
-              5 minutes.
+              WhatsApp, and give your business a trusted online home in under 5
+              minutes.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start pt-2">
-              <Link href="/signup">
-                <Button className="h-12 md:h-14 px-8 md:px-10 text-sm md:text-lg font-semibold text-black bg-primary hover:bg-primary/90">
-                  Start Free
-                </Button>
-              </Link>
-              <Link href="/examples">
-                <Button
-                  variant="outline"
-                  className="h-12 md:h-14 px-8 md:px-10 text-sm md:text-lg border-white/20 bg-transparent text-white hover:bg-white/5"
-                >
-                  View Sample Shop
-                </Button>
-              </Link>
+              <Button
+                asChild
+                className="h-12 md:h-14 px-8 md:px-10 text-sm md:text-lg font-semibold text-black bg-primary hover:bg-primary/90 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-black"
+              >
+                <Link href="/signup">Start Free</Link>
+              </Button>
+
+              <Button
+                asChild
+                variant="outline"
+                className="h-12 md:h-14 px-8 md:px-10 text-sm md:text-lg border-white/20 bg-transparent text-white hover:bg-white/5 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-black"
+              >
+                <Link href="/examples">View Sample Shop</Link>
+              </Button>
             </div>
 
             <p className="text-xs md:text-sm text-muted-foreground pt-1">
@@ -74,7 +92,7 @@ export default function LandingPage() {
           </div>
 
           {/* Right: Phone Mockup / Preview */}
-          <div className="flex-1 w-full max-w-[520px]">
+          <div className="flex-1 w-full max-w-[520px]" aria-hidden="true">
             <div className="relative aspect-[4/3] rounded-3xl border border-white/10 bg-gradient-to-br from-zinc-950 via-zinc-900 to-zinc-950 shadow-[0_0_120px_rgba(0,0,0,0.7)] overflow-hidden">
               {/* Inner frame */}
               <div className="absolute inset-5 rounded-2xl border border-white/5 bg-black/60 backdrop-blur-sm flex">
@@ -82,7 +100,10 @@ export default function LandingPage() {
                 <div className="flex-1 flex flex-col gap-4 px-5 py-4">
                   <div className="flex items-center gap-3">
                     <div className="h-9 w-9 rounded-full bg-primary/10 flex items-center justify-center">
-                      <Store className="h-4 w-4 text-primary" />
+                      <Store
+                        className="h-4 w-4 text-primary"
+                        aria-hidden="true"
+                      />
                     </div>
                     <div>
                       <p className="text-xs text-muted-foreground uppercase tracking-[0.2em]">
@@ -138,7 +159,10 @@ export default function LandingPage() {
                   <div className="flex-1 flex flex-col gap-2 overflow-hidden p-3 text-[11px]">
                     <div className="flex gap-2 items-center">
                       <div className="h-8 w-8 rounded-md bg-zinc-800 flex items-center justify-center">
-                        <ImageIcon className="h-4 w-4 text-muted-foreground" />
+                        <ImageIcon
+                          className="h-4 w-4 text-muted-foreground"
+                          aria-hidden="true"
+                        />
                       </div>
                       <div className="flex-1">
                         <p className="truncate">Emerald Silk Saree</p>
@@ -149,7 +173,10 @@ export default function LandingPage() {
                     </div>
                     <div className="flex gap-2 items-center">
                       <div className="h-8 w-8 rounded-md bg-zinc-800 flex items-center justify-center">
-                        <ImageIcon className="h-4 w-4 text-muted-foreground" />
+                        <ImageIcon
+                          className="h-4 w-4 text-muted-foreground"
+                          aria-hidden="true"
+                        />
                       </div>
                       <div className="flex-1">
                         <p className="truncate">Georgette Kurti</p>
@@ -164,7 +191,7 @@ export default function LandingPage() {
                         <span className="font-semibold">₹3,797</span>
                       </div>
                       <Button className="w-full h-8 text-[11px] bg-emerald-500 text-black hover:bg-emerald-400 flex items-center justify-center gap-1">
-                        <MessageCircle className="h-3 w-3" />
+                        <MessageCircle className="h-3 w-3" aria-hidden="true" />
                         Order on WhatsApp
                       </Button>
                     </div>
@@ -179,11 +206,15 @@ export default function LandingPage() {
       {/* HOW IT WORKS */}
       <section
         id="how-it-works"
+        aria-labelledby="how-it-works-heading"
         className="py-16 md:py-20 border-y border-white/5 bg-black/40"
       >
         <div className="mx-auto max-w-5xl text-center space-y-10">
           <div>
-            <h2 className="text-2xl md:text-3xl font-bold mb-3">
+            <h2
+              id="how-it-works-heading"
+              className="text-2xl md:text-3xl font-bold mb-3"
+            >
               How BizoraPro Works
             </h2>
             <p className="text-sm md:text-base text-muted-foreground max-w-2xl mx-auto">
@@ -196,7 +227,7 @@ export default function LandingPage() {
             <div className="flex flex-col gap-3 rounded-2xl border border-white/10 bg-black/50 p-6">
               <div className="flex items-center gap-3">
                 <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary/10">
-                  <Store className="h-4 w-4 text-primary" />
+                  <Store className="h-4 w-4 text-primary" aria-hidden="true" />
                 </div>
                 <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary/80">
                   Step 1
@@ -214,7 +245,10 @@ export default function LandingPage() {
             <div className="flex flex-col gap-3 rounded-2xl border border-white/10 bg-black/50 p-6">
               <div className="flex items-center gap-3">
                 <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary/10">
-                  <ImageIcon className="h-4 w-4 text-primary" />
+                  <ImageIcon
+                    className="h-4 w-4 text-primary"
+                    aria-hidden="true"
+                  />
                 </div>
                 <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary/80">
                   Step 2
@@ -232,7 +266,10 @@ export default function LandingPage() {
             <div className="flex flex-col gap-3 rounded-2xl border border-white/10 bg-black/50 p-6">
               <div className="flex items-center gap-3">
                 <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary/10">
-                  <MessageCircle className="h-4 w-4 text-primary" />
+                  <MessageCircle
+                    className="h-4 w-4 text-primary"
+                    aria-hidden="true"
+                  />
                 </div>
                 <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary/80">
                   Step 3
@@ -251,15 +288,19 @@ export default function LandingPage() {
       </section>
 
       {/* VALUE PROPS */}
-      <section id="why" className="py-20 bg-[#050509]">
+      <section
+        id="why"
+        aria-labelledby="why-heading"
+        className="py-20 bg-[#050509]"
+      >
         <div className="mx-auto max-w-6xl space-y-10">
           <div className="text-center space-y-3">
-            <h2 className="text-2xl md:text-3xl font-bold">
+            <h2 id="why-heading" className="text-2xl md:text-3xl font-bold">
               Why sellers love BizoraPro
             </h2>
             <p className="text-sm md:text-base text-muted-foreground max-w-2xl mx-auto">
               Built specifically for Indian small businesses who already sell on
-              WhatsApp not a generic foreign e-commerce tool.
+              WhatsApp, not a generic foreign e-commerce tool.
             </p>
           </div>
 
@@ -268,7 +309,7 @@ export default function LandingPage() {
               {
                 icon: TrendingUp,
                 title: "Boost trust & sales",
-                text: "A premium link makes your business look serious and reliable no more random Google Drive photos.",
+                text: "A premium link makes your business look serious and reliable – no more random Google Drive photos.",
               },
               {
                 icon: Tag,
@@ -287,10 +328,13 @@ export default function LandingPage() {
               },
             ].map((item, i) => (
               <div
-                key={i}
+                key={item.title}
                 className="bg-[#0B0B0F] border border-white/5 rounded-xl p-7 text-left hover:border-primary/40 transition-colors group"
               >
-                <item.icon className="w-8 h-8 text-primary mb-4 group-hover:scale-110 transition-transform" />
+                <item.icon
+                  className="w-8 h-8 text-primary mb-4 group-hover:scale-110 transition-transform"
+                  aria-hidden="true"
+                />
                 <h3 className="font-semibold text-base md:text-lg mb-2">
                   {item.title}
                 </h3>
@@ -304,9 +348,16 @@ export default function LandingPage() {
       </section>
 
       {/* SAMPLE SHOPS */}
-      <section id="examples" className="py-24 bg-background">
+      <section
+        id="examples"
+        aria-labelledby="examples-heading"
+        className="py-24 bg-background"
+      >
         <div className="mx-auto max-w-6xl text-center">
-          <h2 className="text-2xl md:text-3xl font-bold mb-3">
+          <h2
+            id="examples-heading"
+            className="text-2xl md:text-3xl font-bold mb-3"
+          >
             Sample <span className="text-primary">Shops</span>
           </h2>
           <p className="text-sm md:text-base text-muted-foreground mb-12">
@@ -327,14 +378,14 @@ export default function LandingPage() {
                 title: "Salon",
                 desc: "Clean, minimal look for beauty and grooming.",
               },
-            ].map((shop, i) => (
-              <div
-                key={i}
+            ].map((shop) => (
+              <article
+                key={shop.title}
                 className="bg-[#0B0B0F] border border-white/5 rounded-2xl overflow-hidden text-left group hover:border-primary/60 transition-all"
               >
                 <div className="aspect-[16/10] bg-gradient-to-br from-zinc-900 via-zinc-800 to-zinc-900 flex items-center justify-center border-b border-white/5">
                   <span className="text-[11px] text-muted-foreground">
-                    Demo preview replace with real screenshots later
+                    Demo preview – replace with real screenshots later
                   </span>
                 </div>
                 <div className="p-6 space-y-4">
@@ -347,17 +398,24 @@ export default function LandingPage() {
                     Open Demo
                   </Button>
                 </div>
-              </div>
+              </article>
             ))}
           </div>
         </div>
       </section>
 
       {/* PREMIUM FEATURES */}
-      <section id="features" className="py-24 bg-[#050509]">
+      <section
+        id="features"
+        aria-labelledby="features-heading"
+        className="py-24 bg-[#050509]"
+      >
         <div className="mx-auto max-w-6xl">
           <div className="text-center mb-14">
-            <h2 className="text-2xl md:text-3xl font-bold mb-3">
+            <h2
+              id="features-heading"
+              className="text-2xl md:text-3xl font-bold mb-3"
+            >
               Premium <span className="text-primary">Features</span>
             </h2>
             <p className="text-sm md:text-base text-muted-foreground max-w-2xl mx-auto">
@@ -396,15 +454,18 @@ export default function LandingPage() {
               {
                 icon: ShieldCheck,
                 title: "Secure hosting",
-                text: "Fast, secure hosting on modern cloud infrastructure no DevOps needed.",
+                text: "Fast, secure hosting on modern cloud infrastructure – no DevOps needed.",
               },
-            ].map((item, i) => (
+            ].map((item) => (
               <div
-                key={i}
+                key={item.title}
                 className="flex gap-4 p-5 rounded-xl bg-[#0B0B0F] border border-white/5 hover:bg-[#101018] transition-colors"
               >
                 <div className="mt-1">
-                  <item.icon className="w-7 h-7 text-primary" />
+                  <item.icon
+                    className="w-7 h-7 text-primary"
+                    aria-hidden="true"
+                  />
                 </div>
                 <div>
                   <h3 className="font-semibold text-base md:text-lg mb-1.5">
@@ -421,9 +482,16 @@ export default function LandingPage() {
       </section>
 
       {/* PRICING */}
-      <section id="pricing" className="py-24 bg-background">
+      <section
+        id="pricing"
+        aria-labelledby="pricing-heading"
+        className="py-24 bg-background"
+      >
         <div className="mx-auto max-w-4xl text-center">
-          <h2 className="text-2xl md:text-3xl font-bold mb-3">
+          <h2
+            id="pricing-heading"
+            className="text-2xl md:text-3xl font-bold mb-3"
+          >
             Simple <span className="text-primary">Pricing</span>
           </h2>
           <p className="text-sm md:text-base text-muted-foreground mb-12">
@@ -453,11 +521,12 @@ export default function LandingPage() {
                   <li>WhatsApp cart checkout</li>
                   <li>Premium themes included</li>
                 </ul>
-                <Link href="/signup" className="w-full mt-2">
-                  <Button className="w-full h-12 font-semibold bg-primary text-black hover:bg-primary/90">
-                    Get Started Monthly
-                  </Button>
-                </Link>
+                <Button
+                  asChild
+                  className="w-full h-12 font-semibold bg-primary text-black hover:bg-primary/90 mt-2"
+                >
+                  <Link href="/signup">Get Started Monthly</Link>
+                </Button>
               </CardContent>
             </Card>
 
@@ -486,11 +555,12 @@ export default function LandingPage() {
                   <li>Priority feature access</li>
                   <li>Best for serious sellers</li>
                 </ul>
-                <Link href="/signup" className="w-full mt-2">
-                  <Button className="w-full h-12 font-semibold bg-primary text-black hover:bg-primary/90">
-                    Get Started Yearly
-                  </Button>
-                </Link>
+                <Button
+                  asChild
+                  className="w-full h-12 font-semibold bg-primary text-black hover:bg-primary/90 mt-2"
+                >
+                  <Link href="/signup">Get Started Yearly</Link>
+                </Button>
               </CardContent>
             </Card>
           </div>
@@ -504,9 +574,15 @@ export default function LandingPage() {
       </section>
 
       {/* FINAL CTA */}
-      <section className="py-24 bg-black border-t border-white/10">
+      <section
+        aria-labelledby="final-cta-heading"
+        className="py-24 bg-black border-t border-white/10"
+      >
         <div className="mx-auto max-w-4xl text-center space-y-8">
-          <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold leading-tight">
+          <h2
+            id="final-cta-heading"
+            className="text-2xl md:text-3xl lg:text-4xl font-bold leading-tight"
+          >
             Turn your WhatsApp catalogue into a{" "}
             <span className="text-primary">premium website</span> today.
           </h2>
@@ -515,20 +591,33 @@ export default function LandingPage() {
             your business look trustworthy and easy to buy from.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="/signup">
-              <Button className="h-12 md:h-14 px-8 md:px-10 text-sm md:text-lg font-semibold bg-primary text-black hover:bg-primary/90">
-                Create Your Shop Link
-              </Button>
-            </Link>
-            <Link href="https://wa.me/your-number">
-              <Button
-                variant="outline"
-                className="h-12 md:h-14 px-8 md:px-10 text-sm md:text-lg border-white/25 text-white hover:bg-white/10 flex items-center gap-2"
+            <Button
+              asChild
+              className="h-12 md:h-14 px-8 md:px-10 text-sm md:text-lg font-semibold bg-primary text-black hover:bg-primary/90"
+            >
+              <Link href="/signup">Create Your Shop Link</Link>
+            </Button>
+
+            <Button
+              asChild
+              variant="outline"
+              className="h-12 md:h-14 px-8 md:px-10 text-sm md:text-lg border-white/25 text-white hover:bg-white/10 flex items-center gap-2"
+            >
+              <Link
+                href="https://wa.me/your-number"
+                aria-label="Chat with BizoraPro support on WhatsApp"
+                target="_blank"
+                rel="noreferrer"
               >
-                <MessageCircle className="w-4 h-4 text-green-500" />
-                WhatsApp Support
-              </Button>
-            </Link>
+                <span className="flex items-center gap-2">
+                  <MessageCircle
+                    className="w-4 h-4 text-green-500"
+                    aria-hidden="true"
+                  />
+                  WhatsApp Support
+                </span>
+              </Link>
+            </Button>
           </div>
         </div>
       </section>

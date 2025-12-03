@@ -23,7 +23,6 @@ export default async function OrdersPage({
 }) {
   const params = await searchParams;
   const statusFilter = params.status || "all";
-  const searchQuery = params.search || "";
 
   const supabase = await createClient();
   const {
@@ -36,6 +35,10 @@ export default async function OrdersPage({
     .select("id")
     .eq("owner_id", user.id)
     .single();
+
+  if (!shop) {
+    redirect("/onboarding");
+  }
 
   // Build Query
   let query = supabase

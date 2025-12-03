@@ -27,26 +27,33 @@ export async function getAdminStats() {
 }
 
 // 2. TOGGLE SHOP STATUS (Suspend/Activate)
-export async function toggleShopStatusAction(formData: FormData) {
-  const shopId = formData.get("shopId") as string;
-  const currentStatus = formData.get("currentStatus") === "true"; // "true" if suspended
+export async function toggleShopStatusAction(formData: FormData): Promise<void> {
+  const shopId = formData.get("shopId") as string | null;
+  const desiredStatusRaw = formData.get("desiredStatus");
+
+  if (!shopId) {
+    // fatal — throw so platform shows the error (or handle via your toast system)
+    throw new Error("Missing shopId");
+  }
+
+  const desiredStatus = desiredStatusRaw === "true";
 
   const supabase = await createClient();
 
-  // We use 'is_published' or create a new 'status' column.
-  // Let&apos;s assume we use 'is_published' as a proxy for "Active" for now,
-  // or better: add a 'status' column to shops table.
-
-  // Let&apos;s use is_open for now to force close.
   const { error } = await supabase
     .from("shops")
-    .update({ is_open: !currentStatus })
+    .update({ is_open: desiredStatus })
     .eq("id", shopId);
 
-  if (error) return { error: error.message };
+  if (error) {
+    // either throw to show an error page or use your notification system
+    // throwing will surface the error in Next.js server-action error UI
+    throw new Error(error.message);
+  }
 
+  // revalidate the admin listing so the change shows up on the next render
   revalidatePath("/admin/shops");
-  return { success: "Shop status updated" };
+
 }
 
 export async function createPlanAction(formData: FormData) {

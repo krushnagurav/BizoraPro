@@ -8,7 +8,7 @@ import Link from "next/link";
 export default async function AbandonedOrdersPage() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
-  const { data: shop } = await supabase.from("shops").select("id").eq("owner_id", user!.id).single();
+  const { data: shop } = await supabase.from("shops").select("id, name").eq("owner_id", user!.id).single();
 
   // Fetch ONLY Draft Orders
   const { data: orders } = await supabase

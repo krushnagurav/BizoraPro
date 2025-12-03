@@ -1,126 +1,95 @@
+// src/components/storefront/shared/shop-footer.tsx
 import Link from "next/link";
-import { Store, Facebook, Instagram, Twitter, Youtube } from "lucide-react";
+import { Instagram, Facebook, Youtube, Twitter } from "lucide-react";
 
 export function ShopFooter({ shop }: { shop: any }) {
   const social = shop.social_links || {};
+  const policies = shop.policies || {};
 
   return (
-    <footer className="bg-[#0F172A] text-white pt-16 pb-8">
-      <div className="max-w-5xl mx-auto px-6">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
-          {/* Brand */}
-          <div className="space-y-4 col-span-1 md:col-span-2">
-            <div className="flex items-center gap-2 font-bold text-xl text-primary">
-              <Store className="w-6 h-6" />
-              {shop.name}
-            </div>
-            <p className="text-slate-400 text-sm leading-relaxed max-w-xs">
-              Your trusted destination for quality products. We are committed to
-              providing the best service to our customers.
-            </p>
-          </div>
-
-          {/* Quick Links */}
-          <div className="space-y-4">
-            <h4 className="font-bold text-white">Shop</h4>
-            <ul className="space-y-2 text-sm text-slate-400">
-              <li>
-                <Link
-                  href={`/${shop.slug}`}
-                  className="hover:text-primary transition"
-                >
-                  All Products
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href={`/${shop.slug}/about`}
-                  className="hover:text-primary transition"
-                >
-                  About Us
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href={`/${shop.slug}/contact`}
-                  className="hover:text-primary transition-colors"
-                >
-                  Contact
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href={`/${shop.slug}/legal`}
-                  className="hover:text-primary transition-colors"
-                >
-                  Store Policies
-                </Link>
-              </li>
-            </ul>
-          </div>
-
-          {/* Socials */}
-          <div className="space-y-4">
-            <h4 className="font-bold text-white">Follow Us</h4>
-            <div className="flex gap-3">
-              {social.instagram && (
-                <a
-                  href={social.instagram}
-                  target="_blank"
-                  className="bg-white/10 p-2 rounded-full hover:bg-primary hover:text-black transition"
-                >
-                  <Instagram className="w-4 h-4" />
-                </a>
-              )}
-              {social.facebook && (
-                <a
-                  href={social.facebook}
-                  target="_blank"
-                  className="bg-white/10 p-2 rounded-full hover:bg-primary hover:text-black transition"
-                >
-                  <Facebook className="w-4 h-4" />
-                </a>
-              )}
-              {social.youtube && (
-                <a
-                  href={social.youtube}
-                  target="_blank"
-                  className="bg-white/10 p-2 rounded-full hover:bg-primary hover:text-black transition"
-                >
-                  <Youtube className="w-4 h-4" />
-                </a>
-              )}
-              {social.twitter && (
-                <a
-                  href={social.twitter}
-                  target="_blank"
-                  className="bg-white/10 p-2 rounded-full hover:bg-primary hover:text-black transition"
-                >
-                  <Twitter className="w-4 h-4" />
-                </a>
-              )}
-            </div>
-          </div>
-        </div>
-
-        {/* Bottom Bar */}
-        <div className="border-t border-white/10 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-slate-500">
-          <p>
-            © {new Date().getFullYear()} {shop.name}. All rights reserved.
+    <footer className="bg-slate-900 text-slate-200 mt-16 pt-12 pb-6">
+      <div className="container mx-auto px-6 grid gap-10 md:grid-cols-4">
+        {/* Brand */}
+        <div className="md:col-span-2 space-y-3">
+          <p className="text-lg font-bold text-white">{shop.name}</p>
+          <p className="text-sm text-slate-400 max-w-md">
+            Your trusted destination for quality products and a smooth WhatsApp
+            shopping experience.
           </p>
-          {shop.plan === "free" && (
-            <p>
-              Powered by{" "}
-              <a
-                href="https://bizorapro.com"
-                target="_blank"
-                className="text-slate-300 font-medium hover:underline"
-              >
-                BizoraPro
-              </a>
-            </p>
-          )}{" "}
         </div>
+
+        {/* Shop Links */}
+        <div>
+          <h4 className="font-semibold text-sm mb-3 text-white">Shop</h4>
+          <div className="flex flex-col gap-2 text-sm text-slate-400">
+            <Link href={`/${shop.slug}`}>All Products</Link>
+            <Link href={`/${shop.slug}/about`}>About Us</Link>
+            <Link href={`/${shop.slug}/contact`}>Contact</Link>
+            <Link href={`/${shop.slug}/legal`}>Store Policies</Link>
+          </div>
+        </div>
+
+        {/* Policies Quick Access (if present) */}
+        <div>
+          <h4 className="font-semibold text-sm mb-3 text-white">Support</h4>
+          <div className="flex flex-col gap-2 text-sm text-slate-400">
+            {policies.refund && (
+              <Link href={`/${shop.slug}/legal#refund`}>Refund Policy</Link>
+            )}
+            {policies.privacy && (
+              <Link href={`/${shop.slug}/legal#privacy`}>Privacy Policy</Link>
+            )}
+            {policies.terms && (
+              <Link href={`/${shop.slug}/legal#terms`}>
+                Terms &amp; Conditions
+              </Link>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Social + bottom bar */}
+      <div className="container mx-auto px-6 mt-8 pt-4 border-t border-slate-700 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-slate-500">
+        <div className="flex items-center gap-3">
+          <span>
+            © {new Date().getFullYear()} {shop.name}. All rights reserved.
+          </span>
+          <div className="flex gap-2">
+            {social.instagram && (
+              <a href={social.instagram} target="_blank" rel="noreferrer">
+                <Instagram className="h-4 w-4" />
+              </a>
+            )}
+            {social.facebook && (
+              <a href={social.facebook} target="_blank" rel="noreferrer">
+                <Facebook className="h-4 w-4" />
+              </a>
+            )}
+            {social.youtube && (
+              <a href={social.youtube} target="_blank" rel="noreferrer">
+                <Youtube className="h-4 w-4" />
+              </a>
+            )}
+            {social.twitter && (
+              <a href={social.twitter} target="_blank" rel="noreferrer">
+                <Twitter className="h-4 w-4" />
+              </a>
+            )}
+          </div>
+        </div>
+
+        {shop.plan === "free" && (
+          <p>
+            Powered by{" "}
+            <Link
+              href="https://bizorapro.com"
+              target="_blank"
+              className="text-[hsl(var(--primary))] hover:underline"
+            >
+              BizoraPro
+            </Link>
+          </p>
+        )}
       </div>
     </footer>
   );

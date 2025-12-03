@@ -72,25 +72,28 @@ export async function replyToTicketAction(formData: FormData) {
   return { success: "Reply sent" };
 }
 
-// 3. UPDATE TICKET STATUS (Admin)
-export async function updateTicketStatusAction(formData: FormData) {
+// 3. UPDATE TICKET STATUS (Admin / Owner)
+export async function updateTicketStatusAction(formData: FormData): Promise<void> {
   const ticketId = formData.get("ticketId") as string;
   const status = formData.get("status") as string; // 'open', 'resolved'
 
   const supabase = await createClient();
-  
+
   const { error } = await supabase
     .from("support_tickets")
     .update({ status })
     .eq("id", ticketId);
 
-  if (error) return { error: error.message };
+  if (error) {
+    console.error("Failed to update ticket status:", error.message);
+    return;
+  }
 
-  // Revalidate lists and details
-  revalidatePath("/admin/support");
-  revalidatePath(`/admin/support/${ticketId}`);
-  revalidatePath("/dashboard/support");
-  revalidatePath(`/dashboard/support/${ticketId}`);
-  
-  return { success: "Status updated" };
+  // Revalidate lists and details in both admin + dashboard
+  await Promise.all([
+    revalidatePath("/admin/support"),
+    revalidatePath(`/admin/support/${ticketId}`),
+    revalidatePath("/dashboard/support"),
+    revalidatePath(`/dashboard/support/${ticketId}`),
+  ]);
 }

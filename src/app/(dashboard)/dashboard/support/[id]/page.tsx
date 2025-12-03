@@ -1,13 +1,12 @@
-import { createClient } from "@/src/lib/supabase/server";
-import { notFound } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Send, CheckCircle2, AlertCircle } from "lucide-react";
-import Link from "next/link";
-import { replyToTicketAction, updateTicketStatusAction } from "@/src/actions/support-actions"; // Need to ensure these exist
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { updateTicketStatusAction } from "@/src/actions/support-actions"; // Need to ensure these exist
 import { TicketReplyForm } from "@/src/components/dashboard/support/ticket-reply-form";
+import { createClient } from "@/src/lib/supabase/server";
+import { ArrowLeft, CheckCircle2 } from "lucide-react";
+import Link from "next/link";
+import { notFound } from "next/navigation";
 
 export default async function TicketDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;

@@ -1,3 +1,4 @@
+// src/app/(marketing)/pricing/page.tsx
 "use client";
 
 import Link from "next/link";
@@ -114,27 +115,37 @@ export default function PricingPage() {
   ];
 
   return (
-    <main className="bg-black text-foreground pb-20 pt-24">
+    <>
       {/* HEADER + TOGGLE */}
-      <section className="container mx-auto px-6 md:px-12 mb-16 text-center">
+      <section className="container mx-auto mb-16 px-6 pt-24 text-center md:px-12" aria-labelledby="pricing-heading">
         <p className="mb-3 text-xs font-semibold uppercase tracking-[0.25em] text-primary">
           Pricing
         </p>
-        <h1 className="mb-4 text-3xl md:text-5xl font-bold text-white">
+        <h1
+          id="pricing-heading"
+          className="mb-4 text-3xl font-bold text-white md:text-5xl"
+        >
           Simple pricing that{" "}
           <span className="text-primary">grows with your shop</span>
         </h1>
-        <p className="mb-8 text-sm md:text-lg text-muted-foreground">
+        <p className="mb-8 text-sm text-muted-foreground md:text-lg">
           Start free for a limited time. No GST required to begin. Cancel
           anytime from your dashboard.
         </p>
 
         <div className="flex items-center justify-center gap-4">
-          <div className="relative inline-flex items-center rounded-full border border-white/15 bg-[#111] p-1">
+          <div
+            className="relative inline-flex items-center rounded-full border border-white/15 bg-[#111] p-1"
+            role="radiogroup"
+            aria-label="Billing interval"
+          >
             <button
               type="button"
               onClick={() => setIsYearly(false)}
-              className={`px-5 py-2 text-xs md:text-sm font-semibold rounded-full transition-all ${
+              aria-pressed={!isYearly}
+              role="radio"
+              aria-checked={!isYearly}
+              className={`px-5 py-2 text-xs font-semibold rounded-full transition-all md:text-sm ${
                 !isYearly
                   ? "bg-primary text-black shadow-sm"
                   : "text-muted-foreground hover:text-white"
@@ -145,7 +156,10 @@ export default function PricingPage() {
             <button
               type="button"
               onClick={() => setIsYearly(true)}
-              className={`px-5 py-2 text-xs md:text-sm font-semibold rounded-full transition-all ${
+              aria-pressed={isYearly}
+              role="radio"
+              aria-checked={isYearly}
+              className={`px-5 py-2 text-xs font-semibold rounded-full transition-all md:text-sm ${
                 isYearly
                   ? "bg-primary text-black shadow-sm"
                   : "text-muted-foreground hover:text-white"
@@ -169,12 +183,12 @@ export default function PricingPage() {
 
       {/* PRICING CARDS */}
       <section className="container mx-auto mb-24 grid max-w-6xl grid-cols-1 gap-8 px-6 md:px-12 lg:grid-cols-3">
-        {plans.map((plan, i) => (
+        {plans.map((plan) => (
           <Card
-            key={plan.name + i}
+            key={plan.name}
             className={`relative flex flex-col border bg-[#111] ${
               plan.highlight
-                ? "border-primary shadow-2xl shadow-primary/15 scale-[1.03] z-10"
+                ? "z-10 scale-[1.03] border-primary shadow-2xl shadow-primary/15"
                 : "border-white/10 hover:border-white/20"
             }`}
           >
@@ -187,17 +201,17 @@ export default function PricingPage() {
             )}
 
             <CardHeader className="p-7 pb-4 md:p-8 md:pb-4">
-              <h3 className="text-xl md:text-2xl font-bold text-white">
+              <h2 className="text-xl font-bold text-white md:text-2xl">
                 {plan.name}
-              </h3>
-              <p className="mt-2 text-xs md:text-sm text-muted-foreground">
+              </h2>
+              <p className="mt-2 text-xs text-muted-foreground md:text-sm">
                 {plan.desc}
               </p>
               <div className="mt-4 flex items-baseline gap-1">
-                <span className="text-4xl md:text-5xl font-bold text-white">
+                <span className="text-4xl font-bold text-white md:text-5xl">
                   {plan.price}
                 </span>
-                <span className="text-xs md:text-sm text-muted-foreground">
+                <span className="text-xs text-muted-foreground md:text-sm">
                   {plan.period}
                 </span>
               </div>
@@ -208,26 +222,25 @@ export default function PricingPage() {
                 {plan.features.map((feature) => (
                   <li
                     key={feature}
-                    className="flex items-start gap-3 text-xs md:text-sm text-gray-200"
+                    className="flex items-start gap-3 text-xs text-gray-200 md:text-sm"
                   >
-                    <Check className="mt-0.5 h-4 w-4 flex-shrink-0 text-primary" />
+                    <Check
+                      aria-hidden="true"
+                      className="mt-0.5 h-4 w-4 flex-shrink-0 text-primary"
+                    />
                     <span>{feature}</span>
                   </li>
                 ))}
               </ul>
 
               <div className="mt-auto space-y-3">
-                <Link href="/signup" className="block">
-                  <Button
-                    className={`h-11 w-full text-sm md:h-12 md:text-lg font-bold ${
-                      plan.highlight
-                        ? "bg-primary text-black hover:bg-primary/90"
-                        : "bg-primary text-black hover:bg-primary/90"
-                    }`}
-                  >
-                    {plan.btnText}
-                  </Button>
-                </Link>
+                <Button
+                  asChild
+                  className="h-11 w-full text-sm font-bold bg-primary text-black hover:bg-primary/90 md:h-12 md:text-lg"
+                >
+                  <Link href="/signup">{plan.btnText}</Link>
+                </Button>
+
                 <button
                   type="button"
                   className="w-full text-xs font-medium text-primary hover:underline"
@@ -241,65 +254,133 @@ export default function PricingPage() {
       </section>
 
       {/* COMPARISON TABLE */}
-      <section className="container mx-auto mb-24 max-w-5xl px-6 md:px-12">
-        <h2 className="mb-8 text-center text-2xl md:text-3xl font-bold text-white">
+      <section
+        className="container mx-auto mb-24 max-w-5xl px-6 md:px-12"
+        aria-labelledby="compare-heading"
+      >
+        <h2
+          id="compare-heading"
+          className="mb-8 text-center text-2xl font-bold text-white md:text-3xl"
+        >
           Compare plans
         </h2>
-        <div className="overflow-hidden rounded-2xl border border-white/10 bg-[#111]">
-          <div className="grid grid-cols-4 border-b border-white/10 bg-[#151515] p-4 text-xs md:text-sm font-semibold text-gray-200">
-            <div className="pl-4 text-left">Features</div>
-            <div className="text-center">Starter</div>
-            <div className="text-center text-primary">Business</div>
-            <div className="text-center">Pro Plus</div>
-          </div>
 
-          {comparisonRows.map((row) => (
-            <div
-              key={row.name}
-              className="grid grid-cols-4 items-center border-b border-white/5 p-4 text-xs md:text-sm hover:bg-white/5"
-            >
-              <div className="pl-4 text-gray-200">{row.name}</div>
+        <div className="overflow-x-auto rounded-2xl border border-white/10 bg-[#111]">
+          <table className="min-w-full text-xs md:text-sm">
+            <thead>
+              <tr className="border-b border-white/10 bg-[#151515] text-gray-200">
+                <th className="py-3 pl-4 pr-2 text-left font-semibold">
+                  Features
+                </th>
+                <th className="px-2 text-center font-semibold">Starter</th>
+                <th className="px-2 text-center font-semibold text-primary">
+                  Business
+                </th>
+                <th className="px-2 pr-4 text-center font-semibold">
+                  Pro Plus
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {comparisonRows.map((row) => (
+                <tr
+                  key={row.name}
+                  className="border-b border-white/5 hover:bg-white/5"
+                >
+                  <td className="py-3 pl-4 pr-2 text-gray-200">{row.name}</td>
 
-              {/* Starter */}
-              <div className="flex justify-center text-center">
-                {typeof row.starter === "boolean" ? (
-                  row.starter ? (
-                    <Check className="h-4 w-4 text-primary" />
-                  ) : (
-                    <X className="h-4 w-4 text-muted-foreground" />
-                  )
-                ) : (
-                  <span className="text-muted-foreground">{row.starter}</span>
-                )}
-              </div>
+                  {/* Starter */}
+                  <td className="px-2 text-center">
+                    {typeof row.starter === "boolean" ? (
+                      row.starter ? (
+                        <span
+                          className="inline-flex items-center justify-center"
+                          aria-label="Included in Starter plan"
+                        >
+                          <Check
+                            aria-hidden="true"
+                            className="h-4 w-4 text-primary"
+                          />
+                        </span>
+                      ) : (
+                        <span
+                          className="inline-flex items-center justify-center"
+                          aria-label="Not included in Starter plan"
+                        >
+                          <X
+                            aria-hidden="true"
+                            className="h-4 w-4 text-muted-foreground"
+                          />
+                        </span>
+                      )
+                    ) : (
+                      <span className="text-muted-foreground">
+                        {row.starter}
+                      </span>
+                    )}
+                  </td>
 
-              {/* Business */}
-              <div className="flex justify-center text-center">
-                {typeof row.business === "boolean" ? (
-                  row.business ? (
-                    <Check className="h-4 w-4 text-primary" />
-                  ) : (
-                    <X className="h-4 w-4 text-muted-foreground" />
-                  )
-                ) : (
-                  <span className="text-primary">{row.business}</span>
-                )}
-              </div>
+                  {/* Business */}
+                  <td className="px-2 text-center">
+                    {typeof row.business === "boolean" ? (
+                      row.business ? (
+                        <span
+                          className="inline-flex items-center justify-center"
+                          aria-label="Included in Business plan"
+                        >
+                          <Check
+                            aria-hidden="true"
+                            className="h-4 w-4 text-primary"
+                          />
+                        </span>
+                      ) : (
+                        <span
+                          className="inline-flex items-center justify-center"
+                          aria-label="Not included in Business plan"
+                        >
+                          <X
+                            aria-hidden="true"
+                            className="h-4 w-4 text-muted-foreground"
+                          />
+                        </span>
+                      )
+                    ) : (
+                      <span className="text-primary">{row.business}</span>
+                    )}
+                  </td>
 
-              {/* Pro */}
-              <div className="flex justify-center text-center">
-                {typeof row.pro === "boolean" ? (
-                  row.pro ? (
-                    <Check className="h-4 w-4 text-primary" />
-                  ) : (
-                    <X className="h-4 w-4 text-muted-foreground" />
-                  )
-                ) : (
-                  <span className="text-primary">{row.pro}</span>
-                )}
-              </div>
-            </div>
-          ))}
+                  {/* Pro */}
+                  <td className="px-2 pr-4 text-center">
+                    {typeof row.pro === "boolean" ? (
+                      row.pro ? (
+                        <span
+                          className="inline-flex items-center justify-center"
+                          aria-label="Included in Pro Plus plan"
+                        >
+                          <Check
+                            aria-hidden="true"
+                            className="h-4 w-4 text-primary"
+                          />
+                        </span>
+                      ) : (
+                        <span
+                          className="inline-flex items-center justify-center"
+                          aria-label="Not included in Pro Plus plan"
+                        >
+                          <X
+                            aria-hidden="true"
+                            className="h-4 w-4 text-muted-foreground"
+                          />
+                        </span>
+                      )
+                    ) : (
+                      <span className="text-primary">{row.pro}</span>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       </section>
 
@@ -324,12 +405,12 @@ export default function PricingPage() {
         ].map((item) => (
           <div key={item.title} className="flex flex-col items-center">
             <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full border border-white/10 bg-[#181818] text-primary">
-              <item.icon className="h-6 w-6" />
+              <item.icon aria-hidden="true" className="h-6 w-6" />
             </div>
-            <h4 className="mb-1 text-sm md:text-base font-semibold text-white">
+            <h3 className="mb-1 text-sm font-semibold text-white md:text-base">
               {item.title}
-            </h4>
-            <p className="max-w-xs text-[11px] md:text-xs text-muted-foreground">
+            </h3>
+            <p className="max-w-xs text-[11px] text-muted-foreground md:text-xs">
               {item.desc}
             </p>
           </div>
@@ -337,15 +418,21 @@ export default function PricingPage() {
       </section>
 
       {/* FAQ */}
-      <section className="container mx-auto mb-24 max-w-3xl px-6 md:px-12">
-        <h2 className="mb-8 text-center text-2xl md:text-3xl font-bold text-white">
+      <section
+        className="container mx-auto mb-24 max-w-3xl px-6 md:px-12"
+        aria-labelledby="faq-heading"
+      >
+        <h2
+          id="faq-heading"
+          className="mb-8 text-center text-2xl font-bold text-white md:text-3xl"
+        >
           Frequently asked questions
         </h2>
         <Accordion type="single" collapsible className="w-full space-y-4">
           {[
             {
               q: "Do I need GST to start?",
-              a: "No. You can start without GST. If you later enable online payments through a payment gateway, you may be asked for business details by that provider.",
+              a: "No. You can start without GST. If you later enable online payments through a payment gateway, that provider may ask for your business details.",
             },
             {
               q: "How do customers place orders?",
@@ -353,22 +440,22 @@ export default function PricingPage() {
             },
             {
               q: "Can I change my plan later?",
-              a: "Yes. You can upgrade or downgrade plans from your dashboard. Changes usually apply from your next billing cycle, depending on the payment provider rules.",
+              a: "Yes. You can upgrade or downgrade plans from your dashboard. Changes usually apply from your next billing cycle, depending on the payment provider.",
             },
             {
               q: "What happens if I cancel?",
-              a: "Your shop can be moved into a lightweight ‘catalog mode’ with limited features so that links you have shared don’t look broken.",
+              a: "Your shop can be moved into a lightweight “catalog mode” with limited features so that links you have already shared do not look broken.",
             },
           ].map((faq, i) => (
             <AccordionItem
-              key={faq.q + i}
+              key={faq.q}
               value={`item-${i}`}
               className="rounded-xl border border-white/10 bg-[#111] px-4 data-[state=open]:border-primary/50"
             >
-              <AccordionTrigger className="py-4 text-left text-sm md:text-base text-white hover:no-underline">
+              <AccordionTrigger className="py-4 text-left text-sm text-white hover:no-underline md:text-base">
                 {faq.q}
               </AccordionTrigger>
-              <AccordionContent className="pb-4 text-xs md:text-sm text-muted-foreground">
+              <AccordionContent className="pb-4 text-xs text-muted-foreground md:text-sm">
                 {faq.a}
               </AccordionContent>
             </AccordionItem>
@@ -378,28 +465,29 @@ export default function PricingPage() {
 
       {/* FINAL CTA */}
       <section className="container mx-auto max-w-4xl px-6 text-center md:px-12">
-        <h2 className="mb-4 text-2xl md:text-4xl font-bold text-white">
+        <h2 className="mb-4 text-2xl font-bold text-white md:text-4xl">
           Start free and share your shop link{" "}
           <span className="text-primary">today</span>
         </h2>
-        <p className="mb-8 text-sm md:text-lg text-muted-foreground">
+        <p className="mb-8 text-sm text-muted-foreground md:text-lg">
           Create your BizoraPro shop, add a few products and send the link to
           your best customers on WhatsApp.
         </p>
         <div className="flex flex-col items-center justify-center gap-3 sm:flex-row">
-          <Link href="/signup">
-            <Button className="h-11 px-8 text-sm md:h-12 md:text-lg font-bold bg-primary text-black hover:bg-primary/90">
-              Start free trial
-            </Button>
-          </Link>
+          <Button
+            className="h-11 px-8 text-sm font-bold bg-primary text-black hover:bg-primary/90 md:h-12 md:text-lg"
+            asChild
+          >
+            <Link href="/signup">Start free trial</Link>
+          </Button>
           <button
             type="button"
-            className="text-xs md:text-sm font-medium text-primary hover:underline"
+            className="text-xs font-medium text-primary hover:underline md:text-sm"
           >
             View sample shop
           </button>
         </div>
       </section>
-    </main>
+    </>
   );
 }

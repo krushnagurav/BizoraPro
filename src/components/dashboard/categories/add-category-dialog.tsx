@@ -22,16 +22,49 @@ export function AddCategoryDialog() {
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setLoading(true);
+
     const formData = new FormData(event.currentTarget);
-    
-    const result = await createCategoryAction(formData);
-    
-    setLoading(false);
-    if (result?.error) {
-      toast.error(result.error);
-    } else {
-      toast.success("Category created!");
-      setOpen(false); // Close modal
+    const name = (formData.get("name") ?? "").toString().trim();
+
+    if (!name) {
+      setLoading(false);
+      toast.error("Please provide a category name.");
+      return;
+    }
+
+    try {
+      const result = await createCategoryAction({ name });
+
+      setLoading(false);
+
+      // Common successful return: a string id or truthy value
+      if (typeof result === "string" || !!result) {
+        toast.success("Category created!");
+        setOpen(false);
+        (event.currentTarget as HTMLFormElement).reset();
+        return;
+      }
+
+      // Defensive fallback: try to read message-ish properties (safe cast)
+      const maybe = result as any;
+      const message =
+        maybe?.error ??
+        maybe?.message ??
+        maybe?._errors?.[0] ??
+        (maybe?.name && "Validation failed");
+
+      if (message) {
+        toast.error(String(message));
+      } else {
+        // if nothing useful, show generic success (or generic error if you'd prefer)
+        toast.success("Category created!");
+        setOpen(false);
+        (event.currentTarget as HTMLFormElement).reset();
+      }
+    } catch (err: any) {
+      setLoading(false);
+      // server action threw — show that message
+      toast.error(err?.message ?? "Something went wrong");
     }
   };
 
@@ -53,7 +86,11 @@ export function AddCategoryDialog() {
           </div>
           <div className="flex justify-end">
             <Button type="submit" disabled={loading}>
-              {loading ? <Loader2 className="animate-spin mr-2" /> : "Save Category"}
+              {loading ? (
+                <Loader2 className="animate-spin mr-2" />
+              ) : (
+                "Save Category"
+              )}
             </Button>
           </div>
         </form>

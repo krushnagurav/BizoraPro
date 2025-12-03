@@ -1,11 +1,26 @@
+import type { Metadata } from "next";
+import Link from "next/link";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+
+export const metadata: Metadata = {
+  title: "Legal, Terms & Policies – BizoraPro India",
+  description:
+    "Review BizoraPro’s Privacy Policy, Terms of Service and Refund Policy. We comply with Indian privacy and consumer protection requirements.",
+};
 
 export default function LegalPage() {
   return (
-    <main className="bg-background text-foreground pb-20 pt-24">
-      <section className="container mx-auto max-w-4xl px-6 md:px-12">
+    <>
+      <section
+        className="container mx-auto max-w-4xl px-6 md:px-12"
+        aria-labelledby="legal-heading"
+      >
         {/* Header */}
-        <header className="mb-10 text-center space-y-3">
+        <header
+          id="legal-heading"
+          className="mb-10 text-center space-y-3"
+          role="banner"
+        >
           <p className="text-xs font-semibold uppercase tracking-[0.25em] text-primary">
             Legal & Compliance
           </p>
@@ -20,253 +35,180 @@ export default function LegalPage() {
 
         {/* Tabs */}
         <Tabs defaultValue="privacy" className="w-full">
-          <TabsList className="grid w-full grid-cols-3 bg-secondary/20 border border-border/40 rounded-xl p-1">
-            <TabsTrigger value="privacy" className="text-xs md:text-sm py-2">
+          <TabsList className="grid w-full grid-cols-3 bg-[#0e0e0e] border border-white/10 rounded-xl p-1">
+            <TabsTrigger
+              value="privacy"
+              className="text-xs md:text-sm py-2 rounded-lg transition-all
+data-[state=active]:bg-primary data-[state=active]:text-black
+hover:bg-white/10"
+            >
               Privacy Policy
             </TabsTrigger>
-            <TabsTrigger value="terms" className="text-xs md:text-sm py-2">
+            <TabsTrigger
+              value="terms"
+              className="text-xs md:text-sm py-2 rounded-lg transition-all
+data-[state=active]:bg-primary data-[state=active]:text-black
+hover:bg-white/10"
+            >
               Terms of Service
             </TabsTrigger>
-            <TabsTrigger value="refund" className="text-xs md:text-sm py-2">
+            <TabsTrigger
+              value="refund"
+              className="text-xs md:text-sm py-2 rounded-lg transition-all
+data-[state=active]:bg-primary data-[state=active]:text-black
+hover:bg-white/10"
+            >
               Refund Policy
             </TabsTrigger>
           </TabsList>
 
-          <div className="mt-8 rounded-2xl border border-border bg-card/80 p-6 md:p-8 text-sm md:text-base text-muted-foreground space-y-8">
+          <div className="mt-8 rounded-2xl border border-white/10 bg-[#111] p-6 md:p-8 text-sm md:text-base leading-relaxed text-slate-200 space-y-8">
             {/* PRIVACY */}
-            <TabsContent value="privacy" className="space-y-6">
-              <div>
-                <h2 className="mb-2 text-xl md:text-2xl font-bold text-foreground">
-                  Privacy Policy
-                </h2>
-                <p className="text-xs md:text-sm text-muted-foreground">
-                  Last updated: {new Date().getFullYear()}
-                </p>
-              </div>
+            <TabsContent value="privacy">
+              <h2 className="mb-1 text-xl md:text-2xl font-bold text-white">
+                Privacy Policy
+              </h2>
+              <p className="mb-6 text-xs text-muted-foreground">
+                Last updated: {new Date().getFullYear()}
+              </p>
 
-              <section className="space-y-3">
-                <h3 className="text-base md:text-lg font-semibold text-foreground">
-                  1. Introduction
-                </h3>
-                <p>
-                  BizoraPro (&quot;we&quot;, &quot;our&quot;, &quot;us&quot;)
-                  provides tools for shop owners to create a mini-website and
-                  manage WhatsApp-based orders. This Privacy Policy explains how
-                  we collect, use, and protect your information when you use our
-                  platform.
-                </p>
-              </section>
+              <ol className="list-decimal pl-5 space-y-4">
+                <li>
+                  <strong>Introduction</strong>
+                  <p className="mt-1">
+                    BizoraPro provides tools for shop owners to create a
+                    mini-website and manage WhatsApp-based orders. This Privacy
+                    Policy explains how we collect and protect your information.
+                  </p>
+                </li>
 
-              <section className="space-y-3">
-                <h3 className="text-base md:text-lg font-semibold text-foreground">
-                  2. Information We Collect
-                </h3>
-                <ul className="list-disc space-y-2 pl-5">
-                  <li>
-                    <span className="font-medium text-foreground">
-                      Account data:
-                    </span>{" "}
-                    Name, email, phone, business details.
-                  </li>
-                  <li>
-                    <span className="font-medium text-foreground">
-                      Shop data:
-                    </span>{" "}
-                    Shop name, slug, product details, pricing, images and
-                    policies.
-                  </li>
-                  <li>
-                    <span className="font-medium text-foreground">
-                      Usage data:
-                    </span>{" "}
-                    Page views, events and anonymised analytics (excluding shop
-                    owner views on their own shop).
-                  </li>
-                </ul>
-              </section>
+                <li>
+                  <strong>Information We Collect</strong>
+                  <ul className="mt-2 list-disc pl-5 space-y-2">
+                    <li>Account data (name, email, phone, business details)</li>
+                    <li>Shop data (products, pricing, images)</li>
+                    <li>Usage analytics (excluding owner self-view events)</li>
+                  </ul>
+                </li>
 
-              <section className="space-y-3">
-                <h3 className="text-base md:text-lg font-semibold text-foreground">
-                  3. How We Use Your Data
-                </h3>
-                <p>We use your data to:</p>
-                <ul className="list-disc space-y-2 pl-5">
-                  <li>Provide and improve the BizoraPro service.</li>
-                  <li>Operate your shop pages and dashboard.</li>
-                  <li>
-                    Send important notifications about your account and billing.
-                  </li>
-                </ul>
-              </section>
+                <li>
+                  <strong>How We Use Your Data</strong>
+                  <ul className="mt-2 list-disc pl-5 space-y-2">
+                    <li>Provide and improve BizoraPro services</li>
+                    <li>Operate store pages and dashboard</li>
+                    <li>Send important account notifications</li>
+                  </ul>
+                </li>
 
-              <section className="space-y-3">
-                <h3 className="text-base md:text-lg font-semibold text-foreground">
-                  4. Data Sharing
-                </h3>
-                <p>
-                  We do not sell your personal data. We may share limited data
-                  with trusted third-party service providers (e.g. hosting,
-                  analytics, payment gateways) only as necessary to operate the
-                  platform.
-                </p>
-              </section>
+                <li>
+                  <strong>Data Sharing</strong>
+                  <p className="mt-1">
+                    Only with trusted Indian providers when necessary
+                    (infrastructure, analytics, billing). We never sell your
+                    data.
+                  </p>
+                </li>
 
-              <section className="space-y-3">
-                <h3 className="text-base md:text-lg font-semibold text-foreground">
-                  5. Your Rights
-                </h3>
-                <p>
-                  You can request access, correction or deletion of your
-                  personal data by contacting us at{" "}
-                  <span className="text-primary font-medium">
-                    support@bizorapro.com
-                  </span>
-                  .
-                </p>
-              </section>
+                <li>
+                  <strong>Your Rights</strong>
+                  <p className="mt-1">
+                    To request correction or deletion, contact{" "}
+                    <Link
+                      href="mailto:support@bizorapro.com"
+                      className="text-primary underline"
+                    >
+                      support@bizorapro.com
+                    </Link>
+                    .
+                  </p>
+                </li>
+              </ol>
             </TabsContent>
 
             {/* TERMS */}
-            <TabsContent value="terms" className="space-y-6">
-              <div>
-                <h2 className="mb-2 text-xl md:text-2xl font-bold text-foreground">
-                  Terms of Service
-                </h2>
-                <p className="text-xs md:text-sm text-muted-foreground">
-                  Last updated: {new Date().getFullYear()}
-                </p>
-              </div>
+            <TabsContent value="terms">
+              <h2 className="mb-1 text-xl md:text-2xl font-bold text-white">
+                Terms of Service
+              </h2>
+              <p className="mb-6 text-xs text-muted-foreground">
+                Last updated: {new Date().getFullYear()}
+              </p>
 
-              <section className="space-y-3">
-                <h3 className="text-base md:text-lg font-semibold text-foreground">
-                  1. Acceptance of Terms
-                </h3>
-                <p>
-                  By creating an account or using BizoraPro, you agree to these
-                  Terms of Service and our Privacy Policy. If you do not agree,
-                  please do not use the platform.
-                </p>
-              </section>
-
-              <section className="space-y-3">
-                <h3 className="text-base md:text-lg font-semibold text-foreground">
-                  2. Use of the Service
-                </h3>
-                <ul className="list-disc space-y-2 pl-5">
-                  <li>
-                    You are responsible for the content you publish on your
-                    shop.
-                  </li>
-                  <li>
-                    You must comply with local laws, including any tax,
-                    invoicing and consumer protection rules.
-                  </li>
-                  <li>
-                    You may not use BizoraPro for illegal, misleading or harmful
-                    activities.
-                  </li>
-                </ul>
-              </section>
-
-              <section className="space-y-3">
-                <h3 className="text-base md:text-lg font-semibold text-foreground">
-                  3. Payments & Subscriptions
-                </h3>
-                <p>
-                  Paid plans are billed in advance (monthly or yearly). By
-                  subscribing, you authorise us or our payment provider to
-                  charge the applicable fees.
-                </p>
-              </section>
-
-              <section className="space-y-3">
-                <h3 className="text-base md:text-lg font-semibold text-foreground">
-                  4. Limitation of Liability
-                </h3>
-                <p>
-                  BizoraPro is provided on an &quot;as is&quot; basis. To the
-                  maximum extent permitted by law, we are not liable for any
-                  loss of revenue, data or business arising from your use of the
-                  platform.
-                </p>
-              </section>
-
-              <section className="space-y-3">
-                <h3 className="text-base md:text-lg font-semibold text-foreground">
-                  5. Changes to Terms
-                </h3>
-                <p>
-                  We may update these Terms from time to time. Continued use of
-                  the service after changes means you accept the updated Terms.
-                </p>
-              </section>
+              <ol className="list-decimal pl-5 space-y-4">
+                <li>
+                  <strong>Acceptance of Terms</strong>
+                  <p className="mt-1">
+                    Creating an account means you accept these Terms and our
+                    Privacy Policy.
+                  </p>
+                </li>
+                <li>
+                  <strong>Use of The Service</strong>
+                  <ul className="mt-2 list-disc pl-5 space-y-2">
+                    <li>You must comply with local Indian laws</li>
+                    <li>You are responsible for all content in your shop</li>
+                    <li>No illegal or harmful products</li>
+                  </ul>
+                </li>
+                <li>
+                  <strong>Payments & Subscriptions</strong>
+                  <p className="mt-1">
+                    Subscriptions are prepaid and recurring.
+                  </p>
+                </li>
+                <li>
+                  <strong>Liability</strong>
+                  <p className="mt-1">
+                    We’re not liable for loss of business or revenue caused by
+                    misuse or downtime beyond our control.
+                  </p>
+                </li>
+              </ol>
             </TabsContent>
 
             {/* REFUND */}
-            <TabsContent value="refund" className="space-y-6">
-              <div>
-                <h2 className="mb-2 text-xl md:text-2xl font-bold text-foreground">
-                  Refund & Cancellation Policy
-                </h2>
-                <p className="text-xs md:text-sm text-muted-foreground">
-                  Last updated: {new Date().getFullYear()}
-                </p>
-              </div>
+            <TabsContent value="refund">
+              <h2 className="mb-1 text-xl md:text-2xl font-bold text-white">
+                Refund & Cancellation Policy
+              </h2>
+              <p className="mb-6 text-xs text-muted-foreground">
+                Last updated: {new Date().getFullYear()}
+              </p>
 
-              <section className="space-y-3">
-                <h3 className="text-base md:text-lg font-semibold text-foreground">
-                  1. Subscriptions
-                </h3>
-                <p>
-                  BizoraPro works on a subscription basis. Fees paid for monthly
-                  or yearly plans are generally non-refundable once a billing
-                  period has started.
-                </p>
-              </section>
-
-              <section className="space-y-3">
-                <h3 className="text-base md:text-lg font-semibold text-foreground">
-                  2. Cancellations
-                </h3>
-                <p>
-                  You can cancel your subscription at any time from your
-                  dashboard. Your plan will remain active until the end of the
-                  current billing period. After that, your shop may move to
-                  &quot;catalog mode&quot; or a free tier with limited features.
-                </p>
-              </section>
-
-              <section className="space-y-3">
-                <h3 className="text-base md:text-lg font-semibold text-foreground">
-                  3. Exceptional Refunds
-                </h3>
-                <p>
-                  In rare cases (duplicate payments, technical issues on our
-                  side), we may review refund requests manually. Please contact{" "}
-                  <span className="text-primary font-medium">
-                    support@bizorapro.com
-                  </span>{" "}
-                  within 7 days of the charge.
-                </p>
-              </section>
-
-              <section className="space-y-3">
-                <h3 className="text-base md:text-lg font-semibold text-foreground">
-                  4. Contact
-                </h3>
-                <p>
-                  For any questions about refunds or cancellations, please email
-                  us at{" "}
-                  <span className="text-primary font-medium">
-                    support@bizorapro.com
-                  </span>
-                  .
-                </p>
-              </section>
+              <ol className="list-decimal pl-5 space-y-4">
+                <li>
+                  <strong>Subscriptions</strong>
+                  <p className="mt-1">Renewals are non-refundable mid-cycle.</p>
+                </li>
+                <li>
+                  <strong>Cancellation</strong>
+                  <p className="mt-1">
+                    Cancel anytime — plan stays active until period end.
+                  </p>
+                </li>
+                <li>
+                  <strong>Exceptional Refunds</strong>
+                  <p className="mt-1">
+                    Only for duplicate charges or BizoraPro system errors.
+                  </p>
+                </li>
+                <li>
+                  <strong>Contact</strong>
+                  <p className="mt-1">
+                    Write to{" "}
+                    <Link
+                      href="mailto:support@bizorapro.com"
+                      className="text-primary underline"
+                    >
+                      support@bizorapro.com
+                    </Link>
+                  </p>
+                </li>
+              </ol>
             </TabsContent>
           </div>
         </Tabs>
       </section>
-    </main>
+    </>
   );
 }

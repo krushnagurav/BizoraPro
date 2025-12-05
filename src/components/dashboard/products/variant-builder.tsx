@@ -12,10 +12,16 @@ interface Variant {
   values: string[]; // e.g. ["S", "M", "L"]
 }
 
-export function VariantBuilder({ value, onChange }: { value: Variant[], onChange: (v: Variant[]) => void }) {
+export function VariantBuilder({
+  value,
+  onChange,
+}: {
+  value: Variant[];
+  onChange: (v: Variant[]) => void;
+}) {
   const [variants, setVariants] = useState<Variant[]>(value || []);
   const [isAdding, setIsAdding] = useState(false);
-  
+
   // Temp state for new variant
   const [tempName, setTempName] = useState("");
   const [tempValue, setTempValue] = useState("");
@@ -55,7 +61,12 @@ export function VariantBuilder({ value, onChange }: { value: Variant[], onChange
       <div className="flex items-center justify-between">
         <Label>Product Variants</Label>
         {!isAdding && variants.length < 3 && (
-          <Button size="sm" variant="outline" onClick={() => setIsAdding(true)} type="button">
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => setIsAdding(true)}
+            type="button"
+          >
             <Plus className="h-4 w-4 mr-2" /> Add Option
           </Button>
         )}
@@ -64,12 +75,22 @@ export function VariantBuilder({ value, onChange }: { value: Variant[], onChange
       {/* List Existing Variants */}
       <div className="space-y-3">
         {variants.map((v, i) => (
-          <div key={i} className="flex items-center justify-between p-3 bg-secondary/20 border border-border rounded-md">
+          <div
+            key={i}
+            className="flex items-center justify-between p-3 bg-secondary/20 border border-border rounded-md"
+          >
             <div>
               <span className="font-bold text-sm">{v.name}: </span>
-              <span className="text-sm text-muted-foreground">{v.values.join(", ")}</span>
+              <span className="text-sm text-muted-foreground">
+                {v.values.join(", ")}
+              </span>
             </div>
-            <Button size="icon" variant="ghost" onClick={() => removeVariant(i)} type="button">
+            <Button
+              size="icon"
+              variant="ghost"
+              onClick={() => removeVariant(i)}
+              type="button"
+            >
               <Trash2 className="h-4 w-4 text-destructive" />
             </Button>
           </div>
@@ -81,33 +102,39 @@ export function VariantBuilder({ value, onChange }: { value: Variant[], onChange
         <div className="p-4 border border-primary/20 bg-secondary/10 rounded-lg space-y-4">
           <div className="space-y-2">
             <Label className="text-xs">Option Name</Label>
-            <Input 
-              placeholder="e.g. Size, Color" 
-              value={tempName} 
-              onChange={(e) => setTempName(e.target.value)} 
+            <Input
+              placeholder="e.g. Size, Color"
+              value={tempName}
+              onChange={(e) => setTempName(e.target.value)}
             />
           </div>
-          
+
           <div className="space-y-2">
             <Label className="text-xs">Option Values</Label>
             <div className="flex gap-2">
-              <Input 
-                placeholder="e.g. Small" 
-                value={tempValue} 
+              <Input
+                placeholder="e.g. Small"
+                value={tempValue}
                 onChange={(e) => setTempValue(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addValue())} 
+                onKeyDown={(e) =>
+                  e.key === "Enter" && (e.preventDefault(), addValue())
+                }
               />
-              <Button type="button" onClick={addValue} variant="secondary">Add</Button>
+              <Button type="button" onClick={addValue} variant="secondary">
+                Add
+              </Button>
             </div>
-            
+
             {/* Value Badges */}
             <div className="flex flex-wrap gap-2 mt-2">
               {tempValues.map((val, i) => (
                 <Badge key={i} variant="secondary" className="gap-1">
                   {val}
-                  <X 
-                    className="h-3 w-3 cursor-pointer hover:text-destructive" 
-                    onClick={() => setTempValues(tempValues.filter((_, idx) => idx !== i))}
+                  <X
+                    className="h-3 w-3 cursor-pointer hover:text-destructive"
+                    onClick={() =>
+                      setTempValues(tempValues.filter((_, idx) => idx !== i))
+                    }
                   />
                 </Badge>
               ))}
@@ -115,8 +142,16 @@ export function VariantBuilder({ value, onChange }: { value: Variant[], onChange
           </div>
 
           <div className="flex justify-end gap-2">
-            <Button type="button" variant="ghost" onClick={() => setIsAdding(false)}>Cancel</Button>
-            <Button type="button" onClick={saveVariant} className="font-bold">Save Option</Button>
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={() => setIsAdding(false)}
+            >
+              Cancel
+            </Button>
+            <Button type="button" onClick={saveVariant} className="font-bold">
+              Save Option
+            </Button>
           </div>
         </div>
       )}

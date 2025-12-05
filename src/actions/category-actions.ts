@@ -79,7 +79,7 @@ export const deleteCategoryAction = authAction
 
     if (count && count > 0) {
       throw new Error(
-        `Cannot delete: This category has ${count} active products. Please move or delete them first.`
+        `Cannot delete: This category has ${count} active products. Please move or delete them first.`,
       );
     }
 

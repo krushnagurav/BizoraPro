@@ -117,7 +117,10 @@ export default function PricingPage() {
   return (
     <>
       {/* HEADER + TOGGLE */}
-      <section className="container mx-auto mb-16 px-6 pt-24 text-center md:px-12" aria-labelledby="pricing-heading">
+      <section
+        className="container mx-auto mb-16 px-6 pt-24 text-center md:px-12"
+        aria-labelledby="pricing-heading"
+      >
         <p className="mb-3 text-xs font-semibold uppercase tracking-[0.25em] text-primary">
           Pricing
         </p>

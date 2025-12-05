@@ -10,7 +10,7 @@ import {
   ChevronRight,
   FileSpreadsheet,
   Plus,
-  Search
+  Search,
 } from "lucide-react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
@@ -56,7 +56,7 @@ export default async function ProductsPage({
     currentPage,
     searchQuery,
     categoryId,
-    status
+    status,
   );
 
   return (
@@ -111,7 +111,6 @@ export default async function ProductsPage({
 
       {/* Table */}
       <ProductListTable products={products} slug={shop.slug} />
-
 
       {/* Pagination */}
       {metadata.totalPages > 1 && (

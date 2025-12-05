@@ -177,7 +177,7 @@ export default async function ProductDetailPage({
                       />
                     </Link>
                   </div>
-                ) : null
+                ) : null,
               )}
             </div>
           </section>

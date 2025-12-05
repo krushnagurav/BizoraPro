@@ -51,7 +51,7 @@ export function ProductListTable({
   // 🚀 OPTIMISTIC UI: Delete instantly updates the list
   const [optimisticProducts, removeOptimisticProduct] = useOptimistic(
     products,
-    (state, idToRemove) => state.filter((p) => p.id !== idToRemove)
+    (state, idToRemove) => state.filter((p) => p.id !== idToRemove),
   );
 
   const handleDelete = async (id: string) => {

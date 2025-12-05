@@ -10,10 +10,7 @@ type CouponShareButtonProps = {
 export function CouponShareButton({ code }: CouponShareButtonProps) {
   const handleClick = () => {
     const text = `Use code ${code} to get a discount on our shop!`;
-    window.open(
-      `https://wa.me/?text=${encodeURIComponent(text)}`,
-      "_blank"
-    );
+    window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank");
   };
 
   return (

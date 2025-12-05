@@ -17,13 +17,15 @@ export default function VerifyPage() {
       // 1. Parse the Hash manually (Reliable way)
       // URL looks like: http://.../verify#access_token=xyz&refresh_token=abc...
       const hash = window.location.hash;
-      
+
       if (!hash) {
         // If no hash, maybe Supabase already processed it? Check session.
-        const { data: { session } } = await supabase.auth.getSession();
+        const {
+          data: { session },
+        } = await supabase.auth.getSession();
         if (session) {
-           handleSuccess();
-           return;
+          handleSuccess();
+          return;
         }
         setStatus("No token found.");
         return;
@@ -41,7 +43,7 @@ export default function VerifyPage() {
 
       // 3. FORCE SET SESSION
       setStatus("Switching accounts...");
-      
+
       // First, sign out the Admin to clean state
       await supabase.auth.signOut();
 
@@ -64,10 +66,10 @@ export default function VerifyPage() {
     const handleSuccess = () => {
       setStatus("Access granted. Redirecting...");
       toast.success("Impersonation active!");
-      
+
       // Force hard reload to clear any server-side caches
       setTimeout(() => {
-        window.location.href = "/dashboard"; 
+        window.location.href = "/dashboard";
       }, 1000);
     };
 

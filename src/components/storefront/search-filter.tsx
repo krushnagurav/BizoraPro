@@ -27,7 +27,7 @@ export function ShopSearch({ slug }: { slug: string }) {
 
   useEffect(() => {
     const params = new URLSearchParams(searchParams.toString());
-    
+
     if (debouncedText) {
       params.set("q", debouncedText);
     } else {
@@ -36,21 +36,23 @@ export function ShopSearch({ slug }: { slug: string }) {
 
     // 2. Use pathname instead of manual slug construction
     // This prevents double slashes or wrong slug issues
-    router.replace(`${pathname}?${params.toString()}`); 
-    
+    router.replace(`${pathname}?${params.toString()}`);
   }, [debouncedText, router, pathname, searchParams]);
 
   return (
     <div className="relative">
       <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-      <Input 
+      <Input
         value={text}
         onChange={(e) => setText(e.target.value)}
-        placeholder="Search products..." 
+        placeholder="Search products..."
         className="pl-10 bg-secondary/20 border-transparent focus:border-primary rounded-xl h-12"
       />
       {text && (
-        <button onClick={() => setText("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+        <button
+          onClick={() => setText("")}
+          className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+        >
           <X className="h-4 w-4" />
         </button>
       )}
@@ -59,12 +61,18 @@ export function ShopSearch({ slug }: { slug: string }) {
 }
 
 // ... (Keep CategoryFilter as is) ...
-export function CategoryFilter({ categories, slug }: { categories: any[], slug: string }) {
+export function CategoryFilter({
+  categories,
+  slug,
+}: {
+  categories: any[];
+  slug: string;
+}) {
   const router = useRouter();
   const pathname = usePathname(); // Use here too
   const searchParams = useSearchParams();
   const activeCat = searchParams.get("cat");
-console.log(slug);
+  console.log(slug);
   const toggleCat = (catId: string) => {
     const params = new URLSearchParams(searchParams.toString());
     if (activeCat === catId) {
@@ -83,8 +91,8 @@ console.log(slug);
       <button
         onClick={() => toggleCat("")}
         className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors border ${
-          !activeCat 
-            ? "bg-primary text-black border-primary" 
+          !activeCat
+            ? "bg-primary text-black border-primary"
             : "bg-background border-border text-muted-foreground"
         }`}
       >

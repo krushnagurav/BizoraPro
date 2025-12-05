@@ -10,7 +10,11 @@ type ProductGalleryProps = {
   gallery: string[];
 };
 
-export function ProductGallery({ name, mainImage, gallery }: ProductGalleryProps) {
+export function ProductGallery({
+  name,
+  mainImage,
+  gallery,
+}: ProductGalleryProps) {
   const allImages = [mainImage, ...(gallery || [])].filter(Boolean);
   const [activeIndex, setActiveIndex] = useState(0);
   const [lightboxOpen, setLightboxOpen] = useState(false);

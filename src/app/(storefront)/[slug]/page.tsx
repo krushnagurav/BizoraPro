@@ -155,9 +155,9 @@ export default async function ShopHomePage({
             <Link
               href={`https://wa.me/${shop.whatsapp_number.replace(
                 /\D/g,
-                ""
+                "",
               )}?text=${encodeURIComponent(
-                `Hi! I want to order from ${shop.name}.`
+                `Hi! I want to order from ${shop.name}.`,
               )}`}
               className="inline-flex items-center justify-center px-6 py-3 rounded-xl bg-[hsl(var(--primary))] text-black font-semibold text-sm shadow-sm hover:bg-[hsl(var(--primary))]/90 transition"
             >

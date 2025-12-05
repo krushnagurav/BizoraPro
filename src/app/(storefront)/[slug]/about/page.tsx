@@ -64,9 +64,9 @@ export default async function ShopAboutPage({
                 things in life. Every piece in our collection tells a story.
               </p>
               <p>
-                We believe that luxury is not just about price—it&apos;s about the
-                experience, the craftsmanship, and the connection between what
-                you own and who you are.
+                We believe that luxury is not just about price—it&apos;s about
+                the experience, the craftsmanship, and the connection between
+                what you own and who you are.
               </p>
             </div>
           </div>
@@ -130,8 +130,8 @@ export default async function ShopAboutPage({
             <MessageCircle className="w-12 h-12 mx-auto mb-4 text-white/80" />
             <h3 className="text-3xl font-serif">Let&apos;s Connect</h3>
             <p className="text-white/90 max-w-md mx-auto">
-              Have questions? Want to learn more about our products? We&apos;re here
-              to help. Reach out via WhatsApp for personalized assistance.
+              Have questions? Want to learn more about our products? We&apos;re
+              here to help. Reach out via WhatsApp for personalized assistance.
             </p>
             <a
               href={`https://wa.me/${shop.whatsapp_number}`}

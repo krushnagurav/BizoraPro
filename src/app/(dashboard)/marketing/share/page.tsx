@@ -28,7 +28,7 @@ import {
   MessageCircle,
   Printer,
   Share2,
-  TrendingUp
+  TrendingUp,
 } from "lucide-react";
 import Link from "next/link";
 import { QRCodeSVG } from "qrcode.react";
@@ -170,7 +170,7 @@ export default function ShareStorePage() {
         break;
       case "facebook":
         url = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
-          shopUrl
+          shopUrl,
         )}`;
         break;
       case "instagram":

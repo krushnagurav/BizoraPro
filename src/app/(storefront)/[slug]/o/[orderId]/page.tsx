@@ -104,11 +104,7 @@ ${itemList}
 
             {/* ACTION BUTTONS */}
             <div className="grid md:grid-cols-2 gap-4">
-              <a
-                href={whatsappUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
+              <a href={whatsappUrl} target="_blank" rel="noopener noreferrer">
                 <Button className="w-full h-14 text-lg font-bold bg-[#25D366] hover:bg-[#20BD5C] text-white shadow-lg shadow-green-500/20 rounded-xl gap-2">
                   <MessageCircle className="w-5 h-5" /> Send Order Message
                 </Button>
@@ -149,9 +145,7 @@ ${itemList}
                 </div>
                 <div className="relative opacity-50">
                   <div className="absolute -left-[21px] top-0 w-4 h-4 bg-slate-200 rounded-full border-2 border-white" />
-                  <p className="font-bold text-sm text-slate-900">
-                    Delivery
-                  </p>
+                  <p className="font-bold text-sm text-slate-900">Delivery</p>
                   <p className="text-xs text-slate-500 mt-1">
                     Expected within 3-5 business days.
                   </p>

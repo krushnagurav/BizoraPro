@@ -68,7 +68,7 @@ export async function placeOrderAction(formData: FormData) {
   const { data: shop, error: shopError } = await supabase
     .from("shops")
     .select(
-      "id, whatsapp_number, is_open, auto_close, opening_time, closing_time"
+      "id, whatsapp_number, is_open, auto_close, opening_time, closing_time",
     )
     .eq("slug", parsed.data.slug)
     .single();
@@ -213,7 +213,9 @@ export async function placeOrderAction(formData: FormData) {
 // ----------------------------
 // 2. UPDATE ORDER STATUS (Dashboard)
 // ----------------------------
-export async function updateOrderStatusAction(formData: FormData): Promise<void> {
+export async function updateOrderStatusAction(
+  formData: FormData,
+): Promise<void> {
   const orderId = formData.get("orderId") as string | null;
   const newStatus = formData.get("status") as string | null;
 
@@ -268,7 +270,7 @@ export async function updateOrderStatusAction(formData: FormData): Promise<void>
     }>;
 
     for (const item of items) {
-      const quantity = (item.qty ?? item.quantity) ?? 0;
+      const quantity = item.qty ?? item.quantity ?? 0;
       if (!item.id || !quantity) continue;
 
       const { data: product } = await supabase

@@ -1,6 +1,13 @@
 import { createClient } from "@/src/lib/supabase/server";
 import { Card, CardContent } from "@/components/ui/card";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Eye } from "lucide-react";
@@ -22,12 +29,18 @@ export default async function AdminOrdersPage() {
   for (let i = 29; i >= 0; i--) {
     const d = new Date();
     d.setDate(d.getDate() - i);
-    const key = d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+    const key = d.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+    });
     dateMap.set(key, { date: key, orders: 0 });
   }
 
   orders?.forEach((order) => {
-    const key = new Date(order.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric" });
+    const key = new Date(order.created_at).toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+    });
     if (dateMap.has(key)) {
       dateMap.get(key).orders += 1;
     }
@@ -58,12 +71,17 @@ export default async function AdminOrdersPage() {
                 <TableHead className="text-gray-400">Total</TableHead>
                 <TableHead className="text-gray-400">Status</TableHead>
                 <TableHead className="text-gray-400">Time</TableHead>
-                <TableHead className="text-right text-gray-400">Action</TableHead>
+                <TableHead className="text-right text-gray-400">
+                  Action
+                </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {orders?.map((order) => (
-                <TableRow key={order.id} className="border-white/10 hover:bg-white/5">
+                <TableRow
+                  key={order.id}
+                  className="border-white/10 hover:bg-white/5"
+                >
                   <TableCell className="font-mono text-xs text-gray-500">
                     #{order.id.slice(0, 6)}
                   </TableCell>
@@ -73,12 +91,20 @@ export default async function AdminOrdersPage() {
                   <TableCell>
                     <div className="flex flex-col">
                       <span>{order.customer_info.name}</span>
-                      <span className="text-xs text-gray-500">{order.customer_info.phone}</span>
+                      <span className="text-xs text-gray-500">
+                        {order.customer_info.phone}
+                      </span>
                     </div>
                   </TableCell>
-                  <TableCell className="font-bold">₹{order.total_amount}</TableCell>
+                  <TableCell className="font-bold">
+                    ₹{order.total_amount}
+                  </TableCell>
                   <TableCell>
-                    <Badge variant={order.status === 'draft' ? 'destructive' : 'secondary'}>
+                    <Badge
+                      variant={
+                        order.status === "draft" ? "destructive" : "secondary"
+                      }
+                    >
                       {order.status}
                     </Badge>
                   </TableCell>
@@ -86,12 +112,19 @@ export default async function AdminOrdersPage() {
                     {new Date(order.created_at).toLocaleDateString()}
                   </TableCell>
                   <TableCell className="text-right">
-                     {/* Admin can view public order tracking page */}
-                     <Link href={`/${order.shops.slug}/o/${order.id}`} target="_blank">
-                       <Button size="icon" variant="ghost" className="hover:bg-white/10 hover:text-white">
-                         <Eye className="h-4 w-4" />
-                       </Button>
-                     </Link>
+                    {/* Admin can view public order tracking page */}
+                    <Link
+                      href={`/${order.shops.slug}/o/${order.id}`}
+                      target="_blank"
+                    >
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        className="hover:bg-white/10 hover:text-white"
+                      >
+                        <Eye className="h-4 w-4" />
+                      </Button>
+                    </Link>
                   </TableCell>
                 </TableRow>
               ))}

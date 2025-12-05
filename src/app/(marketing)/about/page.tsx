@@ -14,7 +14,10 @@ export default function AboutPage() {
   return (
     <>
       {/* HERO */}
-      <section className="mx-auto max-w-4xl px-4 py-16 text-center sm:px-6 md:py-20 lg:px-8" aria-labelledby="about-heading">
+      <section
+        className="mx-auto max-w-4xl px-4 py-16 text-center sm:px-6 md:py-20 lg:px-8"
+        aria-labelledby="about-heading"
+      >
         <div className="mb-6 inline-block rounded-full border border-white/10 bg-[#141414] px-4 py-1.5 text-xs font-medium text-primary md:text-sm">
           Our Story
         </div>

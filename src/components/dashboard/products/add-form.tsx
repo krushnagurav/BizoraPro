@@ -91,7 +91,7 @@ export function AddProductForm({
           toast.error(firstError ? String(firstError) : "Validation Failed");
         } else if (result?.data?.success) {
           toast.success(
-            status === "draft" ? "Draft Saved!" : "Product Published!"
+            status === "draft" ? "Draft Saved!" : "Product Published!",
           );
           if (result.data.redirect) {
             router.push(result.data.redirect);

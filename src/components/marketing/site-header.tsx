@@ -50,7 +50,7 @@ export function SiteHeader() {
                 href={item.href}
                 className={cn(
                   "relative transition-colors hover:text-primary",
-                  isActive ? "text-primary" : "text-muted-foreground"
+                  isActive ? "text-primary" : "text-muted-foreground",
                 )}
               >
                 {item.name}
@@ -109,7 +109,7 @@ export function SiteHeader() {
                       onClick={() => setIsOpen(false)}
                       className={cn(
                         "text-base font-medium transition-colors hover:text-primary",
-                        isActive ? "text-primary" : "text-muted-foreground"
+                        isActive ? "text-primary" : "text-muted-foreground",
                       )}
                     >
                       {item.name}

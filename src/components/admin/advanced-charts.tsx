@@ -26,7 +26,11 @@ export function RevenuePieChart({ data }: { data: any[] }) {
               ))}
             </Pie>
             <Tooltip
-              contentStyle={{ backgroundColor: "#000", borderRadius: "8px", border: "1px solid #333" }}
+              contentStyle={{
+                backgroundColor: "#000",
+                borderRadius: "8px",
+                border: "1px solid #333",
+              }}
               itemStyle={{ color: "#fff" }}
             />
           </PieChart>

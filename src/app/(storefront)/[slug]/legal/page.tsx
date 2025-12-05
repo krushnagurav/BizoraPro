@@ -3,12 +3,7 @@ import type { CSSProperties } from "react";
 import { createClient } from "@/src/lib/supabase/server";
 import { notFound } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@/components/ui/tabs";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Scale, RotateCcw, Lock, ShieldCheck } from "lucide-react";
 import { hexToHsl } from "@/src/lib/utils";
 import { ShopHeader } from "@/src/components/storefront/shared/shop-header";
@@ -30,12 +25,11 @@ export default async function ShopLegalPage({
 
   if (!shop) return notFound();
 
-  const policies =
-    (shop.policies as any) || {
-      privacy: "No privacy policy defined.",
-      terms: "No terms of service defined.",
-      refund: "No refund policy defined.",
-    };
+  const policies = (shop.policies as any) || {
+    privacy: "No privacy policy defined.",
+    terms: "No terms of service defined.",
+    refund: "No refund policy defined.",
+  };
 
   const theme = (shop.theme_config as any) || {};
   const primaryColorHsl = hexToHsl(theme.primaryColor || "#E6B800");
@@ -146,9 +140,7 @@ function PolicyCard({
       <CardContent className="p-8 md:p-12">
         <div className="flex items-start justify-between mb-8 border-b border-slate-100 pb-8">
           <div>
-            <h2 className="text-2xl font-bold text-slate-900 mb-2">
-              {title}
-            </h2>
+            <h2 className="text-2xl font-bold text-slate-900 mb-2">{title}</h2>
             <p className="text-sm text-slate-400">{updated}</p>
           </div>
           <div className="bg-slate-50 p-3 rounded-xl text-slate-900">

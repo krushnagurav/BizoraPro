@@ -41,7 +41,7 @@ export interface Shop {
   social_links: SocialLinks;
   policies: Policies;
   product_limit: number;
-  plan: 'free' | 'pro';
+  plan: "free" | "pro";
 }
 
 export interface ProductVariant {
@@ -65,7 +65,7 @@ export interface Product {
   price: number;
   sale_price?: number | null;
   image_url?: string;
-  status: 'active' | 'draft' | 'archived';
+  status: "active" | "draft" | "archived";
   stock_count: number;
   deleted_at?: string | null;
   created_at: string;

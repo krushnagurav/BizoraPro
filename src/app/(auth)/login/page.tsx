@@ -2,7 +2,13 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { loginAction } from "@/src/actions/auth-actions";
@@ -39,13 +45,21 @@ export default function LoginPage() {
     <Card className="bg-[#111] border-white/10 shadow-2xl shadow-black">
       <CardHeader className="text-center pb-2">
         <CardTitle className="text-2xl text-white">Welcome Back 👋</CardTitle>
-        <CardDescription className="text-gray-400">Log In to manage your shop</CardDescription>
+        <CardDescription className="text-gray-400">
+          Log In to manage your shop
+        </CardDescription>
       </CardHeader>
 
       <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-4" aria-describedby="login-help">
+        <form
+          onSubmit={handleSubmit}
+          className="space-y-4"
+          aria-describedby="login-help"
+        >
           <div className="space-y-2">
-            <Label className="text-gray-300" htmlFor="email">Email Address</Label>
+            <Label className="text-gray-300" htmlFor="email">
+              Email Address
+            </Label>
             <Input
               id="email"
               name="email"
@@ -58,7 +72,9 @@ export default function LoginPage() {
           </div>
 
           <div className="space-y-2">
-            <Label className="text-gray-300" htmlFor="password">Password</Label>
+            <Label className="text-gray-300" htmlFor="password">
+              Password
+            </Label>
             <div className="relative">
               <Input
                 id="password"
@@ -76,7 +92,11 @@ export default function LoginPage() {
                 onClick={() => setShowPassword((s) => !s)}
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-white transition"
               >
-                {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                {showPassword ? (
+                  <EyeOff className="h-5 w-5" />
+                ) : (
+                  <Eye className="h-5 w-5" />
+                )}
               </button>
             </div>
           </div>
@@ -92,12 +112,22 @@ export default function LoginPage() {
         </form>
 
         <div id="login-help" className="mt-6 text-center space-y-4">
-          <Link href="/forgot-password" className="text-sm text-primary hover:underline">Forgot Password?</Link>
+          <Link
+            href="/forgot-password"
+            className="text-sm text-primary hover:underline"
+          >
+            Forgot Password?
+          </Link>
 
           <div className="border-t border-white/10 pt-4">
             <p className="text-sm text-gray-400">
               Don&apos;t have an account?{" "}
-              <Link href="/signup" className="text-primary hover:underline font-bold">Create Shop</Link>
+              <Link
+                href="/signup"
+                className="text-primary hover:underline font-bold"
+              >
+                Create Shop
+              </Link>
             </p>
           </div>
         </div>

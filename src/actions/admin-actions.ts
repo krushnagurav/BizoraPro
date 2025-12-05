@@ -27,7 +27,9 @@ export async function getAdminStats() {
 }
 
 // 2. TOGGLE SHOP STATUS (Suspend/Activate)
-export async function toggleShopStatusAction(formData: FormData): Promise<void> {
+export async function toggleShopStatusAction(
+  formData: FormData,
+): Promise<void> {
   const shopId = formData.get("shopId") as string | null;
   const desiredStatusRaw = formData.get("desiredStatus");
 
@@ -53,7 +55,6 @@ export async function toggleShopStatusAction(formData: FormData): Promise<void> 
 
   // revalidate the admin listing so the change shows up on the next render
   revalidatePath("/admin/shops");
-
 }
 
 export async function createPlanAction(formData: FormData) {
@@ -85,9 +86,8 @@ export async function impersonateUserAction(userId: string) {
   const supabaseAdmin = createAdminClient();
 
   // 1. Get the Target User's Email
-  const { data: targetUser } = await supabaseAdmin.auth.admin.getUserById(
-    userId
-  );
+  const { data: targetUser } =
+    await supabaseAdmin.auth.admin.getUserById(userId);
   if (!targetUser?.user?.email) return { error: "User not found" };
 
   // 2. Determine Current Domain
@@ -143,14 +143,14 @@ export async function createAdminUserAction(formData: FormData) {
   const role = formData.get("role") as string;
 
   const supabase = await createClient();
-  
+
   // Security: Only Super Admin can do this
   // (RLS handles it, but good to double check)
-  
+
   const { error } = await supabase.from("admin_users").insert({
     email,
     full_name: fullName,
-    role
+    role,
   });
 
   if (error) return { error: error.message };
@@ -174,11 +174,16 @@ export async function saveTemplateAction(formData: FormData) {
 
   if (id) {
     // UPDATE
-    const { error } = await supabase.from("notification_templates").update(payload).eq("id", id);
+    const { error } = await supabase
+      .from("notification_templates")
+      .update(payload)
+      .eq("id", id);
     if (error) return { error: error.message };
   } else {
     // CREATE
-    const { error } = await supabase.from("notification_templates").insert(payload);
+    const { error } = await supabase
+      .from("notification_templates")
+      .insert(payload);
     if (error) return { error: error.message };
   }
 

@@ -31,7 +31,7 @@ export function AddToCartButton({
     <Button
       onClick={isShopOpen ? handleAdd : undefined}
       disabled={!isShopOpen}
-    className="w-full h-12 font-bold text-lg gap-2 bg-primary text-black hover:bg-primary/90"
+      className="w-full h-12 font-bold text-lg gap-2 bg-primary text-black hover:bg-primary/90"
     >
       {isShopOpen ? (
         <>

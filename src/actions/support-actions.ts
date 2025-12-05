@@ -10,18 +10,24 @@ export async function createTicketAction(formData: FormData) {
   const priority = formData.get("priority") as string;
 
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   if (!user) return { error: "Unauthorized" };
 
   // Get Shop ID
-  const { data: shop } = await supabase.from("shops").select("id").eq("owner_id", user.id).single();
+  const { data: shop } = await supabase
+    .from("shops")
+    .select("id")
+    .eq("owner_id", user.id)
+    .single();
   if (!shop) return { error: "Shop not found" };
 
   // Create Ticket
   const { data: ticket, error } = await supabase
     .from("support_tickets")
-    .insert({ shop_id: shop.id, subject, priority, status: 'open' })
+    .insert({ shop_id: shop.id, subject, priority, status: "open" })
     .select("id")
     .single();
 
@@ -31,7 +37,7 @@ export async function createTicketAction(formData: FormData) {
   await supabase.from("ticket_messages").insert({
     ticket_id: ticket.id,
     sender_role: "owner", // Consistent role name
-    message: message
+    message: message,
   });
 
   revalidatePath("/dashboard/support");
@@ -76,7 +82,9 @@ export async function replyToTicketAction(formData: FormData): Promise<void> {
 }
 
 // 3. UPDATE TICKET STATUS (Admin / Owner)
-export async function updateTicketStatusAction(formData: FormData): Promise<void> {
+export async function updateTicketStatusAction(
+  formData: FormData,
+): Promise<void> {
   const ticketId = formData.get("ticketId") as string;
   const status = formData.get("status") as string; // 'open', 'resolved'
 

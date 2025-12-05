@@ -2,9 +2,20 @@ import { Inter, Playfair_Display, Poppins, Lato } from "next/font/google";
 
 // 1. Configure Fonts
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
-const playfair = Playfair_Display({ subsets: ["latin"], variable: "--font-playfair" });
-const poppins = Poppins({ weight: ["400", "500", "600", "700"], subsets: ["latin"], variable: "--font-poppins" });
-const lato = Lato({ weight: ["400", "700"], subsets: ["latin"], variable: "--font-lato" });
+const playfair = Playfair_Display({
+  subsets: ["latin"],
+  variable: "--font-playfair",
+});
+const poppins = Poppins({
+  weight: ["400", "500", "600", "700"],
+  subsets: ["latin"],
+  variable: "--font-poppins",
+});
+const lato = Lato({
+  weight: ["400", "700"],
+  subsets: ["latin"],
+  variable: "--font-lato",
+});
 
 // 2. Map DB String to Font Class
 export const fontMapper = {
@@ -40,5 +51,5 @@ export const categoryPresets: Record<string, any> = {
     font: "inter",
     primaryColor: "#E6B800", // Default Gold
     radius: "0.5rem",
-  }
+  },
 };

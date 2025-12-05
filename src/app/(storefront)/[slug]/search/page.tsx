@@ -18,7 +18,7 @@ export default async function SearchPage({
   searchParams?: { q?: string; min?: string; max?: string; stock?: string };
 }) {
   const { slug } = await params;
-  const { q, min, max } =await searchParams ?? {};
+  const { q, min, max } = (await searchParams) ?? {};
   const supabase = await createClient();
 
   // 1. Fetch Shop
@@ -100,10 +100,7 @@ export default async function SearchPage({
             {products && products.length > 0 ? (
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
                 {products.map((product) => (
-                  <Link
-                    href={`/${slug}/p/${product.id}`}
-                    key={product.id}
-                  >
+                  <Link href={`/${slug}/p/${product.id}`} key={product.id}>
                     <ProductCard
                       product={product}
                       isShopOpen={isShopActuallyOpen}

@@ -4,18 +4,18 @@ import { Button } from "@/components/ui/button";
 import { Lock, Zap } from "lucide-react";
 import Link from "next/link";
 
-export function FeatureLock({ 
-  plan, 
-  children, 
-  featureName 
-}: { 
-  plan: string | undefined, 
-  children: React.ReactNode, 
-  featureName: string 
+export function FeatureLock({
+  plan,
+  children,
+  featureName,
+}: {
+  plan: string | undefined;
+  children: React.ReactNode;
+  featureName: string;
 }) {
   // If PRO, show the real feature
   // We treat 'undefined' as 'free' for safety
-  if (plan === 'pro') {
+  if (plan === "pro") {
     return <>{children}</>;
   }
 
@@ -23,7 +23,10 @@ export function FeatureLock({
   return (
     <div className="relative rounded-xl overflow-hidden border border-border/50">
       {/* The Content (Blurred) */}
-      <div className="filter blur-sm opacity-20 pointer-events-none select-none p-4" aria-hidden="true">
+      <div
+        className="filter blur-sm opacity-20 pointer-events-none select-none p-4"
+        aria-hidden="true"
+      >
         {children}
       </div>
 
@@ -36,10 +39,14 @@ export function FeatureLock({
           Unlock {featureName}
         </h3>
         <p className="text-sm text-muted-foreground max-w-xs mb-6 leading-relaxed">
-          This is a <strong>Pro Feature</strong>. Upgrade your plan to access advanced analytics, unlimited products, and more.
+          This is a <strong>Pro Feature</strong>. Upgrade your plan to access
+          advanced analytics, unlimited products, and more.
         </p>
         <Link href="/billing">
-          <Button size="lg" className="bg-primary text-black font-bold hover:bg-primary/90 gap-2 shadow-lg shadow-primary/20">
+          <Button
+            size="lg"
+            className="bg-primary text-black font-bold hover:bg-primary/90 gap-2 shadow-lg shadow-primary/20"
+          >
             <Zap className="w-4 h-4" /> Upgrade to Pro
           </Button>
         </Link>

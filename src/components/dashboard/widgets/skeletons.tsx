@@ -7,11 +7,11 @@ export function StatsSkeleton() {
       {[1, 2, 3, 4].map((i) => (
         <Card key={i} className="bg-card border-border/50">
           <CardContent className="p-6 flex justify-between items-center">
-             <div className="space-y-2">
-               <Skeleton className="h-4 w-20" />
-               <Skeleton className="h-8 w-12" />
-             </div>
-             <Skeleton className="h-10 w-10 rounded-full" />
+            <div className="space-y-2">
+              <Skeleton className="h-4 w-20" />
+              <Skeleton className="h-8 w-12" />
+            </div>
+            <Skeleton className="h-10 w-10 rounded-full" />
           </CardContent>
         </Card>
       ))}

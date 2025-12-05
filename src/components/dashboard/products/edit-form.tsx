@@ -45,13 +45,13 @@ export function EditProductForm({
   const [imageUrl, setImageUrl] = useState<string>(product.image_url || "");
   const [variants, setVariants] = useState<any[]>(product.variants || []);
   const [gallery, setGallery] = useState<string[]>(
-    product.gallery_images || []
+    product.gallery_images || [],
   );
   const [badges, setBadges] = useState<string[]>(product.badges || []);
   const [price, setPrice] = useState<string>(
     product.price !== undefined && product.price !== null
       ? String(product.price)
-      : ""
+      : "",
   );
   const [skus, setSkus] = useState<any[]>(product.skus || []);
   const [stock, setStock] = useState<number>(product.stock_count ?? 0);
@@ -105,7 +105,7 @@ export function EditProductForm({
           toast.success(
             rawData.status === "draft"
               ? "Draft updated successfully!"
-              : "Product updated successfully!"
+              : "Product updated successfully!",
           );
 
           if (result.data.redirect) {

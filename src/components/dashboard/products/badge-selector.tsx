@@ -10,7 +10,13 @@ const AVAILABLE_BADGES = [
   { id: "sale", label: "On Sale", color: "bg-red-500" },
 ];
 
-export function BadgeSelector({ value, onChange }: { value: string[], onChange: (v: string[]) => void }) {
+export function BadgeSelector({
+  value,
+  onChange,
+}: {
+  value: string[];
+  onChange: (v: string[]) => void;
+}) {
   const [selected, setSelected] = useState<string[]>(value || []);
 
   useEffect(() => {
@@ -19,7 +25,7 @@ export function BadgeSelector({ value, onChange }: { value: string[], onChange: 
 
   const toggleBadge = (id: string) => {
     if (selected.includes(id)) {
-      setSelected(selected.filter(b => b !== id));
+      setSelected(selected.filter((b) => b !== id));
     } else {
       setSelected([...selected, id]);
     }
@@ -30,7 +36,7 @@ export function BadgeSelector({ value, onChange }: { value: string[], onChange: 
       {AVAILABLE_BADGES.map((badge) => {
         const isActive = selected.includes(badge.id);
         return (
-          <div 
+          <div
             key={badge.id}
             onClick={() => toggleBadge(badge.id)}
             className={`

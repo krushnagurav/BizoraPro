@@ -1,12 +1,12 @@
 import { createClient } from "@/src/lib/supabase/server";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { 
-  Store, 
-  DollarSign, 
-  TrendingUp, 
-  MessageCircle, 
-  Eye, 
-  Headphones 
+import {
+  Store,
+  DollarSign,
+  TrendingUp,
+  MessageCircle,
+  Eye,
+  Headphones,
 } from "lucide-react";
 
 export default async function AdminDashboardPage() {
@@ -16,9 +16,17 @@ export default async function AdminDashboardPage() {
   const sevenDaysAgoIso = sevenDaysAgo.toISOString();
 
   // 1. Fetch Real Counts (Basic)
-  const { count: totalShops } = await supabase.from("shops").select("*", { count: 'exact', head: true });
-  const { count: activeShops } = await supabase.from("shops").select("*", { count: 'exact', head: true }).eq("is_open", true);
-  const { count: orders7d } = await supabase.from("orders").select("*", { count: 'exact', head: true }).gte("created_at", sevenDaysAgoIso);
+  const { count: totalShops } = await supabase
+    .from("shops")
+    .select("*", { count: "exact", head: true });
+  const { count: activeShops } = await supabase
+    .from("shops")
+    .select("*", { count: "exact", head: true })
+    .eq("is_open", true);
+  const { count: orders7d } = await supabase
+    .from("orders")
+    .select("*", { count: "exact", head: true })
+    .gte("created_at", sevenDaysAgoIso);
 
   // Mock Data for Advanced Metrics (Until we build full analytics engine)
   // In Phase 3, we will replace these with real DB aggregations
@@ -30,7 +38,7 @@ export default async function AdminDashboardPage() {
       icon: Store,
       color: "text-blue-500",
       trend: "+12%",
-      trendColor: "text-green-500"
+      trendColor: "text-green-500",
     },
     {
       title: "Total Revenue",
@@ -39,7 +47,7 @@ export default async function AdminDashboardPage() {
       icon: DollarSign,
       color: "text-yellow-500",
       trend: "+24%",
-      trendColor: "text-green-500"
+      trendColor: "text-green-500",
     },
     {
       title: "Trial Conversion",
@@ -48,7 +56,7 @@ export default async function AdminDashboardPage() {
       icon: TrendingUp,
       color: "text-orange-500",
       trend: "+8%",
-      trendColor: "text-green-500"
+      trendColor: "text-green-500",
     },
     {
       title: "WhatsApp Orders (7d)",
@@ -57,7 +65,7 @@ export default async function AdminDashboardPage() {
       icon: MessageCircle,
       color: "text-green-500",
       trend: "+18%",
-      trendColor: "text-green-500"
+      trendColor: "text-green-500",
     },
     {
       title: "Platform Traffic (7d)",
@@ -66,7 +74,7 @@ export default async function AdminDashboardPage() {
       icon: Eye,
       color: "text-cyan-500",
       trend: "-3%",
-      trendColor: "text-red-500"
+      trendColor: "text-red-500",
     },
     {
       title: "Support Queue",
@@ -75,7 +83,7 @@ export default async function AdminDashboardPage() {
       icon: Headphones,
       color: "text-purple-500",
       trend: "0%",
-      trendColor: "text-gray-500"
+      trendColor: "text-gray-500",
     },
   ];
 
@@ -84,7 +92,9 @@ export default async function AdminDashboardPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-white">Platform Overview</h1>
-          <p className="text-gray-400">Monitor and manage your entire platform ecosystem</p>
+          <p className="text-gray-400">
+            Monitor and manage your entire platform ecosystem
+          </p>
         </div>
         <button className="bg-[#E6B800] text-black px-4 py-2 rounded-lg font-bold hover:bg-[#FFD700] transition">
           + Add New Shop Owner
@@ -96,11 +106,15 @@ export default async function AdminDashboardPage() {
         {stats.map((item, i) => (
           <Card key={i} className="bg-[#111] border-white/10 text-white">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-gray-400">{item.title}</CardTitle>
+              <CardTitle className="text-sm font-medium text-gray-400">
+                {item.title}
+              </CardTitle>
               <div className="flex items-center gap-2">
-                <span className={`text-xs font-bold ${item.trendColor}`}>{item.trend}</span>
+                <span className={`text-xs font-bold ${item.trendColor}`}>
+                  {item.trend}
+                </span>
                 <div className={`p-2 rounded-lg bg-white/5 ${item.color}`}>
-                   <item.icon className="h-4 w-4" />
+                  <item.icon className="h-4 w-4" />
                 </div>
               </div>
             </CardHeader>
@@ -115,8 +129,10 @@ export default async function AdminDashboardPage() {
       {/* GRAPH SECTION (Placeholder for now) */}
       <Card className="bg-[#111] border-white/10 text-white h-[300px] flex items-center justify-center">
         <div className="text-center">
-           <p className="text-lg font-bold">Platform Growth</p>
-           <p className="text-sm text-gray-500">Monthly trends for new shops and order requests</p>
+          <p className="text-lg font-bold">Platform Growth</p>
+          <p className="text-sm text-gray-500">
+            Monthly trends for new shops and order requests
+          </p>
         </div>
       </Card>
     </div>

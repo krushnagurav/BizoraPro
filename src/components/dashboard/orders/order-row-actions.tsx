@@ -11,7 +11,14 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { updateOrderStatusAction } from "@/src/actions/order-actions";
-import { MoreHorizontal, CheckCircle2, Truck, Package, Ban, Loader2 } from "lucide-react";
+import {
+  MoreHorizontal,
+  CheckCircle2,
+  Truck,
+  Package,
+  Ban,
+  Loader2,
+} from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -66,33 +73,58 @@ export function OrderRowActions({ order }: { order: any }) {
 
   return (
     <div className="flex items-center justify-end gap-3">
-      <Badge variant="outline" className={`capitalize ${getStatusColor(order.status)}`}>
+      <Badge
+        variant="outline"
+        className={`capitalize ${getStatusColor(order.status)}`}
+      >
         {order.status}
       </Badge>
 
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="icon" disabled={loading} aria-label="Order actions">
-            {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <MoreHorizontal className="h-4 w-4" />}
+          <Button
+            variant="ghost"
+            size="icon"
+            disabled={loading}
+            aria-label="Order actions"
+          >
+            {loading ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <MoreHorizontal className="h-4 w-4" />
+            )}
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
           <DropdownMenuLabel>Update Status</DropdownMenuLabel>
           <DropdownMenuSeparator />
 
-          <DropdownMenuItem onClick={() => handleUpdate("confirmed")} disabled={loading}>
+          <DropdownMenuItem
+            onClick={() => handleUpdate("confirmed")}
+            disabled={loading}
+          >
             <CheckCircle2 className="h-4 w-4 mr-2 text-blue-500" /> Confirm
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => handleUpdate("shipped")} disabled={loading}>
+          <DropdownMenuItem
+            onClick={() => handleUpdate("shipped")}
+            disabled={loading}
+          >
             <Package className="h-4 w-4 mr-2 text-purple-500" /> Mark Shipped
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => handleUpdate("delivered")} disabled={loading}>
+          <DropdownMenuItem
+            onClick={() => handleUpdate("delivered")}
+            disabled={loading}
+          >
             <Truck className="h-4 w-4 mr-2 text-green-500" /> Mark Delivered
           </DropdownMenuItem>
 
           <DropdownMenuSeparator />
 
-          <DropdownMenuItem onClick={() => handleUpdate("cancelled")} className="text-red-500 focus:text-red-500" disabled={loading}>
+          <DropdownMenuItem
+            onClick={() => handleUpdate("cancelled")}
+            className="text-red-500 focus:text-red-500"
+            disabled={loading}
+          >
             <Ban className="h-4 w-4 mr-2" /> Cancel Order
           </DropdownMenuItem>
         </DropdownMenuContent>

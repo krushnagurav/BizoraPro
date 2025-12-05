@@ -5,8 +5,20 @@ import { createAdminUserAction } from "@/src/actions/admin-actions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { Plus, Loader2 } from "lucide-react";
 
@@ -20,7 +32,7 @@ export function AddAdminDialog() {
     const formData = new FormData(event.currentTarget);
     const result = await createAdminUserAction(formData);
     setLoading(false);
-    
+
     if (result?.error) toast.error(result.error);
     else {
       toast.success("Admin user added");
@@ -42,16 +54,27 @@ export function AddAdminDialog() {
         <form onSubmit={handleSubmit} className="space-y-4 mt-4">
           <div className="space-y-2">
             <Label>Full Name</Label>
-            <Input name="fullName" className="bg-[#050505] border-white/10" required />
+            <Input
+              name="fullName"
+              className="bg-[#050505] border-white/10"
+              required
+            />
           </div>
           <div className="space-y-2">
             <Label>Email</Label>
-            <Input name="email" type="email" className="bg-[#050505] border-white/10" required />
+            <Input
+              name="email"
+              type="email"
+              className="bg-[#050505] border-white/10"
+              required
+            />
           </div>
           <div className="space-y-2">
             <Label>Role</Label>
             <Select name="role" defaultValue="support">
-              <SelectTrigger className="bg-[#050505] border-white/10"><SelectValue /></SelectTrigger>
+              <SelectTrigger className="bg-[#050505] border-white/10">
+                <SelectValue />
+              </SelectTrigger>
               <SelectContent>
                 <SelectItem value="support">Support Agent</SelectItem>
                 <SelectItem value="finance">Finance Manager</SelectItem>
@@ -60,7 +83,11 @@ export function AddAdminDialog() {
             </Select>
           </div>
           <div className="flex justify-end">
-            <Button type="submit" disabled={loading} className="bg-primary text-black font-bold">
+            <Button
+              type="submit"
+              disabled={loading}
+              className="bg-primary text-black font-bold"
+            >
               {loading ? <Loader2 className="animate-spin" /> : "Create User"}
             </Button>
           </div>

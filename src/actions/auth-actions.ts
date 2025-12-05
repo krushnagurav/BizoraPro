@@ -74,7 +74,7 @@ export async function signupAction(formData: FormData) {
     return { error: error.message };
   }
 
-// CHECK: Is this the Super Admin?
+  // CHECK: Is this the Super Admin?
   if (parsed.data.email === ADMIN_EMAIL) {
     redirect("/admin"); // Skip onboarding, go to Admin
   }
@@ -136,21 +136,22 @@ export async function updatePasswordAction(formData: FormData) {
   redirect("/dashboard");
 }
 
-
 // 7. UPDATE PROFILE
 export async function updateProfileAction(formData: FormData) {
   const fullName = formData.get("fullName") as string;
   const email = formData.get("email") as string;
 
   const supabase = await createClient();
-  
+
   // 1. Update Auth User (Metadata)
   const { error: userError } = await supabase.auth.updateUser({
     email: email, // This triggers a confirmation email to the new address
-    data: { full_name: fullName }
+    data: { full_name: fullName },
   });
 
   if (userError) return { error: userError.message };
 
-  return { success: "Profile updated. If you changed email, check your inbox." };
+  return {
+    success: "Profile updated. If you changed email, check your inbox.",
+  };
 }

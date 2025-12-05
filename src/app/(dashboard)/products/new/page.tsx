@@ -5,7 +5,9 @@ import { ArrowLeft } from "lucide-react";
 
 export default async function AddProductPage() {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   // 1. Get Shop ID
   const { data: shop } = await supabase
@@ -23,14 +25,20 @@ export default async function AddProductPage() {
 
   return (
     <div className="p-8 max-w-2xl mx-auto">
-      <Link href="/products" className="text-sm text-muted-foreground hover:text-primary flex items-center gap-2 mb-6">
+      <Link
+        href="/products"
+        className="text-sm text-muted-foreground hover:text-primary flex items-center gap-2 mb-6"
+      >
         <ArrowLeft className="h-4 w-4" /> Back to Products
       </Link>
 
       <h1 className="text-3xl font-bold text-primary mb-8">Add New Product</h1>
 
       {/* Pass categories to the Client Component */}
-      <AddProductForm categories={categories || []} plan={shop?.plan || 'free'} />
+      <AddProductForm
+        categories={categories || []}
+        plan={shop?.plan || "free"}
+      />
     </div>
   );
 }

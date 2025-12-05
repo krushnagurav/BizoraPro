@@ -27,7 +27,10 @@ export default function SupportPage() {
   return (
     <>
       {/* HERO + SEARCH */}
-      <section className="container mx-auto px-6 pt-28 pb-16 text-center md:px-12" aria-labelledby="support-heading">
+      <section
+        className="container mx-auto px-6 pt-28 pb-16 text-center md:px-12"
+        aria-labelledby="support-heading"
+      >
         <p className="mb-3 text-xs font-semibold uppercase tracking-[0.25em] text-primary">
           Help Center
         </p>

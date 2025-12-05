@@ -1,7 +1,6 @@
 // src/actions/shop-actions.ts
 "use server";
 
-
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { createClient } from "../lib/supabase/server";
@@ -11,7 +10,10 @@ import { categoryPresets } from "@/src/lib/fonts";
 // --- STEP 1 VALIDATION ---
 const step1Schema = z.object({
   name: z.string().min(3, "Shop name too short"),
-  slug: z.string().min(3).regex(/^[a-z0-9-]+$/, "Invalid URL format"),
+  slug: z
+    .string()
+    .min(3)
+    .regex(/^[a-z0-9-]+$/, "Invalid URL format"),
 });
 
 // --- STEP 2 VALIDATION ---
@@ -32,28 +34,34 @@ const step2Schema = z.object({
 // ==========================================
 export async function completeStep1(formData: FormData) {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   if (!user) return { error: "Login required" };
 
   const raw = { name: formData.get("name"), slug: formData.get("slug") };
   const parsed = step1Schema.safeParse(raw);
-  
+
   if (!parsed.success) {
     return { error: parsed.error.issues[0]?.message ?? "Invalid shop details" };
   }
   // Check slug uniqueness
-  const { data: exists } = await supabase.from("shops").select("id").eq("slug", parsed.data.slug).single();
+  const { data: exists } = await supabase
+    .from("shops")
+    .select("id")
+    .eq("slug", parsed.data.slug)
+    .single();
   if (exists) return { error: "URL already taken" };
 
   const { error } = await supabase.from("shops").insert({
     owner_id: user.id,
     name: parsed.data.name,
     slug: parsed.data.slug,
-    onboarding_step: 2 // Advance to Step 2
+    onboarding_step: 2, // Advance to Step 2
   });
 
   if (error) return { error: error.message };
-  
+
   // Stay on onboarding page to show Step 2
   redirect("/onboarding");
 }
@@ -63,23 +71,29 @@ export async function completeStep1(formData: FormData) {
 // ==========================================
 export async function completeStep2(formData: FormData) {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  
-  const raw = { 
-    whatsapp: formData.get("whatsapp"), 
-    category: formData.get("category") 
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  const raw = {
+    whatsapp: formData.get("whatsapp"),
+    category: formData.get("category"),
   };
   const parsed = step2Schema.safeParse(raw);
   if (!parsed.success) {
     return { error: parsed.error.issues[0]?.message ?? "Invalid details" };
   }
   const category = parsed.data.category;
-  
+
   // 1. Get Preset based on Category (or default to Other)
   const preset = categoryPresets[category] || categoryPresets["Other"];
 
   // 1. Create the Category in DB first
-  const { data: shop } = await supabase.from("shops").select("id").eq("owner_id", user?.id).single();
+  const { data: shop } = await supabase
+    .from("shops")
+    .select("id")
+    .eq("owner_id", user?.id)
+    .single();
   if (!shop) return { error: "Shop not found" };
 
   const { error: catError } = await supabase
@@ -90,25 +104,25 @@ export async function completeStep2(formData: FormData) {
 
   if (catError) return { error: "Failed to save category" };
 
-  // 2. Update Shop with WA number (Using theme_config for now or a metadata column, 
-  // let&apos;s assume we save it to a 'contact_phone' column if it exists, 
+  // 2. Update Shop with WA number (Using theme_config for now or a metadata column,
+  // let&apos;s assume we save it to a 'contact_phone' column if it exists,
   // OR better: create a 'whatsapp_number' column in shops table if we missed it.
-  // For MVP, let&apos;s assume we forgot the column and add it via SQL or store in metadata. 
+  // For MVP, let&apos;s assume we forgot the column and add it via SQL or store in metadata.
   // *QUICK FIX*: Let&apos;s run a SQL command later to add 'whatsapp_number' to shops.*
-  
+
   // Updating onboarding step
   const { error } = await supabase
     .from("shops")
-    .update({ 
+    .update({
       whatsapp_number: parsed.data.whatsapp,
-      onboarding_step: 3 ,
+      onboarding_step: 3,
       theme_config: {
         primaryColor: preset.primaryColor,
         font: preset.font,
         radius: preset.radius,
         bannerUrl: "",
-        logoUrl: ""
-      }
+        logoUrl: "",
+      },
     })
     .eq("id", shop.id);
 
@@ -122,7 +136,9 @@ export async function completeStep2(formData: FormData) {
 // ==========================================
 export async function completeStep3(formData: FormData) {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   if (!user) return { error: "Login required" };
 
@@ -143,15 +159,12 @@ export async function completeStep3(formData: FormData) {
     name,
     price,
     status: "active",
-    image_url: ""
+    image_url: "",
   });
 
   if (error) return { error: error.message };
 
-  await supabase
-    .from("shops")
-    .update({ onboarding_step: 4 })
-    .eq("id", shop.id);
+  await supabase.from("shops").update({ onboarding_step: 4 }).eq("id", shop.id);
 
   redirect("/dashboard");
 }
@@ -161,9 +174,11 @@ export async function completeStep3(formData: FormData) {
 export async function updateShopAppearanceAction(formData: FormData) {
   const bannerUrl = formData.get("bannerUrl") as string;
   const primaryColor = formData.get("primaryColor") as string;
-  
+
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   const logoUrl = formData.get("logoUrl") as string;
 
   if (!user) return { error: "Login required" };
@@ -175,8 +190,8 @@ export async function updateShopAppearanceAction(formData: FormData) {
       theme_config: {
         primaryColor: primaryColor || "#E6B800",
         bannerUrl: bannerUrl || "",
-        logoUrl: logoUrl
-      }
+        logoUrl: logoUrl,
+      },
     })
     .eq("owner_id", user.id);
 
@@ -184,7 +199,6 @@ export async function updateShopAppearanceAction(formData: FormData) {
 
   return { success: "Shop appearance updated!" };
 }
-
 
 export async function updateShopSettingsAction(formData: FormData) {
   const supabase = await createClient();
@@ -255,14 +269,16 @@ export async function updateStorePoliciesAction(formData: FormData) {
   const refund = formData.get("refund") as string;
 
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   if (!user) return { error: "Login required" };
 
   const { error } = await supabase
     .from("shops")
     .update({
-      policies: { privacy, terms, refund }
+      policies: { privacy, terms, refund },
     })
     .eq("owner_id", user.id);
 
@@ -280,7 +296,9 @@ export async function updateNotificationPrefsAction(formData: FormData) {
   const marketingUpdates = formData.get("marketing_updates") === "on";
 
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   if (!user) return { error: "Login required" };
 
@@ -291,8 +309,8 @@ export async function updateNotificationPrefsAction(formData: FormData) {
         email_order: emailOrder,
         email_low_stock: emailLowStock,
         whatsapp_order: whatsappOrder,
-        marketing_updates: marketingUpdates
-      }
+        marketing_updates: marketingUpdates,
+      },
     })
     .eq("owner_id", user.id);
 
@@ -305,7 +323,7 @@ export async function updateNotificationPrefsAction(formData: FormData) {
 // UPDATE CUSTOM DOMAIN
 export async function updateCustomDomainAction(formData: FormData) {
   const domain = formData.get("domain") as string;
-  
+
   // Basic cleaning (remove https:// and www.)
   const cleanDomain = domain
     .replace("https://", "")
@@ -315,7 +333,9 @@ export async function updateCustomDomainAction(formData: FormData) {
     .toLowerCase();
 
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   if (!user) return { error: "Login required" };
 
   // Check if domain is taken by another shop
@@ -326,14 +346,15 @@ export async function updateCustomDomainAction(formData: FormData) {
     .neq("owner_id", user.id) // Exclude self
     .single();
 
-  if (existing) return { error: "This domain is already connected to another shop." };
+  if (existing)
+    return { error: "This domain is already connected to another shop." };
 
   // Update
   const { error } = await supabase
     .from("shops")
-    .update({ 
+    .update({
       custom_domain: cleanDomain,
-      domain_verified: false // Needs Vercel verification logic later
+      domain_verified: false, // Needs Vercel verification logic later
     })
     .eq("owner_id", user.id);
 
@@ -346,14 +367,16 @@ export async function updateCustomDomainAction(formData: FormData) {
 // REMOVE CUSTOM DOMAIN
 export async function removeCustomDomainAction() {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   if (!user) return { error: "Login required" };
 
   const { error } = await supabase
     .from("shops")
-    .update({ 
+    .update({
       custom_domain: null,
-      domain_verified: false 
+      domain_verified: false,
     })
     .eq("owner_id", user.id);
 

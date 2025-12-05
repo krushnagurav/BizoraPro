@@ -14,9 +14,15 @@ const couponSchema = z.object({
 // 1. CREATE
 export async function createCouponAction(formData: FormData) {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  
-  const { data: shop } = await supabase.from("shops").select("id").eq("owner_id", user?.id).single();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  const { data: shop } = await supabase
+    .from("shops")
+    .select("id")
+    .eq("owner_id", user?.id)
+    .single();
   if (!shop) return { error: "Shop not found" };
 
   const raw = {
@@ -43,7 +49,7 @@ export async function createCouponAction(formData: FormData) {
     end_date: raw.endDate,
     usage_limit: raw.maxUsesTotal,
     max_discount_amount: raw.maxDiscountAmount,
-    is_active: true
+    is_active: true,
   });
 
   if (error) {
@@ -109,10 +115,18 @@ export async function duplicateCouponAction(formData: FormData): Promise<void> {
 }
 
 // 4. VERIFY (Public)
-export async function verifyCouponAction(code: string, shopSlug: string, cartTotal: number) {
+export async function verifyCouponAction(
+  code: string,
+  shopSlug: string,
+  cartTotal: number,
+) {
   const supabase = await createClient();
 
-  const { data: shop } = await supabase.from("shops").select("id").eq("slug", shopSlug).single();
+  const { data: shop } = await supabase
+    .from("shops")
+    .select("id")
+    .eq("slug", shopSlug)
+    .single();
   if (!shop) return { error: "Invalid Shop" };
 
   const { data: coupon } = await supabase
@@ -139,13 +153,13 @@ export async function verifyCouponAction(code: string, shopSlug: string, cartTot
     return { error: "Coupon usage limit reached" };
   }
 
-  return { 
-    success: true, 
+  return {
+    success: true,
     coupon: {
       code: coupon.code,
       type: coupon.discount_type,
-      value: coupon.discount_value
-    } 
+      value: coupon.discount_value,
+    },
   };
 }
 
@@ -153,10 +167,16 @@ export async function verifyCouponAction(code: string, shopSlug: string, cartTot
 export async function updateCouponAction(formData: FormData) {
   const id = formData.get("id") as string;
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
   // Verify ownership
-  const { data: shop } = await supabase.from("shops").select("id").eq("owner_id", user?.id).single();
+  const { data: shop } = await supabase
+    .from("shops")
+    .select("id")
+    .eq("owner_id", user?.id)
+    .single();
   if (!shop) return { error: "Unauthorized" };
 
   const raw = {
@@ -167,22 +187,26 @@ export async function updateCouponAction(formData: FormData) {
     startDate: formData.get("startDate"),
     endDate: formData.get("endDate") || null,
     maxUsesTotal: formData.get("maxUsesTotal") || null,
-    status: formData.get("status") === "active" // Handle Active/Inactive toggle
+    status: formData.get("status") === "active", // Handle Active/Inactive toggle
   };
 
   // Validate (reuse schema or simplified check)
   // We skip full Zod here for brevity, but you should use it in prod
-  
-  const { error } = await supabase.from("coupons").update({
-    code: String(raw.code).toUpperCase(),
-    discount_type: raw.discountType,
-    discount_value: raw.discountValue,
-    min_order_value: raw.minOrderValue,
-    start_date: raw.startDate,
-    end_date: raw.endDate,
-    usage_limit: raw.maxUsesTotal,
-    is_active: raw.status
-  }).eq("id", id).eq("shop_id", shop.id);
+
+  const { error } = await supabase
+    .from("coupons")
+    .update({
+      code: String(raw.code).toUpperCase(),
+      discount_type: raw.discountType,
+      discount_value: raw.discountValue,
+      min_order_value: raw.minOrderValue,
+      start_date: raw.startDate,
+      end_date: raw.endDate,
+      usage_limit: raw.maxUsesTotal,
+      is_active: raw.status,
+    })
+    .eq("id", id)
+    .eq("shop_id", shop.id);
 
   if (error) return { error: error.message };
 

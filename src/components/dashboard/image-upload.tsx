@@ -76,7 +76,13 @@ export function ImageUpload({ value, onChange, disabled }: ImageUploadProps) {
             <X className="h-4 w-4" />
           </Button>
         </div>
-        <Image fill className="object-cover" alt="Product" src={value} unoptimized />
+        <Image
+          fill
+          className="object-cover"
+          alt="Product"
+          src={value}
+          unoptimized
+        />
       </div>
     );
   }
@@ -92,16 +98,15 @@ export function ImageUpload({ value, onChange, disabled }: ImageUploadProps) {
             <ImagePlus className="w-10 h-10 text-muted-foreground mb-3" />
           )}
           <p className="mb-2 text-sm text-muted-foreground">
-            <span className="font-semibold">Click to upload</span> or drag and drop
+            <span className="font-semibold">Click to upload</span> or drag and
+            drop
           </p>
-          <p className="text-xs text-muted-foreground">
-            JPG, PNG (MAX. 5MB)
-          </p>
+          <p className="text-xs text-muted-foreground">JPG, PNG (MAX. 5MB)</p>
         </div>
-        <input 
-          type="file" 
-          className="hidden" 
-          accept="image/*" 
+        <input
+          type="file"
+          className="hidden"
+          accept="image/*"
           onChange={onUpload}
           disabled={disabled || isUploading}
         />

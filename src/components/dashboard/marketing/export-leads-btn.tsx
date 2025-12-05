@@ -13,18 +13,18 @@ export function ExportLeadsButton({ data }: { data: any[] }) {
 
     // 1. Define Headers
     const headers = ["Name", "Phone", "Date"];
-    
+
     // 2. Format Rows
-    const rows = data.map(lead => [
+    const rows = data.map((lead) => [
       lead.name || "Guest",
       lead.phone,
-      new Date(lead.created_at).toLocaleDateString()
+      new Date(lead.created_at).toLocaleDateString(),
     ]);
 
     // 3. Generate CSV String
     const csvContent = [
       headers.join(","),
-      ...rows.map(row => row.join(","))
+      ...rows.map((row) => row.join(",")),
     ].join("\n");
 
     // 4. Download File
@@ -36,7 +36,7 @@ export function ExportLeadsButton({ data }: { data: any[] }) {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-    
+
     toast.success("Leads exported successfully!");
   };
 

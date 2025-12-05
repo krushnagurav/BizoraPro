@@ -5,11 +5,11 @@ import { headers } from "next/headers";
 
 export async function getGrowthStatsAction() {
   const supabase = await createClient();
-  
+
   // 1. Get data for last 30 days
   const thirtyDaysAgo = new Date();
   thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-  
+
   const { data: shops } = await supabase
     .from("shops")
     .select("created_at")
@@ -28,13 +28,19 @@ export async function getGrowthStatsAction() {
   for (let i = 29; i >= 0; i--) {
     const d = new Date();
     d.setDate(d.getDate() - i);
-    const key = d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+    const key = d.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+    });
     dateMap.set(key, { date: key, shops: 0, orders: 0, revenue: 0 });
   }
 
   // Fill Shops
   shops?.forEach((s) => {
-    const key = new Date(s.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric" });
+    const key = new Date(s.created_at).toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+    });
     if (dateMap.has(key)) {
       const entry = dateMap.get(key);
       entry.shops += 1;
@@ -43,7 +49,10 @@ export async function getGrowthStatsAction() {
 
   // Fill Orders
   orders?.forEach((o) => {
-    const key = new Date(o.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric" });
+    const key = new Date(o.created_at).toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+    });
     if (dateMap.has(key)) {
       const entry = dateMap.get(key);
       entry.orders += 1;
@@ -59,20 +68,24 @@ export async function getGrowthStatsAction() {
 }
 
 // 2. RECORD VIEW (Server Action)
-export async function trackEventAction(shopId: string, event: string, metadata: any = {}) {
+export async function trackEventAction(
+  shopId: string,
+  event: string,
+  metadata: any = {},
+) {
   const supabase = await createClient();
-  
+
   // Get simple fingerprint (User Agent + IP prefix) for basic unique counting
   const headerList = await headers();
   const userAgent = headerList.get("user-agent") || "unknown";
   // In production, get IP from x-forwarded-for
-  const hash = btoa(userAgent).slice(0, 20); 
+  const hash = btoa(userAgent).slice(0, 20);
 
   await supabase.from("analytics").insert({
     shop_id: shopId,
     event_type: event,
     metadata: metadata,
-    viewer_hash: hash
+    viewer_hash: hash,
   });
 }
 
@@ -101,33 +114,43 @@ export async function getProductStatsAction(productId: string) {
     .neq("status", "draft"); // Only real orders
 
   // Filter orders that contain this product
-  const productOrders = orders?.filter(o => 
-    (o.items as any[]).some((i: any) => i.id === productId)
-  ) || [];
+  const productOrders =
+    orders?.filter((o) =>
+      (o.items as any[]).some((i: any) => i.id === productId),
+    ) || [];
 
   // 3. Group by Date
   const dateMap = new Map();
   for (let i = 29; i >= 0; i--) {
     const d = new Date();
     d.setDate(d.getDate() - i);
-    const key = d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+    const key = d.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+    });
     dateMap.set(key, { date: key, views: 0, sales: 0 });
   }
 
-  views?.forEach(v => {
-    const key = new Date(v.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric" });
+  views?.forEach((v) => {
+    const key = new Date(v.created_at).toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+    });
     if (dateMap.has(key)) dateMap.get(key).views += 1;
   });
 
-  productOrders.forEach(o => {
-    const key = new Date(o.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric" });
+  productOrders.forEach((o) => {
+    const key = new Date(o.created_at).toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+    });
     if (dateMap.has(key)) dateMap.get(key).sales += 1;
   });
 
   return {
     chartData: Array.from(dateMap.values()),
     totalViews: views?.length || 0,
-    totalSales: productOrders.length
+    totalSales: productOrders.length,
   };
 }
 
@@ -138,19 +161,19 @@ export async function getDeepAnalyticsAction() {
   // A. Plan Distribution (Pie Chart)
   // Count how many shops are on 'free' vs 'pro'
   const { data: shops } = await supabase.from("shops").select("plan");
-  
+
   const planDistribution = [
     { name: "Free", value: 0, fill: "#94a3b8" }, // Gray
     { name: "Pro", value: 0, fill: "#E6B800" }, // Gold
   ];
 
-  shops?.forEach(s => {
-    if (s.plan === 'pro') planDistribution[1].value++;
+  shops?.forEach((s) => {
+    if (s.plan === "pro") planDistribution[1].value++;
     else planDistribution[0].value++;
   });
 
   // B. Top Shops (Leaderboard)
-  // We need to count orders per shop. 
+  // We need to count orders per shop.
   // (Note: In a huge DB, we'd use an RPC function. For MVP, we fetch orders and aggregate in JS).
   const { data: orders } = await supabase
     .from("orders")
@@ -158,8 +181,8 @@ export async function getDeepAnalyticsAction() {
     .neq("status", "draft");
 
   const shopStats = new Map();
-  
-  orders?.forEach(o => {
+
+  orders?.forEach((o) => {
     if (!shopStats.has(o.shop_id)) {
       shopStats.set(o.shop_id, { revenue: 0, orders: 0 });
     }
@@ -172,21 +195,24 @@ export async function getDeepAnalyticsAction() {
   const topShopIds = Array.from(shopStats.entries())
     .sort((a, b) => b[1].revenue - a[1].revenue)
     .slice(0, 5)
-    .map(x => x[0]);
+    .map((x) => x[0]);
 
   const { data: topShopsDetails } = await supabase
     .from("shops")
     .select("id, name")
     .in("id", topShopIds);
 
-  const leaderboard = topShopsDetails?.map(s => ({
-    name: s.name,
-    revenue: shopStats.get(s.id)?.revenue || 0,
-    orders: shopStats.get(s.id)?.orders || 0,
-  })).sort((a, b) => b.revenue - a.revenue) || [];
+  const leaderboard =
+    topShopsDetails
+      ?.map((s) => ({
+        name: s.name,
+        revenue: shopStats.get(s.id)?.revenue || 0,
+        orders: shopStats.get(s.id)?.orders || 0,
+      }))
+      .sort((a, b) => b.revenue - a.revenue) || [];
 
   return {
     planDistribution,
-    leaderboard
+    leaderboard,
   };
 }

@@ -8,7 +8,10 @@ import { ShopHeader } from "@/src/components/storefront/shared/shop-header";
 import { ShopFooter } from "@/src/components/storefront/shared/shop-footer";
 import { ProductCard } from "@/src/components/storefront/product-card";
 import { CartBar } from "@/src/components/storefront/cart-bar";
-import { ShopSearch, CategoryFilter } from "@/src/components/storefront/search-filter";
+import {
+  ShopSearch,
+  CategoryFilter,
+} from "@/src/components/storefront/search-filter";
 import { ViewTracker } from "@/src/components/storefront/view-tracker";
 
 import { hexToHsl } from "@/src/lib/utils";

@@ -14,7 +14,11 @@ interface MultiImageUploadProps {
   disabled?: boolean;
 }
 
-export function MultiImageUpload({ value, onChange, disabled }: MultiImageUploadProps) {
+export function MultiImageUpload({
+  value,
+  onChange,
+  disabled,
+}: MultiImageUploadProps) {
   const [isUploading, setIsUploading] = useState(false);
 
   const onUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -30,15 +34,19 @@ export function MultiImageUpload({ value, onChange, disabled }: MultiImageUpload
       // Loop through selected files
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
-        
+
         // 1. Compress
-        const options = { maxSizeMB: 0.5, maxWidthOrHeight: 1000, useWebWorker: true };
+        const options = {
+          maxSizeMB: 0.5,
+          maxWidthOrHeight: 1000,
+          useWebWorker: true,
+        };
         const compressedFile = await imageCompression(file, options);
 
         // 2. Upload
         const fileExt = file.name.split(".").pop();
         const fileName = `gallery/${Math.random()}.${fileExt}`;
-        
+
         const { error } = await supabase.storage
           .from("product-images")
           .upload(fileName, compressedFile);
@@ -49,14 +57,13 @@ export function MultiImageUpload({ value, onChange, disabled }: MultiImageUpload
         const { data } = supabase.storage
           .from("product-images")
           .getPublicUrl(fileName);
-          
+
         newUrls.push(data.publicUrl);
       }
 
       // Add new URLs to existing list
       onChange([...value, ...newUrls]);
       toast.success("Images uploaded!");
-
     } catch (error) {
       console.error(error);
       toast.error("Upload failed");
@@ -73,7 +80,10 @@ export function MultiImageUpload({ value, onChange, disabled }: MultiImageUpload
     <div>
       <div className="grid grid-cols-3 gap-4 mb-4">
         {value.map((url) => (
-          <div key={url} className="relative aspect-square rounded-md overflow-hidden border border-border group">
+          <div
+            key={url}
+            className="relative aspect-square rounded-md overflow-hidden border border-border group"
+          >
             <div className="z-10 absolute top-1 right-1">
               <Button
                 type="button"
@@ -85,11 +95,11 @@ export function MultiImageUpload({ value, onChange, disabled }: MultiImageUpload
                 <X className="h-3 w-3" />
               </Button>
             </div>
-            <Image 
-              fill 
-              className="object-cover" 
-              alt="Gallery Image" 
-              src={url} 
+            <Image
+              fill
+              className="object-cover"
+              alt="Gallery Image"
+              src={url}
               unoptimized // Fix for local dev issue
             />
           </div>
@@ -99,13 +109,17 @@ export function MultiImageUpload({ value, onChange, disabled }: MultiImageUpload
       <div className="flex items-center gap-4">
         <label className="cursor-pointer">
           <div className="flex items-center gap-2 text-sm font-medium text-primary hover:underline">
-            {isUploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <ImagePlus className="h-4 w-4" />}
+            {isUploading ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <ImagePlus className="h-4 w-4" />
+            )}
             {isUploading ? "Uploading..." : "Add More Images"}
           </div>
-          <input 
-            type="file" 
-            className="hidden" 
-            accept="image/*" 
+          <input
+            type="file"
+            className="hidden"
+            accept="image/*"
             multiple // Allow selecting multiple files
             onChange={onUpload}
             disabled={disabled || isUploading}

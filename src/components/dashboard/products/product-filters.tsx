@@ -1,7 +1,13 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export function ProductFilters({ categories }: { categories: any[] }) {
   const router = useRouter();
@@ -21,8 +27,8 @@ export function ProductFilters({ categories }: { categories: any[] }) {
   return (
     <div className="flex gap-2">
       {/* Status Filter */}
-      <Select 
-        defaultValue={searchParams.get("status") || "all"} 
+      <Select
+        defaultValue={searchParams.get("status") || "all"}
         onValueChange={(val) => handleFilterChange("status", val)}
       >
         <SelectTrigger className="w-[130px] bg-card">
@@ -37,8 +43,8 @@ export function ProductFilters({ categories }: { categories: any[] }) {
       </Select>
 
       {/* Category Filter */}
-      <Select 
-        defaultValue={searchParams.get("category") || "all"} 
+      <Select
+        defaultValue={searchParams.get("category") || "all"}
         onValueChange={(val) => handleFilterChange("category", val)}
       >
         <SelectTrigger className="w-[150px] bg-card">
@@ -47,7 +53,9 @@ export function ProductFilters({ categories }: { categories: any[] }) {
         <SelectContent>
           <SelectItem value="all">All Categories</SelectItem>
           {categories.map((c) => (
-            <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+            <SelectItem key={c.id} value={c.id}>
+              {c.name}
+            </SelectItem>
           ))}
         </SelectContent>
       </Select>

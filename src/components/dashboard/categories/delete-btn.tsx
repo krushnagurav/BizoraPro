@@ -9,7 +9,7 @@ export function CategoryDeleteButton({ id }: { id: string }) {
   const [loading, setLoading] = useState(false);
 
   const handleDelete = async () => {
-    if(!confirm("Are you sure?")) return;
+    if (!confirm("Are you sure?")) return;
     setLoading(true);
     const res = await deleteCategoryAction({ id });
     setLoading(false);
@@ -18,8 +18,18 @@ export function CategoryDeleteButton({ id }: { id: string }) {
   };
 
   return (
-    <Button size="icon" variant="ghost" onClick={handleDelete} disabled={loading} className="text-red-500 hover:bg-red-500/10">
-       {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
+    <Button
+      size="icon"
+      variant="ghost"
+      onClick={handleDelete}
+      disabled={loading}
+      className="text-red-500 hover:bg-red-500/10"
+    >
+      {loading ? (
+        <Loader2 className="w-4 h-4 animate-spin" />
+      ) : (
+        <Trash2 className="w-4 h-4" />
+      )}
     </Button>
   );
 }

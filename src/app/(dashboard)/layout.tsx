@@ -6,11 +6,13 @@ import { redirect } from "next/navigation";
 export default async function DashboardLayout({
   children,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
   // 1. Check User & Shop Status
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   if (!user) redirect("/login");
 
@@ -37,9 +39,7 @@ export default async function DashboardLayout({
       <MobileHeader />
 
       {/* Main Content Area */}
-      <main className="md:pl-64 pt-16 md:pt-0 min-h-screen">
-        {children}
-      </main>
+      <main className="md:pl-64 pt-16 md:pt-0 min-h-screen">{children}</main>
     </div>
   );
 }

@@ -11,7 +11,9 @@ export const action = createSafeActionClient({
 // Authenticated Action Wrapper
 export const authAction = action.use(async ({ next }) => {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   if (!user) {
     throw new Error("Unauthorized");

@@ -7,7 +7,11 @@ import { ArrowLeft, ExternalLink } from "lucide-react";
 import Link from "next/link";
 import { ImpersonateButton } from "@/src/components/admin/impersonate-button";
 
-export default async function AdminShopDetailPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function AdminShopDetailPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
   const { id } = await params;
   const supabase = await createClient();
 
@@ -28,52 +32,68 @@ export default async function AdminShopDetailPage({ params }: { params: Promise<
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
           <Link href="/admin/shops">
-            <Button variant="ghost" size="icon" className="text-gray-400 hover:text-white">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="text-gray-400 hover:text-white"
+            >
               <ArrowLeft className="h-5 w-5" />
             </Button>
           </Link>
           <div>
             <h1 className="text-3xl font-bold text-white">{shop.name}</h1>
             <div className="flex items-center gap-2 text-gray-400 mt-1">
-               <span>ID: {shop.id}</span>
-               <Badge variant="outline" className="border-primary text-primary">{shop.plan}</Badge>
+              <span>ID: {shop.id}</span>
+              <Badge variant="outline" className="border-primary text-primary">
+                {shop.plan}
+              </Badge>
             </div>
           </div>
         </div>
-        
+
         <div className="flex gap-3">
-           <a href={`${process.env.NEXT_PUBLIC_APP_URL}/${shop.slug}`} target="_blank">
-             <Button variant="outline" className="border-white/20 text-white hover:bg-white/10 gap-2">
-               <ExternalLink className="h-4 w-4" /> Visit Shop
-             </Button>
-           </a>
-           
-           {/* THE MAGIC BUTTON */}
-           <ImpersonateButton userId={shop.owner_id} />
+          <a
+            href={`${process.env.NEXT_PUBLIC_APP_URL}/${shop.slug}`}
+            target="_blank"
+          >
+            <Button
+              variant="outline"
+              className="border-white/20 text-white hover:bg-white/10 gap-2"
+            >
+              <ExternalLink className="h-4 w-4" /> Visit Shop
+            </Button>
+          </a>
+
+          {/* THE MAGIC BUTTON */}
+          <ImpersonateButton userId={shop.owner_id} />
         </div>
       </div>
 
       <div className="grid md:grid-cols-2 gap-6">
         <Card className="bg-[#111] border-white/10 text-white">
-           <CardHeader><CardTitle>Business Details</CardTitle></CardHeader>
-           <CardContent className="space-y-4">
-             <div className="flex justify-between">
-               <span className="text-gray-400">WhatsApp</span>
-               <span>{shop.whatsapp_number}</span>
-             </div>
-             <div className="flex justify-between">
-               <span className="text-gray-400">Status</span>
-               <span className={shop.is_open ? "text-green-400" : "text-red-400"}>
-                 {shop.is_open ? "Open" : "Closed"}
-               </span>
-             </div>
-             <div className="flex justify-between">
-               <span className="text-gray-400">Product Limit</span>
-               <span>{shop.product_limit}</span>
-             </div>
-           </CardContent>
+          <CardHeader>
+            <CardTitle>Business Details</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex justify-between">
+              <span className="text-gray-400">WhatsApp</span>
+              <span>{shop.whatsapp_number}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-gray-400">Status</span>
+              <span
+                className={shop.is_open ? "text-green-400" : "text-red-400"}
+              >
+                {shop.is_open ? "Open" : "Closed"}
+              </span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-gray-400">Product Limit</span>
+              <span>{shop.product_limit}</span>
+            </div>
+          </CardContent>
         </Card>
-        
+
         {/* Add more stats cards here if needed */}
       </div>
     </div>

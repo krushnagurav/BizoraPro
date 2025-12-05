@@ -3,7 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
 import { createClient } from "../lib/supabase/server";
-import { Analytics } from "@vercel/analytics/next"
+import { Analytics } from "@vercel/analytics/next";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -26,10 +26,15 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const supabase = await createClient();
-  const { data: settings } = await supabase.from("platform_settings").select("maintenance_mode").single();
-  
+  const { data: settings } = await supabase
+    .from("platform_settings")
+    .select("maintenance_mode")
+    .single();
+
   // Check if Admin is logged in (Admins bypass maintenance)
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   const isAdmin = user?.email === "krishna@bizorapro.com";
 
   if (settings?.maintenance_mode && !isAdmin) {
@@ -37,9 +42,12 @@ export default async function RootLayout({
       <html>
         <body className="bg-black text-white flex items-center justify-center h-screen text-center p-4">
           <div>
-            <h1 className="text-4xl font-bold text-primary mb-4">Under Maintenance 🛠️</h1>
+            <h1 className="text-4xl font-bold text-primary mb-4">
+              Under Maintenance 🛠️
+            </h1>
             <p className="text-gray-400">
-              BizoraPro is currently being upgraded. Please check back in 30 minutes.
+              BizoraPro is currently being upgraded. Please check back in 30
+              minutes.
             </p>
           </div>
         </body>

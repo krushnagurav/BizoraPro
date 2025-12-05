@@ -3,12 +3,7 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import {
-  ShoppingCart,
-  Heart,
-  Check,
-  AlertCircle,
-} from "lucide-react";
+import { ShoppingCart, Heart, Check, AlertCircle } from "lucide-react";
 import { useCart } from "@/src/hooks/use-cart";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
@@ -46,8 +41,8 @@ export function ProductView({ product, isShopOpen }: ProductViewProps) {
 
     const match = product.product_skus.find((sku: any) =>
       Object.entries(sku.attributes).every(
-        ([key, val]) => selections[key] === val
-      )
+        ([key, val]) => selections[key] === val,
+      ),
     );
     setSelectedSku(match || null);
   }, [selections, product.product_skus]);
@@ -158,13 +153,16 @@ export function ProductView({ product, isShopOpen }: ProductViewProps) {
                             key={val}
                             type="button"
                             onClick={() =>
-                              setSelections({ ...selections, [variant.name]: val })
+                              setSelections({
+                                ...selections,
+                                [variant.name]: val,
+                              })
                             }
                             className={cn(
                               "px-4 py-2 rounded-lg border text-sm font-medium transition-all",
                               isSelected
                                 ? "border-primary bg-primary/10 text-primary ring-1 ring-primary"
-                                : "border-slate-200 text-slate-600 hover:border-slate-300 hover:bg-slate-50"
+                                : "border-slate-200 text-slate-600 hover:border-slate-300 hover:bg-slate-50",
                             )}
                           >
                             {val}

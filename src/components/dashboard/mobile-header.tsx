@@ -70,7 +70,7 @@ const navGroups = [
   {
     label: "Settings",
     items: [
-      {name: "Store Settings", href: "/settings", icon: Store },
+      { name: "Store Settings", href: "/settings", icon: Store },
       { name: "Appearance", href: "/settings/appearance", icon: Settings },
       { name: "Billing", href: "/billing", icon: CreditCard },
       { name: "Policies", href: "/settings/policies", icon: ShieldCheck },
@@ -127,7 +127,7 @@ export function MobileHeader() {
                           "w-full justify-start text-sm font-normal h-10 mb-1",
                           pathname === item.href
                             ? "bg-secondary text-primary font-medium"
-                            : "text-muted-foreground hover:text-foreground"
+                            : "text-muted-foreground hover:text-foreground",
                         )}
                       >
                         <item.icon className="mr-3 h-4 w-4" />

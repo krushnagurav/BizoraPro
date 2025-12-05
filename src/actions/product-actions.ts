@@ -58,7 +58,7 @@ export const createProductAction = authAction
     if (skusData.length > 0) {
       finalStock = skusData.reduce(
         (acc: number, sku: any) => acc + Number(sku.stock || 0),
-        0
+        0,
       );
     }
 
@@ -135,7 +135,7 @@ export const updateProductAction = authAction
     if (skusData.length > 0) {
       finalStock = skusData.reduce(
         (acc: number, sku: any) => acc + Number(sku.stock || 0),
-        0
+        0,
       );
     }
 
@@ -269,7 +269,7 @@ export async function getProductsAction(
   limit: number = 10,
   query: string = "",
   categoryId: string = "all",
-  status: string = "all"
+  status: string = "all",
 ) {
   const supabase = await createClient();
   const from = (page - 1) * limit;
@@ -357,7 +357,7 @@ export async function importProductsAction(products: any[]) {
     .eq("shop_id", shop.id)
     .is("deleted_at", null);
   const existingNames = new Set(
-    existingProducts?.map((p) => p.name.toLowerCase().trim())
+    existingProducts?.map((p) => p.name.toLowerCase().trim()),
   );
 
   const { data: existingCats } = await supabase
@@ -457,7 +457,7 @@ export async function importProductsAction(products: any[]) {
 // 7. DUPLICATE PRODUCT
 // ==========================================
 export async function duplicateProductAction(
-  formData: FormData
+  formData: FormData,
 ): Promise<void> {
   const id = formData.get("id") as string;
   const supabase = await createClient();

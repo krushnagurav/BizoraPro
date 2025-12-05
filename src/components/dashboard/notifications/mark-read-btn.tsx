@@ -12,7 +12,12 @@ export function MarkAllReadBtn() {
   };
 
   return (
-    <Button variant="ghost" size="sm" onClick={handleMark} className="text-xs text-muted-foreground hover:text-primary">
+    <Button
+      variant="ghost"
+      size="sm"
+      onClick={handleMark}
+      className="text-xs text-muted-foreground hover:text-primary"
+    >
       <CheckCheck className="mr-2 h-4 w-4" /> Mark all as read
     </Button>
   );

@@ -18,7 +18,9 @@ export default async function UpsellPage() {
   if (!user) {
     return (
       <div className="p-8 max-w-5xl mx-auto">
-        <p className="text-muted-foreground">Please log in to manage upsell rules.</p>
+        <p className="text-muted-foreground">
+          Please log in to manage upsell rules.
+        </p>
       </div>
     );
   }
@@ -30,7 +32,7 @@ export default async function UpsellPage() {
     .single();
 
   // Fetch products (with stock_count + price)
-  const { data: productsData  = [] } = await supabase
+  const { data: productsData = [] } = await supabase
     .from("products")
     .select("id, name, image_url, price, stock_count")
     .eq("shop_id", shop?.id)
@@ -39,16 +41,18 @@ export default async function UpsellPage() {
   const { data: upsellsData = [] } = await supabase
     .from("upsells")
     .select(
-      "*, trigger:trigger_product_id(name, image_url), suggested:suggested_product_id(name, image_url)"
+      "*, trigger:trigger_product_id(name, image_url), suggested:suggested_product_id(name, image_url)",
     )
     .eq("shop_id", shop?.id);
 
   const upsells = upsellsData ?? [];
   const totalRevenue =
-    upsells?.reduce((acc: number, u: any) => acc + (u.revenue_generated || 0), 0) || 0;
+    upsells?.reduce(
+      (acc: number, u: any) => acc + (u.revenue_generated || 0),
+      0,
+    ) || 0;
 
   const products = productsData ?? [];
-
 
   return (
     <div className="p-8 space-y-8 max-w-5xl mx-auto">
@@ -63,7 +67,9 @@ export default async function UpsellPage() {
           </p>
         </div>
         <div className="text-right">
-          <p className="text-sm text-muted-foreground">Extra Revenue Generated</p>
+          <p className="text-sm text-muted-foreground">
+            Extra Revenue Generated
+          </p>
           <p className="text-2xl font-bold text-green-500">₹{totalRevenue}</p>
         </div>
       </div>
@@ -82,10 +88,7 @@ export default async function UpsellPage() {
         {/* LIST */}
         <div className="space-y-4">
           {upsells.map((item: any) => (
-            <Card
-              key={item.id}
-              className="bg-secondary/10 border-border/50"
-            >
+            <Card key={item.id} className="bg-secondary/10 border-border/50">
               <CardContent className="p-4 flex items-center justify-between">
                 <div className="flex items-center gap-6">
                   {/* Trigger */}

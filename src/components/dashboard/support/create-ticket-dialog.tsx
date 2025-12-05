@@ -6,8 +6,21 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { Loader2, PlusCircle } from "lucide-react";
 
@@ -19,9 +32,9 @@ export function CreateTicketDialog() {
     event.preventDefault();
     setLoading(true);
     const formData = new FormData(event.currentTarget);
-    
+
     const result = await createTicketAction(formData);
-    
+
     setLoading(false);
     if (result?.error) {
       toast.error(result.error);
@@ -46,42 +59,60 @@ export function CreateTicketDialog() {
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4 mt-2">
-          
           <div className="space-y-2">
             <Label>Subject</Label>
-            <Input name="subject" placeholder="e.g. Payment failed during checkout" required className="bg-[#050505] border-white/10" />
+            <Input
+              name="subject"
+              placeholder="e.g. Payment failed during checkout"
+              required
+              className="bg-[#050505] border-white/10"
+            />
           </div>
 
           <div className="space-y-2">
             <Label>Priority</Label>
             <Select name="priority" defaultValue="medium">
-              <SelectTrigger className="bg-[#050505] border-white/10"><SelectValue /></SelectTrigger>
+              <SelectTrigger className="bg-[#050505] border-white/10">
+                <SelectValue />
+              </SelectTrigger>
               <SelectContent>
                 <SelectItem value="low">Low - Suggestion / Feedback</SelectItem>
-                <SelectItem value="medium">Medium - Configuration / How-to</SelectItem>
-                <SelectItem value="high">High - Payment / Order Issue</SelectItem>
+                <SelectItem value="medium">
+                  Medium - Configuration / How-to
+                </SelectItem>
+                <SelectItem value="high">
+                  High - Payment / Order Issue
+                </SelectItem>
                 <SelectItem value="critical">Critical - Shop Down</SelectItem>
               </SelectContent>
             </Select>
             <p className="text-[10px] text-muted-foreground">
-               High/Critical priority is for business-stopping issues only.
+              High/Critical priority is for business-stopping issues only.
             </p>
           </div>
 
           <div className="space-y-2">
             <Label>Description</Label>
-            <Textarea 
-              name="message" 
-              placeholder="Describe the issue... Include error messages or steps to reproduce." 
-              rows={4} 
-              required 
+            <Textarea
+              name="message"
+              placeholder="Describe the issue... Include error messages or steps to reproduce."
+              rows={4}
+              required
               className="bg-[#050505] border-white/10"
             />
           </div>
 
           <div className="flex justify-end pt-2">
-            <Button type="submit" disabled={loading} className="font-bold w-full">
-              {loading ? <Loader2 className="animate-spin mr-2" /> : "Submit Ticket"}
+            <Button
+              type="submit"
+              disabled={loading}
+              className="font-bold w-full"
+            >
+              {loading ? (
+                <Loader2 className="animate-spin mr-2" />
+              ) : (
+                "Submit Ticket"
+              )}
             </Button>
           </div>
         </form>

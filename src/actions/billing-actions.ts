@@ -12,14 +12,21 @@ const razorpay = new Razorpay({
 });
 
 // 1. INITIATE CHECKOUT (Create Order)
-export async function createSubscriptionOrderAction(planType: "monthly" | "yearly") {
+export async function createSubscriptionOrderAction(
+  planType: "monthly" | "yearly",
+) {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
   if (!user) return { error: "Login required" };
 
   // Check if keys exist
-  if (!process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || !process.env.RAZORPAY_KEY_SECRET) {
+  if (
+    !process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID ||
+    !process.env.RAZORPAY_KEY_SECRET
+  ) {
     return { error: "Payment gateway not configured (Missing API Keys)" };
   }
 
@@ -32,16 +39,16 @@ export async function createSubscriptionOrderAction(planType: "monthly" | "yearl
       receipt: `receipt_${user.id.slice(0, 10)}`,
       notes: {
         userId: user.id,
-        planType: planType
-      }
+        planType: planType,
+      },
     });
 
-    return { 
-      success: true, 
-      orderId: order.id, 
-      amount: order.amount, 
+    return {
+      success: true,
+      orderId: order.id,
+      amount: order.amount,
       currency: order.currency,
-      key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID 
+      key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
     };
   } catch (error) {
     console.error("Razorpay Error:", error);
@@ -51,13 +58,13 @@ export async function createSubscriptionOrderAction(planType: "monthly" | "yearl
 
 // 2. VERIFY PAYMENT (After User Pays)
 export async function verifyPaymentAction(
-  razorpay_order_id: string, 
-  razorpay_payment_id: string, 
+  razorpay_order_id: string,
+  razorpay_payment_id: string,
   razorpay_signature: string,
-  planType: "monthly" | "yearly"
+  planType: "monthly" | "yearly",
 ) {
   const body = razorpay_order_id + "|" + razorpay_payment_id;
-  
+
   if (!process.env.RAZORPAY_KEY_SECRET) return { error: "Server Config Error" };
 
   const expectedSignature = crypto
@@ -73,17 +80,23 @@ export async function verifyPaymentAction(
 
   // 3. UPDATE DATABASE (Upgrade User)
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   if (user) {
     // 1. Find Shop
-    const { data: shop } = await supabase.from("shops").select("id").eq("owner_id", user.id).single();
-    
+    const { data: shop } = await supabase
+      .from("shops")
+      .select("id")
+      .eq("owner_id", user.id)
+      .single();
+
     if (shop) {
-       // 2. Update Shop Plan
-       await supabase
+      // 2. Update Shop Plan
+      await supabase
         .from("shops")
-        .update({ 
+        .update({
           plan: "pro",
           product_limit: 10000, // Unlimited
         })
@@ -95,7 +108,7 @@ export async function verifyPaymentAction(
         amount: planType === "monthly" ? 199 : 1999,
         transaction_id: razorpay_payment_id,
         status: "succeeded",
-        payment_method: "razorpay"
+        payment_method: "razorpay",
       });
     }
   }

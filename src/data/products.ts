@@ -8,7 +8,7 @@ export async function getProducts(
   page: number = 1,
   query: string = "",
   categoryId: string = "all",
-  status: string = "all"     
+  status: string = "all",
 ) {
   const supabase = await createClient();
 
@@ -18,7 +18,7 @@ export async function getProducts(
   try {
     let dbQuery = supabase
       .from("products")
-      .select("*, categories(name)", { count: "exact" }) 
+      .select("*, categories(name)", { count: "exact" })
       .eq("shop_id", shopId)
       .is("deleted_at", null)
       .order("created_at", { ascending: false })
@@ -27,11 +27,11 @@ export async function getProducts(
     if (query) {
       dbQuery = dbQuery.ilike("name", `%${query}%`);
     }
-    
+
     if (categoryId && categoryId !== "all") {
       dbQuery = dbQuery.eq("category_id", categoryId);
     }
-    
+
     if (status && status !== "all") {
       dbQuery = dbQuery.eq("status", status);
     }
@@ -41,7 +41,17 @@ export async function getProducts(
     if (error) {
       console.error("DAL Error:", error);
       // Return empty typed array
-      return { data: [] as Product[], metadata: { totalPages: 0, totalItems: 0, hasNextPage: false, hasPrevPage: false, page, limit: ITEMS_PER_PAGE } };
+      return {
+        data: [] as Product[],
+        metadata: {
+          totalPages: 0,
+          totalItems: 0,
+          hasNextPage: false,
+          hasPrevPage: false,
+          page,
+          limit: ITEMS_PER_PAGE,
+        },
+      };
     }
 
     return {
@@ -58,6 +68,16 @@ export async function getProducts(
     };
   } catch (error) {
     console.error("System Error:", error);
-    return { data: [] as Product[], metadata: { totalPages: 0, totalItems: 0, hasNextPage: false, hasPrevPage: false, page, limit: ITEMS_PER_PAGE } };
+    return {
+      data: [] as Product[],
+      metadata: {
+        totalPages: 0,
+        totalItems: 0,
+        hasNextPage: false,
+        hasPrevPage: false,
+        page,
+        limit: ITEMS_PER_PAGE,
+      },
+    };
   }
 }

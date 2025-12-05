@@ -13,7 +13,9 @@ export async function markNotificationReadAction(id: string) {
 // 2. MARK ALL READ
 export async function markAllReadAction() {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   if (!user) return;
 
   await supabase
@@ -29,33 +31,35 @@ export async function markAllReadAction() {
 export async function sendNotificationAction(formData: FormData) {
   const title = formData.get("title") as string;
   const message = formData.get("message") as string;
-  const type = formData.get("type") as string || "info"; // 'info', 'warning', 'announcement'
+  const type = (formData.get("type") as string) || "info"; // 'info', 'warning', 'announcement'
 
   const supabase = await createClient();
 
   // 1. Admin Check (Optional: You can add strict admin role check here)
-  
+
   // 2. Fetch all Shop Owners
   // We send to everyone who has a shop.
   const { data: shops, error: fetchError } = await supabase
     .from("shops")
     .select("owner_id");
-  
+
   if (fetchError || !shops) return { error: "Failed to fetch recipients" };
 
   // 3. Prepare Bulk Insert Payload
-  const notifications = shops.map(shop => ({
+  const notifications = shops.map((shop) => ({
     user_id: shop.owner_id,
     title,
     message,
     type,
-    is_read: false
+    is_read: false,
   }));
 
   // 4. Bulk Insert
   if (notifications.length > 0) {
-      const { error } = await supabase.from("notifications").insert(notifications);
-      if (error) return { error: error.message };
+    const { error } = await supabase
+      .from("notifications")
+      .insert(notifications);
+    if (error) return { error: error.message };
   }
 
   revalidatePath("/admin/notifications");

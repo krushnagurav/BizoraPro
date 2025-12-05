@@ -47,7 +47,7 @@ export const useCart = create<CartStore>()(
 
           return set({
             items: currentItems.map((item) =>
-              item.id === data.id ? { ...item, quantity: newQty } : item
+              item.id === data.id ? { ...item, quantity: newQty } : item,
             ),
           });
         }
@@ -70,7 +70,7 @@ export const useCart = create<CartStore>()(
 
         set({
           items: currentItems.map((item) =>
-            item.id === id ? { ...item, quantity } : item
+            item.id === id ? { ...item, quantity } : item,
           ),
         });
       },
@@ -78,21 +78,24 @@ export const useCart = create<CartStore>()(
       clearCart: () => set({ items: [], coupon: null }),
 
       applyCoupon: (coupon) => set({ coupon }),
-      
+
       removeCoupon: () => set({ coupon: null }),
 
       // 👇 FIXED: Calculate Discount Logic Here
       totalPrice: () => {
         const { items, coupon } = get();
-        const subtotal = items.reduce((total, item) => total + item.price * item.quantity, 0);
-        
+        const subtotal = items.reduce(
+          (total, item) => total + item.price * item.quantity,
+          0,
+        );
+
         if (!coupon) return subtotal;
 
         let discount = 0;
-        if (coupon.type === 'percent') {
-           discount = (subtotal * coupon.value) / 100;
-        } else if (coupon.type === 'fixed') {
-           discount = coupon.value;
+        if (coupon.type === "percent") {
+          discount = (subtotal * coupon.value) / 100;
+        } else if (coupon.type === "fixed") {
+          discount = coupon.value;
         }
 
         // Ensure total doesn't go below 0
@@ -102,6 +105,6 @@ export const useCart = create<CartStore>()(
     {
       name: "bizorapro-cart-storage",
       storage: createJSONStorage(() => localStorage),
-    }
-  )
+    },
+  ),
 );

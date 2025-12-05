@@ -23,7 +23,7 @@ interface CartStore {
   coupon: Coupon | null;
   addItem: (item: CartItem) => void;
   removeItem: (id: string) => void;
-  updateQuantity: (id, quantity) => void;
+  updateQuantity: (id: string, quantity: number) => void;
   clearCart: () => void;
   applyCoupon: (coupon: Coupon) => void;
   removeCoupon: () => void;

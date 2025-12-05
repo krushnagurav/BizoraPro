@@ -40,20 +40,26 @@ export async function createTicketAction(formData: FormData) {
 
 // 2. REPLY TO TICKET (Unified Function)
 // Note: Use this for BOTH Admin and Seller forms.
-export async function replyToTicketAction(formData: FormData) {
+export async function replyToTicketAction(formData: FormData): Promise<void> {
   const ticketId = formData.get("ticketId") as string;
-  const message = formData.get("message") as string;
+  const message = (formData.get("message") as string)?.trim();
   const role = formData.get("role") as string; // 'admin' or 'owner'
 
+  if (!ticketId || !message) {
+    throw new Error("Missing ticketId or message");
+  }
+
   const supabase = await createClient();
-  
   const { error } = await supabase.from("ticket_messages").insert({
     ticket_id: ticketId,
     sender_role: role,
-    message: message
+    message,
   });
 
-  if (error) return { error: error.message };
+  if (error) {
+    console.error("Failed to insert ticket message:", error.message);
+    throw new Error(error.message);
+  }
 
   // Update timestamp and status
   await supabase
@@ -61,15 +67,12 @@ export async function replyToTicketAction(formData: FormData) {
     .update({ updated_at: new Date().toISOString() })
     .eq("id", ticketId);
 
-  // 🔄 REVALIDATE EVERYTHING (To be safe)
-  // Admin Paths
-  revalidatePath("/admin/support");
-  revalidatePath(`/admin/support/${ticketId}`);
-  // User Dashboard Paths
-  revalidatePath("/dashboard/support");
-  revalidatePath(`/dashboard/support/${ticketId}`);
-
-  return { success: "Reply sent" };
+  await Promise.all([
+    revalidatePath("/admin/support"),
+    revalidatePath(`/admin/support/${ticketId}`),
+    revalidatePath("/dashboard/support"),
+    revalidatePath(`/dashboard/support/${ticketId}`),
+  ]);
 }
 
 // 3. UPDATE TICKET STATUS (Admin / Owner)

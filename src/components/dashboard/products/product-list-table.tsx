@@ -56,15 +56,25 @@ export function ProductListTable({
 
   const handleDelete = async (id: string) => {
     startTransition(() => {
-      removeOptimisticProduct(id); // ⚡ Instant UI Update
+      removeOptimisticProduct(id);
     });
 
-    const result = await deleteProductAction({ id }); // Server Call
-    if (result?.error) {
-      toast.error(result.error);
-      // Note: If error, the page revalidation will restore the item automatically
-    } else {
+    const result = await deleteProductAction({ id });
+
+    if (!result) {
+      toast.error("Something went wrong while deleting the product.");
+      return;
+    }
+
+    if (result.serverError) {
+      toast.error(result.serverError);
+      return;
+    }
+
+    if (result.data?.success) {
       toast.success("Product deleted");
+    } else {
+      toast.error("Could not delete product.");
     }
   };
 

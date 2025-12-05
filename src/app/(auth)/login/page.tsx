@@ -29,6 +29,7 @@ export default function LoginPage() {
       }
       // on success the server action should redirect or return success
     } catch (err) {
+      console.error(err);
       toast.error("Something went wrong. Please try again.");
       setLoading(false);
     }

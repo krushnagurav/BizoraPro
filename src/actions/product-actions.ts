@@ -456,20 +456,28 @@ export async function importProductsAction(products: any[]) {
 // ==========================================
 // 7. DUPLICATE PRODUCT
 // ==========================================
-export async function duplicateProductAction(formData: FormData) {
+export async function duplicateProductAction(
+  formData: FormData
+): Promise<void> {
   const id = formData.get("id") as string;
   const supabase = await createClient();
 
   // 1. Fetch Original
-  const { data: original } = await supabase
+  const { data: original, error: fetchError } = await supabase
     .from("products")
     .select("*")
     .eq("id", id)
     .single();
-  if (!original) return { error: "Product not found" };
+
+  if (fetchError) {
+    throw new Error(fetchError.message);
+  }
+
+  if (!original) {
+    throw new Error("Product not found");
+  }
 
   // 2. Create Copy Payload
-  // Remove ID and system fields
   const { id: _, created_at: __, ...rest } = original;
 
   const payload = {
@@ -477,18 +485,20 @@ export async function duplicateProductAction(formData: FormData) {
     name: `${original.name} (Copy)`,
     status: "draft",
     stock_count: 0,
-    // Ensure no nulls break constraints
-    seo_title: original.seo_title || null,
-    seo_description: original.seo_description || null,
+    seo_title: original.seo_title ?? null,
+    seo_description: original.seo_description ?? null,
   };
 
   // 3. Insert
-  const { error } = await supabase.from("products").insert(payload);
+  const { error: insertError } = await supabase
+    .from("products")
+    .insert(payload);
 
-  if (error) return { error: error.message };
+  if (insertError) {
+    throw new Error(insertError.message);
+  }
 
   revalidatePath("/products");
-  return { success: "Product duplicated!" };
 }
 
 // ==========================================

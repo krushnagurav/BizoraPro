@@ -35,7 +35,7 @@ export default function DomainSettingsPage() {
   const [verifying, setVerifying] = useState(false);
   const [domainInput, setDomainInput] = useState("");
   const [shop, setShop] = useState<any>(null);
-
+  console.log("domainInput:", domainInput);
   // 1. Fetch Shop Logic
   useEffect(() => {
     const fetchShop = async () => {

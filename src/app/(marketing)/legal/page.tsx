@@ -9,6 +9,8 @@ export const metadata: Metadata = {
 };
 
 export default function LegalPage() {
+  const year = new Date().getFullYear();
+
   return (
     <>
       <section
@@ -34,29 +36,48 @@ export default function LegalPage() {
         </header>
 
         {/* Tabs */}
-        <Tabs defaultValue="privacy" className="w-full">
-          <TabsList className="grid w-full grid-cols-3 bg-[#0e0e0e] border border-white/10 rounded-xl p-1">
+        <Tabs
+          defaultValue="privacy"
+          className="w-full"
+          aria-label="Legal documents"
+        >
+          <TabsList
+            className="grid w-full grid-cols-3 bg-[#0e0e0e] border border-white/10 rounded-xl p-1"
+            role="tablist"
+            aria-label="Select legal document"
+          >
             <TabsTrigger
               value="privacy"
-              className="text-xs md:text-sm py-2 rounded-lg transition-all
-data-[state=active]:bg-primary data-[state=active]:text-black
-hover:bg-white/10"
+              id="tab-privacy"
+              aria-controls="panel-privacy"
+              className={
+                "text-xs md:text-sm py-2 rounded-lg transition-all data-[state=active]:bg-primary data-[state=active]:text-black hover:bg-white/10"
+              }
+              role="tab"
             >
               Privacy Policy
             </TabsTrigger>
+
             <TabsTrigger
               value="terms"
-              className="text-xs md:text-sm py-2 rounded-lg transition-all
-data-[state=active]:bg-primary data-[state=active]:text-black
-hover:bg-white/10"
+              id="tab-terms"
+              aria-controls="panel-terms"
+              className={
+                "text-xs md:text-sm py-2 rounded-lg transition-all data-[state=active]:bg-primary data-[state=active]:text-black hover:bg-white/10"
+              }
+              role="tab"
             >
               Terms of Service
             </TabsTrigger>
+
             <TabsTrigger
               value="refund"
-              className="text-xs md:text-sm py-2 rounded-lg transition-all
-data-[state=active]:bg-primary data-[state=active]:text-black
-hover:bg-white/10"
+              id="tab-refund"
+              aria-controls="panel-refund"
+              className={
+                "text-xs md:text-sm py-2 rounded-lg transition-all data-[state=active]:bg-primary data-[state=active]:text-black hover:bg-white/10"
+              }
+              role="tab"
             >
               Refund Policy
             </TabsTrigger>
@@ -64,12 +85,17 @@ hover:bg-white/10"
 
           <div className="mt-8 rounded-2xl border border-white/10 bg-[#111] p-6 md:p-8 text-sm md:text-base leading-relaxed text-slate-200 space-y-8">
             {/* PRIVACY */}
-            <TabsContent value="privacy">
+            <TabsContent
+              value="privacy"
+              id="panel-privacy"
+              role="tabpanel"
+              aria-labelledby="tab-privacy"
+            >
               <h2 className="mb-1 text-xl md:text-2xl font-bold text-white">
                 Privacy Policy
               </h2>
               <p className="mb-6 text-xs text-muted-foreground">
-                Last updated: {new Date().getFullYear()}
+                Last updated: {year}
               </p>
 
               <ol className="list-decimal pl-5 space-y-4">
@@ -126,12 +152,17 @@ hover:bg-white/10"
             </TabsContent>
 
             {/* TERMS */}
-            <TabsContent value="terms">
+            <TabsContent
+              value="terms"
+              id="panel-terms"
+              role="tabpanel"
+              aria-labelledby="tab-terms"
+            >
               <h2 className="mb-1 text-xl md:text-2xl font-bold text-white">
                 Terms of Service
               </h2>
               <p className="mb-6 text-xs text-muted-foreground">
-                Last updated: {new Date().getFullYear()}
+                Last updated: {year}
               </p>
 
               <ol className="list-decimal pl-5 space-y-4">
@@ -167,12 +198,17 @@ hover:bg-white/10"
             </TabsContent>
 
             {/* REFUND */}
-            <TabsContent value="refund">
+            <TabsContent
+              value="refund"
+              id="panel-refund"
+              role="tabpanel"
+              aria-labelledby="tab-refund"
+            >
               <h2 className="mb-1 text-xl md:text-2xl font-bold text-white">
                 Refund & Cancellation Policy
               </h2>
               <p className="mb-6 text-xs text-muted-foreground">
-                Last updated: {new Date().getFullYear()}
+                Last updated: {year}
               </p>
 
               <ol className="list-decimal pl-5 space-y-4">
@@ -183,7 +219,7 @@ hover:bg-white/10"
                 <li>
                   <strong>Cancellation</strong>
                   <p className="mt-1">
-                    Cancel anytime — plan stays active until period end.
+                    Cancel anytime plan stays active until period end.
                   </p>
                 </li>
                 <li>

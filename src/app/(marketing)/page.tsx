@@ -37,8 +37,11 @@ export default function LandingPage() {
         aria-labelledby="hero-heading"
         className="relative pt-20 pb-20 md:pt-28 md:pb-28 overflow-hidden"
       >
-        {/* Glow background */}
-        <div className="pointer-events-none absolute inset-0 -z-10">
+        {/* Glow background (decorative) */}
+        <div
+          className="pointer-events-none absolute inset-0 -z-10"
+          aria-hidden="true"
+        >
           <div className="absolute -top-40 right-0 h-72 w-72 rounded-full bg-primary/10 blur-3xl" />
           <div className="absolute bottom-0 left-10 h-64 w-64 rounded-full bg-primary/5 blur-3xl" />
         </div>
@@ -92,112 +95,18 @@ export default function LandingPage() {
           </div>
 
           {/* Right: Phone Mockup / Preview */}
-          <div className="flex-1 w-full max-w-[520px]" aria-hidden="true">
-            <div className="relative aspect-[4/3] rounded-3xl border border-white/10 bg-gradient-to-br from-zinc-950 via-zinc-900 to-zinc-950 shadow-[0_0_120px_rgba(0,0,0,0.7)] overflow-hidden">
+          <div
+            className="flex-1 w-full max-w-[520px]"
+            aria-hidden={false}
+            role="region"
+            aria-label="Demo shop preview"
+          >
+            <div className="relative flex items-center justify-center aspect-[4/3] rounded-3xl border border-white/10 bg-gradient-to-br from-zinc-950 via-zinc-900 to-zinc-950 shadow-[0_0_120px_rgba(0,0,0,0.7)] overflow-hidden">
               {/* Inner frame */}
-              <div className="absolute inset-5 rounded-2xl border border-white/5 bg-black/60 backdrop-blur-sm flex">
-                {/* Left: shop header + metrics */}
-                <div className="flex-1 flex flex-col gap-4 px-5 py-4">
-                  <div className="flex items-center gap-3">
-                    <div className="h-9 w-9 rounded-full bg-primary/10 flex items-center justify-center">
-                      <Store
-                        className="h-4 w-4 text-primary"
-                        aria-hidden="true"
-                      />
-                    </div>
-                    <div>
-                      <p className="text-xs text-muted-foreground uppercase tracking-[0.2em]">
-                        Demo Shop
-                      </p>
-                      <p className="text-sm font-semibold">Mahira Boutique</p>
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-3 gap-3 text-xs">
-                    <div className="rounded-lg bg-white/5 px-3 py-2">
-                      <p className="text-[10px] text-muted-foreground">Views</p>
-                      <p className="text-sm font-semibold">1,245</p>
-                    </div>
-                    <div className="rounded-lg bg-white/5 px-3 py-2">
-                      <p className="text-[10px] text-muted-foreground">
-                        WA Orders
-                      </p>
-                      <p className="text-sm font-semibold">87</p>
-                    </div>
-                    <div className="rounded-lg bg-primary/10 px-3 py-2">
-                      <p className="text-[10px] text-primary">Status</p>
-                      <p className="text-xs font-semibold text-primary">
-                        Open · Today
-                      </p>
-                    </div>
-                  </div>
-                  <div className="mt-auto flex items-center justify-between rounded-xl bg-white/5 px-4 py-3 text-xs">
-                    <div>
-                      <p className="text-[10px] text-muted-foreground">
-                        Your Shop Link
-                      </p>
-                      <p className="font-mono text-[11px] truncate">
-                        bizorapro.com/mahira-boutique
-                      </p>
-                    </div>
-                    <Button
-                      size="sm"
-                      className="h-8 rounded-full bg-primary text-black hover:bg-primary/90 text-xs px-3"
-                    >
-                      Copy
-                    </Button>
-                  </div>
-                </div>
-
-                {/* Right: product preview column */}
-                <div className="hidden md:flex w-40 flex-col border-l border-white/5 bg-black/40">
-                  <div className="p-3 border-b border-white/5 flex items-center justify-between text-[11px]">
-                    <span className="text-muted-foreground">Cart</span>
-                    <span className="rounded-full bg-primary/10 px-2 py-0.5 text-primary">
-                      3 items
-                    </span>
-                  </div>
-                  <div className="flex-1 flex flex-col gap-2 overflow-hidden p-3 text-[11px]">
-                    <div className="flex gap-2 items-center">
-                      <div className="h-8 w-8 rounded-md bg-zinc-800 flex items-center justify-center">
-                        <ImageIcon
-                          className="h-4 w-4 text-muted-foreground"
-                          aria-hidden="true"
-                        />
-                      </div>
-                      <div className="flex-1">
-                        <p className="truncate">Emerald Silk Saree</p>
-                        <p className="text-[10px] text-muted-foreground">
-                          ₹1,999 · Qty 1
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex gap-2 items-center">
-                      <div className="h-8 w-8 rounded-md bg-zinc-800 flex items-center justify-center">
-                        <ImageIcon
-                          className="h-4 w-4 text-muted-foreground"
-                          aria-hidden="true"
-                        />
-                      </div>
-                      <div className="flex-1">
-                        <p className="truncate">Georgette Kurti</p>
-                        <p className="text-[10px] text-muted-foreground">
-                          ₹899 · Qty 2
-                        </p>
-                      </div>
-                    </div>
-                    <div className="mt-auto pt-2 border-t border-white/5">
-                      <div className="flex items-center justify-between text-[11px] mb-2">
-                        <span className="text-muted-foreground">Subtotal</span>
-                        <span className="font-semibold">₹3,797</span>
-                      </div>
-                      <Button className="w-full h-8 text-[11px] bg-emerald-500 text-black hover:bg-emerald-400 flex items-center justify-center gap-1">
-                        <MessageCircle className="h-3 w-3" aria-hidden="true" />
-                        Order on WhatsApp
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              <ImageIcon
+                className="mx-auto h-20 w-20 text-white/15"
+                aria-hidden="true"
+              />
             </div>
           </div>
         </div>
@@ -326,7 +235,7 @@ export default function LandingPage() {
                 title: "No app. No GST headache.",
                 text: "Runs completely on the web. You keep 100% of your payment and manage it your way.",
               },
-            ].map((item, i) => (
+            ].map((item) => (
               <div
                 key={item.title}
                 className="bg-[#0B0B0F] border border-white/5 rounded-xl p-7 text-left hover:border-primary/40 transition-colors group"
@@ -378,28 +287,38 @@ export default function LandingPage() {
                 title: "Salon",
                 desc: "Clean, minimal look for beauty and grooming.",
               },
-            ].map((shop) => (
-              <article
-                key={shop.title}
-                className="bg-[#0B0B0F] border border-white/5 rounded-2xl overflow-hidden text-left group hover:border-primary/60 transition-all"
-              >
-                <div className="aspect-[16/10] bg-gradient-to-br from-zinc-900 via-zinc-800 to-zinc-900 flex items-center justify-center border-b border-white/5">
-                  <span className="text-[11px] text-muted-foreground">
-                    Demo preview – replace with real screenshots later
-                  </span>
-                </div>
-                <div className="p-6 space-y-4">
-                  <h3 className="font-semibold text-lg">{shop.title}</h3>
-                  <p className="text-sm text-muted-foreground">{shop.desc}</p>
-                  <Button
-                    variant="outline"
-                    className="w-full border-white/15 bg-transparent text-xs md:text-sm group-hover:bg-primary group-hover:text-black transition-colors"
-                  >
-                    Open Demo
-                  </Button>
-                </div>
-              </article>
-            ))}
+            ].map((shop) => {
+              const id = `sample-${shop.title.toLowerCase().replace(/\s+/g, "-")}`;
+              return (
+                <article
+                  key={shop.title}
+                  role="article"
+                  aria-labelledby={`${id}-title`}
+                  className="bg-[#0B0B0F] border border-white/5 rounded-2xl overflow-hidden text-left group hover:border-primary/60 transition-all"
+                >
+                  <div className="aspect-[16/10] bg-gradient-to-br from-zinc-900 via-zinc-800 to-zinc-900 flex items-center justify-center border-b border-white/5">
+                    <span className="text-[11px] text-muted-foreground">
+                      Demo preview – replace with real screenshots later
+                    </span>
+                  </div>
+                  <div className="p-6 space-y-4">
+                    <h3 id={`${id}-title`} className="font-semibold text-lg">
+                      {shop.title}
+                    </h3>
+                    <p className="text-sm text-muted-foreground">{shop.desc}</p>
+                    <Button
+                      asChild
+                      variant="outline"
+                      className="w-full border-white/15 bg-transparent text-xs md:text-sm group-hover:bg-primary group-hover:text-black transition-colors"
+                    >
+                      <Link href={`/examples/${shop.title.toLowerCase()}`}>
+                        Open Demo
+                      </Link>
+                    </Button>
+                  </div>
+                </article>
+              );
+            })}
           </div>
         </div>
       </section>

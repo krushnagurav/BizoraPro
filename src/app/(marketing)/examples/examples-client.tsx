@@ -76,6 +76,9 @@ export function ExamplesClient() {
       ? shops
       : shops.filter((shop) => shop.category === activeFilter);
 
+  // Build an id for the tablist/panels
+  const tabListId = "examples-tabs";
+
   return (
     <>
       {/* HEADER */}
@@ -101,27 +104,32 @@ export function ExamplesClient() {
           className="flex flex-wrap justify-center gap-3"
           role="tablist"
           aria-label="Example templates by category"
+          id={tabListId}
         >
-          {filters.map((filter) => {
+          {filters.map((filter, idx) => {
             const Icon = filter.icon;
             const isActive = filter.name === activeFilter;
+            const tabId = `tab-${idx}`;
+            const panelId = `panel-${idx}`;
 
             return (
               <button
                 key={filter.name}
+                id={tabId}
                 type="button"
                 role="tab"
                 aria-selected={isActive}
+                aria-controls={panelId}
                 onClick={() => setActiveFilter(filter.name)}
                 className={
                   "flex items-center gap-2 rounded-full px-5 py-2.5 text-xs font-semibold transition-all md:text-sm " +
                   (isActive
-                    ? "bg-primary text-black hover:bg-primary/90"
-                    : "border border-white/10 bg-[#101010] text-muted-foreground hover:border-white/30 hover:text-white")
+                    ? "bg-primary text-black hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                    : "border border-white/10 bg-[#101010] text-muted-foreground hover:border-white/30 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/10")
                 }
               >
                 <Icon aria-hidden="true" className="h-4 w-4" />
-                {filter.name}
+                <span>{filter.name}</span>
               </button>
             );
           })}
@@ -133,61 +141,93 @@ export function ExamplesClient() {
         aria-label="Example shop layouts"
         className="mx-auto max-w-6xl px-4 pb-20 sm:px-6 lg:px-8"
       >
-        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-          {visibleShops.map((shop) => (
-            <article
-              key={shop.title}
-              className="group flex h-full flex-col overflow-hidden rounded-2xl border border-white/10 bg-[#060608] transition-all hover:border-primary/60"
-            >
-              {/* Image / Screenshot Placeholder */}
-              <div
-                className={`relative aspect-[4/3] ${shop.imageColor} border-b border-white/5`}
-                aria-hidden="true"
+        <div
+          className="grid gap-8 md:grid-cols-2 lg:grid-cols-3"
+          // announce active panel for screen readers: each panel has its own id linked from the active tab
+        >
+          {visibleShops.map((shop) => {
+            const id = `example-${shop.title.toLowerCase().replace(/\s+/g, "-")}`;
+            return (
+              <article
+                key={shop.title}
+                id={id}
+                role="article"
+                aria-labelledby={`${id}-title`}
+                className="group flex h-full flex-col overflow-hidden rounded-2xl border border-white/10 bg-[#060608] transition-all hover:border-primary/60"
               >
-                <div className="absolute top-4 right-4 rounded-full border border-white/15 bg-black/70 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-primary">
-                  Mobile Ready
-                </div>
-                <div className="absolute inset-0 flex items-center justify-center opacity-20">
-                  <div className="h-3/4 w-3/4 rotate-2 rounded-xl bg-white/10" />
-                </div>
-                <div className="absolute bottom-4 left-4 rounded-full bg-black/70 px-3 py-1 text-[10px] font-medium text-slate-200">
-                  {shop.category} template
-                </div>
-              </div>
-
-              {/* Card Body */}
-              <div className="flex h-full flex-col p-6">
-                <h2 className="mb-2 text-lg font-semibold text-white md:text-xl">
-                  {shop.title}
-                </h2>
-                <p className="mb-5 line-clamp-2 text-xs text-muted-foreground md:text-sm">
-                  {shop.desc}
-                </p>
-
-                <div className="mb-6 flex flex-wrap gap-2">
-                  {shop.tags.map((tag) => (
-                    <span
-                      key={tag}
-                      className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[10px] uppercase tracking-[0.16em] text-slate-300"
-                    >
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-
-                <Button
-                  variant="outline"
-                  className="mt-auto w-full border-primary/40 text-sm font-semibold text-primary transition-colors hover:bg-primary hover:text-black"
+                {/* Image / Screenshot Placeholder */}
+                <div
+                  className={`relative aspect-[4/3] ${shop.imageColor} border-b border-white/5`}
+                  aria-hidden="true"
                 >
-                  Open demo
-                  <ArrowRight
+                  <div
+                    className="absolute top-4 right-4 rounded-full border border-white/15 bg-black/70 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-primary"
                     aria-hidden="true"
-                    className="ml-2 h-4 w-4 md:h-5 md:w-5"
-                  />
-                </Button>
-              </div>
-            </article>
-          ))}
+                  >
+                    Mobile Ready
+                  </div>
+                  <div
+                    className="absolute inset-0 flex items-center justify-center opacity-20"
+                    aria-hidden="true"
+                  >
+                    <div className="h-3/4 w-3/4 rotate-2 rounded-xl bg-white/10" />
+                  </div>
+                  <div
+                    className="absolute bottom-4 left-4 rounded-full bg-black/70 px-3 py-1 text-[10px] font-medium text-slate-200"
+                    aria-hidden="true"
+                  >
+                    {shop.category} template
+                  </div>
+                </div>
+
+                {/* Card Body */}
+                <div className="flex h-full flex-col p-6">
+                  <h2
+                    id={`${id}-title`}
+                    className="mb-2 text-lg font-semibold text-white md:text-xl"
+                  >
+                    {shop.title}
+                  </h2>
+                  <p className="mb-5 line-clamp-2 text-xs text-muted-foreground md:text-sm">
+                    {shop.desc}
+                  </p>
+
+                  <div
+                    className="mb-6 flex flex-wrap gap-2"
+                    aria-hidden="false"
+                  >
+                    {shop.tags.map((tag) => (
+                      <span
+                        key={tag}
+                        className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[10px] uppercase tracking-[0.16em] text-slate-300"
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+
+                  <Button
+                    variant="outline"
+                    className="mt-auto w-full border-primary/40 text-sm font-semibold text-primary transition-colors hover:bg-primary hover:text-black"
+                    asChild
+                  >
+                    <Link
+                      href={`/examples/${encodeURIComponent(shop.title.toLowerCase().replace(/\s+/g, "-"))}`}
+                      aria-label={`Open demo for ${shop.title}`}
+                    >
+                      <span className="inline-flex items-center justify-center gap-2">
+                        Open demo
+                        <ArrowRight
+                          aria-hidden="true"
+                          className="ml-2 h-4 w-4 md:h-5 md:w-5"
+                        />
+                      </span>
+                    </Link>
+                  </Button>
+                </div>
+              </article>
+            );
+          })}
         </div>
       </section>
 
@@ -248,7 +288,7 @@ export function ExamplesClient() {
         </h2>
         <p className="mx-auto mb-10 max-w-2xl text-sm text-muted-foreground md:text-lg">
           No credit card required. Create your shop link, add products and start
-          taking WhatsApp orders — today.
+          taking WhatsApp orders today.
         </p>
 
         <div className="flex flex-col justify-center gap-4 sm:flex-row">
@@ -257,12 +297,14 @@ export function ExamplesClient() {
             size="lg"
             className="h-12 px-8 text-sm font-semibold bg-primary text-black hover:bg-primary/90 md:h-14 md:px-10 md:text-lg"
           >
-            <Link href="/signup">
-              Create shop link
-              <ArrowRight
-                aria-hidden="true"
-                className="ml-2 h-4 w-4 md:h-5 md:w-5"
-              />
+            <Link href="/signup" aria-label="Create BizoraPro shop link">
+              <span className="inline-flex items-center gap-2">
+                Create shop link
+                <ArrowRight
+                  aria-hidden="true"
+                  className="ml-2 h-4 w-4 md:h-5 md:w-5"
+                />
+              </span>
             </Link>
           </Button>
 
@@ -272,7 +314,9 @@ export function ExamplesClient() {
             size="lg"
             className="h-12 px-8 text-sm border-white/20 hover:bg-white/10 md:h-14 md:px-10 md:text-lg"
           >
-            <Link href="/pricing">View pricing</Link>
+            <Link href="/pricing" aria-label="View BizoraPro pricing">
+              View pricing
+            </Link>
           </Button>
         </div>
       </section>

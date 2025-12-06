@@ -141,6 +141,7 @@ export default function PricingPage() {
             className="relative inline-flex items-center rounded-full border border-white/15 bg-[#111] p-1"
             role="radiogroup"
             aria-label="Billing interval"
+            aria-controls="plans-grid"
           >
             <button
               type="button"
@@ -172,7 +173,10 @@ export default function PricingPage() {
             </button>
 
             {isYearly && (
-              <div className="absolute -right-14 -top-3 rotate-2 rounded-full bg-yellow-400 px-2 py-0.5 text-[10px] font-bold text-black shadow-sm">
+              <div
+                className="absolute -right-14 -top-3 rotate-2 rounded-full bg-yellow-400 px-2 py-0.5 text-[10px] font-bold text-black shadow-sm"
+                aria-hidden="true"
+              >
                 Save more
               </div>
             )}
@@ -185,75 +189,101 @@ export default function PricingPage() {
       </section>
 
       {/* PRICING CARDS */}
-      <section className="container mx-auto mb-24 grid max-w-6xl grid-cols-1 gap-8 px-6 md:px-12 lg:grid-cols-3">
-        {plans.map((plan) => (
-          <Card
-            key={plan.name}
-            className={`relative flex flex-col border bg-[#111] ${
-              plan.highlight
-                ? "z-10 scale-[1.03] border-primary shadow-2xl shadow-primary/15"
-                : "border-white/10 hover:border-white/20"
-            }`}
-          >
-            {plan.highlight && (
-              <div className="absolute inset-x-0 -top-3 flex justify-center">
-                <span className="rounded-full bg-primary px-3 py-1 text-xs font-bold uppercase tracking-wide text-black">
-                  Recommended
-                </span>
-              </div>
-            )}
+      <section
+        id="plans-grid"
+        className="container mx-auto mb-24 grid max-w-6xl grid-cols-1 gap-8 px-6 md:px-12 lg:grid-cols-3"
+        aria-label="Pricing plans list"
+      >
+        {plans.map((plan) => {
+          const planId = `plan-${plan.name.toLowerCase().replace(/\s+/g, "-")}`;
+          return (
+            <Card
+              key={plan.name}
+              id={planId}
+              aria-labelledby={`${planId}-title`}
+              className={`relative flex flex-col border bg-[#111] ${
+                plan.highlight
+                  ? "z-10 scale-[1.03] border-primary shadow-2xl shadow-primary/15"
+                  : "border-white/10 hover:border-white/20"
+              }`}
+            >
+              {plan.highlight && (
+                <div
+                  className="absolute inset-x-0 -top-3 flex justify-center"
+                  aria-hidden="true"
+                >
+                  <span className="rounded-full bg-primary px-3 py-1 text-xs font-bold uppercase tracking-wide text-black">
+                    Recommended
+                  </span>
+                </div>
+              )}
 
-            <CardHeader className="p-7 pb-4 md:p-8 md:pb-4">
-              <h2 className="text-xl font-bold text-white md:text-2xl">
-                {plan.name}
-              </h2>
-              <p className="mt-2 text-xs text-muted-foreground md:text-sm">
-                {plan.desc}
-              </p>
-              <div className="mt-4 flex items-baseline gap-1">
-                <span className="text-4xl font-bold text-white md:text-5xl">
-                  {plan.price}
-                </span>
-                <span className="text-xs text-muted-foreground md:text-sm">
-                  {plan.period}
-                </span>
-              </div>
-            </CardHeader>
-
-            <CardContent className="flex flex-1 flex-col p-7 pt-2 md:p-8 md:pt-2">
-              <ul className="mb-8 flex-1 space-y-3">
-                {plan.features.map((feature) => (
-                  <li
-                    key={feature}
-                    className="flex items-start gap-3 text-xs text-gray-200 md:text-sm"
+              <CardHeader className="p-7 pb-4 md:p-8 md:pb-4">
+                <h2
+                  id={`${planId}-title`}
+                  className="text-xl font-bold text-white md:text-2xl"
+                >
+                  {plan.name}
+                </h2>
+                <p className="mt-2 text-xs text-muted-foreground md:text-sm">
+                  {plan.desc}
+                </p>
+                <div
+                  className="mt-4 flex items-baseline gap-1"
+                  aria-label={`${plan.name} price`}
+                >
+                  <span
+                    className="text-4xl font-bold text-white md:text-5xl"
+                    aria-hidden="true"
                   >
-                    <Check
-                      aria-hidden="true"
-                      className="mt-0.5 h-4 w-4 flex-shrink-0 text-primary"
-                    />
-                    <span>{feature}</span>
-                  </li>
-                ))}
-              </ul>
+                    {plan.price}
+                  </span>
+                  <span className="sr-only">
+                    {plan.price} {isYearly ? "per year" : "per month"}
+                  </span>
+                  <span className="text-xs text-muted-foreground md:text-sm">
+                    {plan.period}
+                  </span>
+                </div>
+              </CardHeader>
 
-              <div className="mt-auto space-y-3">
-                <Button
-                  asChild
-                  className="h-11 w-full text-sm font-bold bg-primary text-black hover:bg-primary/90 md:h-12 md:text-lg"
-                >
-                  <Link href="/signup">{plan.btnText}</Link>
-                </Button>
+              <CardContent className="flex flex-1 flex-col p-7 pt-2 md:p-8 md:pt-2">
+                <ul className="mb-8 flex-1 space-y-3" aria-hidden={false}>
+                  {plan.features.map((feature) => (
+                    <li
+                      key={feature}
+                      className="flex items-start gap-3 text-xs text-gray-200 md:text-sm"
+                    >
+                      <Check
+                        aria-hidden="true"
+                        className="mt-0.5 h-4 w-4 flex-shrink-0 text-primary"
+                      />
+                      <span>{feature}</span>
+                    </li>
+                  ))}
+                </ul>
 
-                <button
-                  type="button"
-                  className="w-full text-xs font-medium text-primary hover:underline"
-                >
-                  View sample shop for this plan
-                </button>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
+                <div className="mt-auto space-y-3">
+                  <Button
+                    asChild
+                    className="h-11 w-full text-sm font-bold bg-primary text-black hover:bg-primary/90 md:h-12 md:text-lg"
+                    aria-label={`Choose ${plan.name} plan`}
+                  >
+                    <Link href="/signup">{plan.btnText}</Link>
+                  </Button>
+
+                  <button
+                    type="button"
+                    className="w-full text-xs font-medium text-primary hover:underline"
+                    aria-label={`View sample shop for ${plan.name}`}
+                  >
+                    View sample shop for this plan
+                  </button>
+                </div>
+              </CardContent>
+            </Card>
+          );
+        })}
       </section>
 
       {/* COMPARISON TABLE */}
@@ -269,17 +299,32 @@ export default function PricingPage() {
         </h2>
 
         <div className="overflow-x-auto rounded-2xl border border-white/10 bg-[#111]">
-          <table className="min-w-full text-xs md:text-sm">
+          <table
+            className="min-w-full text-xs md:text-sm"
+            role="table"
+            aria-label="Plan comparison"
+          >
+            <caption className="sr-only">
+              Comparison of Starter, Business and Pro Plus plans
+            </caption>
             <thead>
               <tr className="border-b border-white/10 bg-[#151515] text-gray-200">
-                <th className="py-3 pl-4 pr-2 text-left font-semibold">
+                <th
+                  scope="col"
+                  className="py-3 pl-4 pr-2 text-left font-semibold"
+                >
                   Features
                 </th>
-                <th className="px-2 text-center font-semibold">Starter</th>
-                <th className="px-2 text-center font-semibold text-primary">
+                <th scope="col" className="px-2 text-center font-semibold">
+                  Starter
+                </th>
+                <th
+                  scope="col"
+                  className="px-2 text-center font-semibold text-primary"
+                >
                   Business
                 </th>
-                <th className="px-2 pr-4 text-center font-semibold">
+                <th scope="col" className="px-2 pr-4 text-center font-semibold">
                   Pro Plus
                 </th>
               </tr>
@@ -293,12 +338,17 @@ export default function PricingPage() {
                   <td className="py-3 pl-4 pr-2 text-gray-200">{row.name}</td>
 
                   {/* Starter */}
-                  <td className="px-2 text-center">
+                  <td
+                    className="px-2 text-center"
+                    role="cell"
+                    aria-label={`${row.name} in Starter plan`}
+                  >
                     {typeof row.starter === "boolean" ? (
                       row.starter ? (
                         <span
                           className="inline-flex items-center justify-center"
-                          aria-label="Included in Starter plan"
+                          aria-hidden="false"
+                          aria-label="Included"
                         >
                           <Check
                             aria-hidden="true"
@@ -308,7 +358,8 @@ export default function PricingPage() {
                       ) : (
                         <span
                           className="inline-flex items-center justify-center"
-                          aria-label="Not included in Starter plan"
+                          aria-hidden="false"
+                          aria-label="Not included"
                         >
                           <X
                             aria-hidden="true"
@@ -324,12 +375,17 @@ export default function PricingPage() {
                   </td>
 
                   {/* Business */}
-                  <td className="px-2 text-center">
+                  <td
+                    className="px-2 text-center"
+                    role="cell"
+                    aria-label={`${row.name} in Business plan`}
+                  >
                     {typeof row.business === "boolean" ? (
                       row.business ? (
                         <span
                           className="inline-flex items-center justify-center"
-                          aria-label="Included in Business plan"
+                          aria-hidden="false"
+                          aria-label="Included"
                         >
                           <Check
                             aria-hidden="true"
@@ -339,7 +395,8 @@ export default function PricingPage() {
                       ) : (
                         <span
                           className="inline-flex items-center justify-center"
-                          aria-label="Not included in Business plan"
+                          aria-hidden="false"
+                          aria-label="Not included"
                         >
                           <X
                             aria-hidden="true"
@@ -353,12 +410,17 @@ export default function PricingPage() {
                   </td>
 
                   {/* Pro */}
-                  <td className="px-2 pr-4 text-center">
+                  <td
+                    className="px-2 pr-4 text-center"
+                    role="cell"
+                    aria-label={`${row.name} in Pro Plus plan`}
+                  >
                     {typeof row.pro === "boolean" ? (
                       row.pro ? (
                         <span
                           className="inline-flex items-center justify-center"
-                          aria-label="Included in Pro Plus plan"
+                          aria-hidden="false"
+                          aria-label="Included"
                         >
                           <Check
                             aria-hidden="true"
@@ -368,7 +430,8 @@ export default function PricingPage() {
                       ) : (
                         <span
                           className="inline-flex items-center justify-center"
-                          aria-label="Not included in Pro Plus plan"
+                          aria-hidden="false"
+                          aria-label="Not included"
                         >
                           <X
                             aria-hidden="true"
@@ -388,7 +451,10 @@ export default function PricingPage() {
       </section>
 
       {/* TRUST SIGNALS */}
-      <section className="container mx-auto mb-24 grid max-w-5xl grid-cols-1 gap-8 px-6 text-center md:grid-cols-3 md:px-12">
+      <section
+        className="container mx-auto mb-24 grid max-w-5xl grid-cols-1 gap-8 px-6 text-center md:grid-cols-3 md:px-12"
+        aria-label="Trust signals"
+      >
         {[
           {
             icon: ShieldCheck,
@@ -406,8 +472,16 @@ export default function PricingPage() {
             desc: "No lock-in. Stop your plan from the dashboard.",
           },
         ].map((item) => (
-          <div key={item.title} className="flex flex-col items-center">
-            <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full border border-white/10 bg-[#181818] text-primary">
+          <div
+            key={item.title}
+            className="flex flex-col items-center"
+            role="region"
+            aria-label={item.title}
+          >
+            <div
+              className="mb-4 flex h-12 w-12 items-center justify-center rounded-full border border-white/10 bg-[#181818] text-primary"
+              aria-hidden="true"
+            >
               <item.icon aria-hidden="true" className="h-6 w-6" />
             </div>
             <h3 className="mb-1 text-sm font-semibold text-white md:text-base">
@@ -467,8 +541,14 @@ export default function PricingPage() {
       </section>
 
       {/* FINAL CTA */}
-      <section className="container mx-auto max-w-4xl px-6 text-center md:px-12">
-        <h2 className="mb-4 text-2xl font-bold text-white md:text-4xl">
+      <section
+        className="container mx-auto max-w-4xl px-6 text-center md:px-12"
+        aria-labelledby="final-cta-heading"
+      >
+        <h2
+          id="final-cta-heading"
+          className="mb-4 text-2xl font-bold text-white md:text-4xl"
+        >
           Start free and share your shop link{" "}
           <span className="text-primary">today</span>
         </h2>
@@ -486,6 +566,7 @@ export default function PricingPage() {
           <button
             type="button"
             className="text-xs font-medium text-primary hover:underline md:text-sm"
+            aria-label="View sample shop"
           >
             View sample shop
           </button>

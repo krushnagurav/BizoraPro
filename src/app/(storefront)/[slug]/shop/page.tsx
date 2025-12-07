@@ -94,7 +94,7 @@ export default async function ShopPage({
         } as CSSProperties
       }
     >
-      <ShopHeader shop={shop} isOpen={isShopActuallyOpen} />
+      <ShopHeader shop={shop} />
 
       <main className="container mx-auto px-4 py-8 space-y-8">
         <div className="flex items-center justify-between gap-4">
@@ -135,6 +135,7 @@ export default async function ShopPage({
                   <ProductCard
                     product={product}
                     isShopOpen={isShopActuallyOpen}
+                    slug={slug}
                   />
                 </Link>
               ))}

@@ -104,6 +104,7 @@ export default async function SearchPage({
                     <ProductCard
                       product={product}
                       isShopOpen={isShopActuallyOpen}
+                      slug={slug}
                     />
                   </Link>
                 ))}

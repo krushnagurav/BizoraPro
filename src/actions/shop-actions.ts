@@ -1,4 +1,11 @@
 // src/actions/shop-actions.ts
+/**
+ * Shop Actions.
+ *
+ * This file contains server-side actions for managing shop-related
+ * functionalities such as onboarding, appearance settings, shop settings,
+ * store policies, notification preferences, and custom domain management.
+ */
 "use server";
 
 import { redirect } from "next/navigation";
@@ -7,7 +14,6 @@ import { createClient } from "../lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import { categoryPresets } from "@/src/lib/fonts";
 
-// --- STEP 1 VALIDATION ---
 const step1Schema = z.object({
   name: z.string().min(3, "Shop name too short"),
   slug: z
@@ -16,22 +22,11 @@ const step1Schema = z.object({
     .regex(/^[a-z0-9-]+$/, "Invalid URL format"),
 });
 
-// --- STEP 2 VALIDATION ---
 const step2Schema = z.object({
-  whatsapp: z.string().min(10, "Invalid Phone Number"), // we&apos;ll strip non-digits later
+  whatsapp: z.string().min(10, "Invalid Phone Number"),
   category: z.string().min(2, "Please select a category"),
 });
 
-// --- STEP 3 VALIDATION ---
-// const step3Schema = z.object({
-//   productName: z.string().min(2),
-//   productPrice: z.string().transform((val) => Number(val)),
-//   // Image handling happens on client usually, but for MVP we&apos;ll handle the text data here
-// });
-
-// ==========================================
-// ACTION 1: CREATE SHOP (Step 1)
-// ==========================================
 export async function completeStep1(formData: FormData) {
   const supabase = await createClient();
   const {
@@ -45,7 +40,7 @@ export async function completeStep1(formData: FormData) {
   if (!parsed.success) {
     return { error: parsed.error.issues[0]?.message ?? "Invalid shop details" };
   }
-  // Check slug uniqueness
+
   const { data: exists } = await supabase
     .from("shops")
     .select("id")
@@ -57,18 +52,14 @@ export async function completeStep1(formData: FormData) {
     owner_id: user.id,
     name: parsed.data.name,
     slug: parsed.data.slug,
-    onboarding_step: 2, // Advance to Step 2
+    onboarding_step: 2,
   });
 
   if (error) return { error: error.message };
 
-  // Stay on onboarding page to show Step 2
   redirect("/onboarding");
 }
 
-// ==========================================
-// ACTION 2: WA & CATEGORY (Step 2)
-// ==========================================
 export async function completeStep2(formData: FormData) {
   const supabase = await createClient();
   const {
@@ -85,10 +76,8 @@ export async function completeStep2(formData: FormData) {
   }
   const category = parsed.data.category;
 
-  // 1. Get Preset based on Category (or default to Other)
   const preset = categoryPresets[category] || categoryPresets["Other"];
 
-  // 1. Create the Category in DB first
   const { data: shop } = await supabase
     .from("shops")
     .select("id")
@@ -104,13 +93,6 @@ export async function completeStep2(formData: FormData) {
 
   if (catError) return { error: "Failed to save category" };
 
-  // 2. Update Shop with WA number (Using theme_config for now or a metadata column,
-  // let&apos;s assume we save it to a 'contact_phone' column if it exists,
-  // OR better: create a 'whatsapp_number' column in shops table if we missed it.
-  // For MVP, let&apos;s assume we forgot the column and add it via SQL or store in metadata.
-  // *QUICK FIX*: Let&apos;s run a SQL command later to add 'whatsapp_number' to shops.*
-
-  // Updating onboarding step
   const { error } = await supabase
     .from("shops")
     .update({
@@ -131,9 +113,6 @@ export async function completeStep2(formData: FormData) {
   redirect("/onboarding");
 }
 
-// ==========================================
-// ACTION 3: FIRST PRODUCT (Step 3)
-// ==========================================
 export async function completeStep3(formData: FormData) {
   const supabase = await createClient();
   const {
@@ -142,7 +121,6 @@ export async function completeStep3(formData: FormData) {
 
   if (!user) return { error: "Login required" };
 
-  // Get Shop
   const { data: shop } = await supabase
     .from("shops")
     .select("id")
@@ -169,8 +147,6 @@ export async function completeStep3(formData: FormData) {
   redirect("/dashboard");
 }
 
-// --- THEME & SETTINGS ACTIONS ---
-
 export async function updateShopAppearanceAction(formData: FormData) {
   const bannerUrl = formData.get("bannerUrl") as string;
   const primaryColor = formData.get("primaryColor") as string;
@@ -183,7 +159,6 @@ export async function updateShopAppearanceAction(formData: FormData) {
 
   if (!user) return { error: "Login required" };
 
-  // Update Shop
   const { error } = await supabase
     .from("shops")
     .update({
@@ -203,19 +178,16 @@ export async function updateShopAppearanceAction(formData: FormData) {
 export async function updateShopSettingsAction(formData: FormData) {
   const supabase = await createClient();
 
-  // 1) Get user first
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
   if (!user) return { error: "Login required" };
 
-  // 2) Basic fields
   const isOpen = formData.get("isOpen") === "on";
   const minOrder = Number(formData.get("minOrder"));
   const deliveryNote = formData.get("deliveryNote") as string;
 
-  // 3) Get shop plan
   const { data: shop } = await supabase
     .from("shops")
     .select("plan")
@@ -242,7 +214,6 @@ export async function updateShopSettingsAction(formData: FormData) {
     metaDescription: formData.get("metaDescription") as string,
   };
 
-  // 4) Update shop
   const { error } = await supabase
     .from("shops")
     .update({
@@ -284,11 +255,10 @@ export async function updateStorePoliciesAction(formData: FormData) {
 
   if (error) return { error: error.message };
 
-  revalidatePath("/settings/policies"); // We will create this path
+  revalidatePath("/settings/policies");
   return { success: "Policies updated successfully" };
 }
 
-// UPDATE NOTIFICATION PREFS
 export async function updateNotificationPrefsAction(formData: FormData) {
   const emailOrder = formData.get("email_order") === "on";
   const emailLowStock = formData.get("email_low_stock") === "on";
@@ -320,11 +290,9 @@ export async function updateNotificationPrefsAction(formData: FormData) {
   return { success: "Preferences updated" };
 }
 
-// UPDATE CUSTOM DOMAIN
 export async function updateCustomDomainAction(formData: FormData) {
   const domain = formData.get("domain") as string;
 
-  // Basic cleaning (remove https:// and www.)
   const cleanDomain = domain
     .replace("https://", "")
     .replace("http://", "")
@@ -338,23 +306,21 @@ export async function updateCustomDomainAction(formData: FormData) {
   } = await supabase.auth.getUser();
   if (!user) return { error: "Login required" };
 
-  // Check if domain is taken by another shop
   const { data: existing } = await supabase
     .from("shops")
     .select("id")
     .eq("custom_domain", cleanDomain)
-    .neq("owner_id", user.id) // Exclude self
+    .neq("owner_id", user.id)
     .single();
 
   if (existing)
     return { error: "This domain is already connected to another shop." };
 
-  // Update
   const { error } = await supabase
     .from("shops")
     .update({
       custom_domain: cleanDomain,
-      domain_verified: false, // Needs Vercel verification logic later
+      domain_verified: false,
     })
     .eq("owner_id", user.id);
 
@@ -364,7 +330,6 @@ export async function updateCustomDomainAction(formData: FormData) {
   return { success: "Domain added! Please configure your DNS." };
 }
 
-// REMOVE CUSTOM DOMAIN
 export async function removeCustomDomainAction() {
   const supabase = await createClient();
   const {

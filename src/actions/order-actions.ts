@@ -1,23 +1,26 @@
+// src/actions/order-actions.ts
+/**
+ * Order Actions.
+ *
+ * This file contains server-side actions for placing orders and updating
+ * order statuses in the system.
+ */
 "use server";
 
 import { createClient } from "@/src/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
-// ----------------------------
-// Validation Schema
-// ----------------------------
 const orderSchema = z.object({
   slug: z.string(),
   name: z.string().min(2, "Name is required"),
   phone: z.string().min(10, "Phone number is required"),
   city: z.string().min(2, "City is required"),
   address: z.string().optional().nullable(),
-  cartItems: z.string(), // JSON string from client
+  cartItems: z.string(),
   couponCode: z.string().optional().nullable(),
 });
 
-// Type for cart items coming from client
 type CartItemInput = {
   id: string;
   quantity: number;
@@ -30,13 +33,9 @@ type FinalOrderItem = {
   qty: number;
 };
 
-// ----------------------------
-// 1. PLACE ORDER (Storefront)
-// ----------------------------
 export async function placeOrderAction(formData: FormData) {
   const supabase = await createClient();
 
-  // 1. Validate form data with Zod
   const rawData = {
     slug: formData.get("slug"),
     name: formData.get("name"),
@@ -52,7 +51,6 @@ export async function placeOrderAction(formData: FormData) {
     return { error: parsed.error.issues[0]?.message ?? "Invalid data" };
   }
 
-  // 2. Parse cart items safely
   let cartItems: CartItemInput[] = [];
   try {
     cartItems = JSON.parse(parsed.data.cartItems || "[]");
@@ -64,7 +62,6 @@ export async function placeOrderAction(formData: FormData) {
     return { error: "Cart is empty" };
   }
 
-  // 3. Get Shop + open/close logic
   const { data: shop, error: shopError } = await supabase
     .from("shops")
     .select(
@@ -77,15 +74,14 @@ export async function placeOrderAction(formData: FormData) {
     return { error: "Shop not found" };
   }
 
-  // 🔒 CHECK: IS SHOP OPEN?
   let isShopOpen = shop.is_open;
   if (shop.auto_close) {
     const now = new Date();
     const indiaTime = now.toLocaleTimeString("en-IN", {
       timeZone: "Asia/Kolkata",
       hour12: false,
-    }); // "HH:mm:ss"
-    const currentHM = indiaTime.slice(0, 5); // "HH:mm"
+    });
+    const currentHM = indiaTime.slice(0, 5);
 
     if (currentHM < shop.opening_time || currentHM > shop.closing_time) {
       isShopOpen = false;
@@ -96,7 +92,6 @@ export async function placeOrderAction(formData: FormData) {
     return { error: "Shop is currently closed. Please try again later." };
   }
 
-  // 4. Recalculate totals from DB (security)
   const productIds = cartItems.map((item) => item.id);
 
   const { data: products, error: productsError } = await supabase
@@ -108,7 +103,6 @@ export async function placeOrderAction(formData: FormData) {
     return { error: "Products not found" };
   }
 
-  // First pass: validate all products + stock, calculate total
   let totalAmount = 0;
   const finalItems: FinalOrderItem[] = [];
 
@@ -139,7 +133,6 @@ export async function placeOrderAction(formData: FormData) {
     });
   }
 
-  // 5. Apply coupon (if any)
   let discount = 0;
 
   if (parsed.data.couponCode) {
@@ -154,13 +147,11 @@ export async function placeOrderAction(formData: FormData) {
       if (coupon.discount_type === "fixed") {
         discount = coupon.discount_value;
       } else {
-        // percentage
         discount = (totalAmount * coupon.discount_value) / 100;
       }
 
       totalAmount = Math.max(0, totalAmount - discount);
 
-      // Increment usage (simple, non-transactional)
       await supabase
         .from("coupons")
         .update({ used_count: (coupon.used_count || 0) + 1 })
@@ -168,8 +159,6 @@ export async function placeOrderAction(formData: FormData) {
     }
   }
 
-  // 6. Deduct stock (after validation + coupon)
-  // NOTE: still not fully race-safe; for serious prod use RPC/transaction.
   for (const cartItem of cartItems) {
     const product = products.find((p) => p.id === cartItem.id);
     if (!product) continue;
@@ -182,7 +171,6 @@ export async function placeOrderAction(formData: FormData) {
       .eq("id", product.id);
   }
 
-  // 7. Create Order in DB
   const { data: order, error: orderError } = await supabase
     .from("orders")
     .insert({
@@ -195,7 +183,7 @@ export async function placeOrderAction(formData: FormData) {
       },
       items: finalItems,
       total_amount: totalAmount,
-      status: "placed", // change to "draft" if you want manual confirmation
+      status: "placed",
       whatsapp_sent: false,
       coupon_code: parsed.data.couponCode || null,
       discount_amount: discount,
@@ -210,9 +198,6 @@ export async function placeOrderAction(formData: FormData) {
   return { success: true, orderId: order.id };
 }
 
-// ----------------------------
-// 2. UPDATE ORDER STATUS (Dashboard)
-// ----------------------------
 export async function updateOrderStatusAction(
   formData: FormData,
 ): Promise<void> {
@@ -226,7 +211,6 @@ export async function updateOrderStatusAction(
 
   const supabase = await createClient();
 
-  // Auth check
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -236,7 +220,6 @@ export async function updateOrderStatusAction(
     return;
   }
 
-  // Get shop of this owner
   const { data: shop, error: shopError } = await supabase
     .from("shops")
     .select("id")
@@ -248,7 +231,6 @@ export async function updateOrderStatusAction(
     return;
   }
 
-  // Fetch order scoped to this shop
   const { data: order, error: orderError } = await supabase
     .from("orders")
     .select("status, items, shop_id")
@@ -261,7 +243,6 @@ export async function updateOrderStatusAction(
     return;
   }
 
-  // If cancelling, restore stock (only once)
   if (newStatus === "cancelled" && order.status !== "cancelled") {
     const items = (order.items || []) as Array<{
       id: string;
@@ -288,7 +269,6 @@ export async function updateOrderStatusAction(
     }
   }
 
-  // Update status (still scoped to this shop)
   const { error: updateError } = await supabase
     .from("orders")
     .update({ status: newStatus })

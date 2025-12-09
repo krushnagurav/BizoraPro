@@ -1,13 +1,30 @@
-import { AdminSidebar } from "@/src/components/admin/admin-sidebar";
 import { AdminMobileHeader } from "@/src/components/admin/admin-mobile-header";
+import { AdminSidebar } from "@/src/components/admin/admin-sidebar";
+import { createClient } from "@/src/lib/supabase/server";
+import { redirect } from "next/navigation";
 
-export default function SuperAdminLayout({
+const ADMIN_EMAIL = "krishna@bizorapro.com";
+
+export default async function SuperAdminLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    redirect("/login");
+  }
+
+  if (user.email !== ADMIN_EMAIL) {
+    redirect("/dashboard");
+  }
+
   return (
-    <div className="min-h-screen bg-black text-white">
+    <div className="min-h-screen bg-black text-white font-sans">
       {/* Desktop Sidebar */}
       <AdminSidebar />
 
@@ -15,7 +32,7 @@ export default function SuperAdminLayout({
       <AdminMobileHeader />
 
       {/* Content */}
-      <main className="md:pl-64 pt-16 md:pt-0 min-h-screen p-4 md:p-8">
+      <main className="md:pl-64 pt-16 md:pt-0 min-h-screen p-4 md:p-8 bg-black">
         {children}
       </main>
     </div>

@@ -1,3 +1,4 @@
+// src/app/(super-admin)/admin/templates/[id]/page.tsx
 import { createClient } from "@/src/lib/supabase/server";
 import { notFound } from "next/navigation";
 import { TemplateForm } from "@/src/components/admin/template-form";

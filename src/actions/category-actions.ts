@@ -1,3 +1,10 @@
+// src/actions/category-actions.ts
+/**
+ * Category Actions.
+ *
+ * This file contains server-side actions for creating, updating,
+ * and deleting categories in the application.
+ */
 "use server";
 
 import { authAction } from "@/src/lib/safe-action";
@@ -5,7 +12,6 @@ import { categorySchema } from "@/src/lib/validators/category";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
-// 1. CREATE / UPDATE CATEGORY
 export const upsertCategoryAction = authAction
   .schema(categorySchema)
   .action(async ({ parsedInput, ctx: { user, supabase } }) => {
@@ -25,17 +31,14 @@ export const upsertCategoryAction = authAction
     };
 
     if (parsedInput.id) {
-      // UPDATE
       const { error } = await supabase
         .from("categories")
         .update(payload)
         .eq("id", parsedInput.id)
-        .eq("shop_id", shop.id); // Security check
+        .eq("shop_id", shop.id);
 
       if (error) throw new Error(error.message);
     } else {
-      // CREATE
-      // Check if slug exists
       const { data: existing } = await supabase
         .from("categories")
         .select("id")
@@ -56,13 +59,11 @@ export const upsertCategoryAction = authAction
     };
   });
 
-// 2. DELETE CATEGORY (With Protection)
 const deleteSchema = z.object({ id: z.string().uuid() });
 
 export const deleteCategoryAction = authAction
   .schema(deleteSchema)
   .action(async ({ parsedInput, ctx: { user, supabase } }) => {
-    // A. Security Check
     const { data: shop } = await supabase
       .from("shops")
       .select("id")
@@ -70,12 +71,11 @@ export const deleteCategoryAction = authAction
       .single();
     if (!shop) throw new Error("Unauthorized");
 
-    // B. Protection Check: Does it have products?
     const { count } = await supabase
       .from("products")
       .select("*", { count: "exact", head: true })
       .eq("category_id", parsedInput.id)
-      .is("deleted_at", null); // Only check active products
+      .is("deleted_at", null);
 
     if (count && count > 0) {
       throw new Error(
@@ -83,7 +83,6 @@ export const deleteCategoryAction = authAction
       );
     }
 
-    // C. Delete
     const { error } = await supabase
       .from("categories")
       .delete()

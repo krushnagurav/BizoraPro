@@ -49,7 +49,7 @@ export default async function ShopHomePage({ params, searchParams }: any) {
   const theme = shop.theme_config as unknown as ThemeConfig;
   const primaryColorHsl = hexToHsl(theme.primaryColor || "#E6B800");
   const banner = theme.bannerUrl || "";
-  console.log("shop: ", shop);
+
   // Auto-Close Logic
   let isShopActuallyOpen = shop.is_open;
   if (shop.auto_close) {

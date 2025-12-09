@@ -2,13 +2,12 @@
 // src/components/storefront/product-view.tsx
 "use client";
 
-import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { ShoppingCart, Heart, Check, AlertCircle } from "lucide-react";
-import { useCart } from "@/src/hooks/use-cart";
-import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { useCart } from "@/src/hooks/use-cart";
+import { AlertCircle, Check, Heart, ShoppingCart } from "lucide-react";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 export function ProductView({
   product,

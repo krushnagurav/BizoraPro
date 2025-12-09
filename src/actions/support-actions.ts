@@ -1,9 +1,15 @@
+// src/actions/support-actions.ts
+/**
+ * Support Ticket Actions.
+ *
+ * This file contains server-side actions for creating and managing support tickets
+ * submitted by shop owners, including ticket creation, message replies, and status updates.
+ */
 "use server";
 
 import { createClient } from "@/src/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 
-// 1. CREATE TICKET (Seller)
 export async function createTicketAction(formData: FormData) {
   const subject = formData.get("subject") as string;
   const message = formData.get("message") as string;
@@ -16,7 +22,6 @@ export async function createTicketAction(formData: FormData) {
 
   if (!user) return { error: "Unauthorized" };
 
-  // Get Shop ID
   const { data: shop } = await supabase
     .from("shops")
     .select("id")
@@ -24,7 +29,6 @@ export async function createTicketAction(formData: FormData) {
     .single();
   if (!shop) return { error: "Shop not found" };
 
-  // Create Ticket
   const { data: ticket, error } = await supabase
     .from("support_tickets")
     .insert({ shop_id: shop.id, subject, priority, status: "open" })
@@ -33,10 +37,9 @@ export async function createTicketAction(formData: FormData) {
 
   if (error) return { error: error.message };
 
-  // Add First Message
   await supabase.from("ticket_messages").insert({
     ticket_id: ticket.id,
-    sender_role: "owner", // Consistent role name
+    sender_role: "owner",
     message: message,
   });
 
@@ -44,12 +47,10 @@ export async function createTicketAction(formData: FormData) {
   return { success: "Ticket created" };
 }
 
-// 2. REPLY TO TICKET (Unified Function)
-// Note: Use this for BOTH Admin and Seller forms.
 export async function replyToTicketAction(formData: FormData): Promise<void> {
   const ticketId = formData.get("ticketId") as string;
   const message = (formData.get("message") as string)?.trim();
-  const role = formData.get("role") as string; // 'admin' or 'owner'
+  const role = formData.get("role") as string;
 
   if (!ticketId || !message) {
     throw new Error("Missing ticketId or message");
@@ -67,7 +68,6 @@ export async function replyToTicketAction(formData: FormData): Promise<void> {
     throw new Error(error.message);
   }
 
-  // Update timestamp and status
   await supabase
     .from("support_tickets")
     .update({ updated_at: new Date().toISOString() })
@@ -81,12 +81,11 @@ export async function replyToTicketAction(formData: FormData): Promise<void> {
   ]);
 }
 
-// 3. UPDATE TICKET STATUS (Admin / Owner)
 export async function updateTicketStatusAction(
   formData: FormData,
 ): Promise<void> {
   const ticketId = formData.get("ticketId") as string;
-  const status = formData.get("status") as string; // 'open', 'resolved'
+  const status = formData.get("status") as string;
 
   const supabase = await createClient();
 
@@ -100,7 +99,6 @@ export async function updateTicketStatusAction(
     return;
   }
 
-  // Revalidate lists and details in both admin + dashboard
   await Promise.all([
     revalidatePath("/admin/support"),
     revalidatePath(`/admin/support/${ticketId}`),

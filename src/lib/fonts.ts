@@ -1,6 +1,12 @@
-import { Inter, Playfair_Display, Poppins, Lato } from "next/font/google";
+// src/lib/fonts.ts
+/**
+ * Font and Category Presets.
+ *
+ * This file defines font imports from Google Fonts and sets up
+ * category-specific presets for fonts, colors, and border radii.
+ */
+import { Inter, Lato, Playfair_Display, Poppins } from "next/font/google";
 
-// 1. Configure Fonts
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const playfair = Playfair_Display({
   subsets: ["latin"],
@@ -17,7 +23,6 @@ const lato = Lato({
   variable: "--font-lato",
 });
 
-// 2. Map DB String to Font Class
 export const fontMapper = {
   inter: inter.className,
   playfair: playfair.className,
@@ -25,31 +30,30 @@ export const fontMapper = {
   lato: lato.className,
 };
 
-// 3. Default Configs per Category
 export const categoryPresets: Record<string, any> = {
   Fashion: {
     font: "playfair",
-    primaryColor: "#000000", // Lux Black
-    radius: "0rem", // Sharp edges
+    primaryColor: "#000000",
+    radius: "0rem",
   },
   Food: {
     font: "poppins",
-    primaryColor: "#F97316", // Orange
-    radius: "1rem", // Soft/Round
+    primaryColor: "#F97316",
+    radius: "1rem",
   },
   Electronics: {
     font: "inter",
-    primaryColor: "#2563EB", // Tech Blue
-    radius: "0.3rem", // Slight curve
+    primaryColor: "#2563EB",
+    radius: "0.3rem",
   },
   Beauty: {
     font: "lato",
-    primaryColor: "#DB2777", // Pink
+    primaryColor: "#DB2777",
     radius: "0.5rem",
   },
   Other: {
     font: "inter",
-    primaryColor: "#E6B800", // Default Gold
+    primaryColor: "#E6B800",
     radius: "0.5rem",
   },
 };

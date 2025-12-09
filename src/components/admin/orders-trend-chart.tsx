@@ -1,7 +1,8 @@
+// src/components/admin/orders-trend-chart.tsx
 "use client";
 
-import { LineChart, Line, ResponsiveContainer, Tooltip, XAxis } from "recharts";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Line, LineChart, ResponsiveContainer, Tooltip, XAxis } from "recharts";
 
 export function OrdersTrendChart({ data }: { data: any[] }) {
   return (

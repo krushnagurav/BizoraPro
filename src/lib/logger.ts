@@ -1,3 +1,10 @@
+// src/lib/logger.ts
+/**
+ * Activity Logger.
+ *
+ * This file provides a function to log user activities into the audit_logs table
+ * in the database for tracking and auditing purposes.
+ */
 import { createClient } from "@/src/lib/supabase/server";
 
 export async function logActivity(
@@ -11,7 +18,7 @@ export async function logActivity(
       data: { user },
     } = await supabase.auth.getUser();
 
-    if (!user) return; // Don&apos;t log anonymous actions for now
+    if (!user) return;
 
     await supabase.from("audit_logs").insert({
       actor_id: user.id,
@@ -22,6 +29,5 @@ export async function logActivity(
     });
   } catch (error) {
     console.error("Audit Log Failed:", error);
-    // We don&apos;t throw error here to prevent blocking the main user action
   }
 }

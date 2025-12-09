@@ -1,3 +1,4 @@
+// src/app/(super-admin)/admin/templates/new/page.tsx
 import { TemplateForm } from "@/src/components/admin/template-form";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";

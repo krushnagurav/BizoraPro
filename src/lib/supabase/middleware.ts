@@ -1,8 +1,14 @@
+// src/lib/supabase/middleware.ts
+/**
+ * Supabase Middleware for Session Management and Access Control.
+ *
+ * This file defines middleware to manage Supabase sessions using cookies
+ * and restrict access to admin routes based on user authentication and roles.
+ */
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
-// 🔒 YOUR ADMIN EMAIL
-const ADMIN_EMAIL = "krishna@bizorapro.com"; // Replace with your actual login email
+const ADMIN_EMAIL = "krishna@bizorapro.com";
 
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({
@@ -36,13 +42,12 @@ export async function updateSession(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  // 🛡️ ADMIN PROTECTION LOGIC
   if (request.nextUrl.pathname.startsWith("/admin")) {
     if (!user) {
       return NextResponse.redirect(new URL("/login", request.url));
     }
     if (user.email !== ADMIN_EMAIL) {
-      return NextResponse.redirect(new URL("/dashboard", request.url)); // Kick non-admins to normal dashboard
+      return NextResponse.redirect(new URL("/dashboard", request.url));
     }
   }
 

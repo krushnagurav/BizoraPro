@@ -1,3 +1,10 @@
+// src/data/products.ts
+/**
+ * Product Data Access Layer.
+ *
+ * This file provides functions to interact with the products table in the database,
+ * including fetching products with pagination, filtering, and search capabilities.
+ */
 import { createClient } from "@/src/lib/supabase/server";
 import { Product } from "@/src/types/custom";
 
@@ -40,7 +47,6 @@ export async function getProducts(
 
     if (error) {
       console.error("DAL Error:", error);
-      // Return empty typed array
       return {
         data: [] as Product[],
         metadata: {
@@ -55,7 +61,6 @@ export async function getProducts(
     }
 
     return {
-      // Cast the response to your strict type
       data: (data as unknown as Product[]) || [],
       metadata: {
         page,

@@ -1,3 +1,10 @@
+// src/lib/validators/coupon.ts
+/**
+ * Coupon Data Validation Schemas.
+ *
+ * This file defines Zod schemas for validating coupon data structures
+ * used in creating and updating coupons in the application.
+ */
 import { z } from "zod";
 
 export const couponSchema = z.object({

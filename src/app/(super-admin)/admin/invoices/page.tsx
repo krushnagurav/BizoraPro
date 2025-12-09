@@ -1,4 +1,6 @@
-import { createClient } from "@/src/lib/supabase/server";
+// src/app/(super-admin)/admin/invoices/page.tsx
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
   Table,
@@ -8,8 +10,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { createClient } from "@/src/lib/supabase/server";
 import { Download, Eye, FileText, Filter } from "lucide-react";
 import Link from "next/link";
 

@@ -1,3 +1,10 @@
+// src/lib/policy-templates.ts
+/**
+ * Policy Templates.
+ *
+ * This file contains predefined templates for common policies such as
+ * refund, privacy, and terms of service that can be customized with the shop name.
+ */
 export const POLICY_TEMPLATES = {
   refund: (shopName: string) => `Returns and Refunds Policy
 

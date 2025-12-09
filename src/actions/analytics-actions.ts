@@ -1,3 +1,10 @@
+// src/actions/analytics-actions.ts
+/**
+ * Analytics Actions.
+ *
+ * This file contains server-side actions for tracking and retrieving
+ * analytics data related to shops and products.
+ */
 "use server";
 
 import { createClient } from "@/src/lib/supabase/server";
@@ -6,7 +13,6 @@ import { headers } from "next/headers";
 export async function getGrowthStatsAction() {
   const supabase = await createClient();
 
-  // 1. Get data for last 30 days
   const thirtyDaysAgo = new Date();
   thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
@@ -20,11 +26,8 @@ export async function getGrowthStatsAction() {
     .select("created_at, total_amount")
     .gte("created_at", thirtyDaysAgo.toISOString());
 
-  // 2. Process Data for Charts
-  // We want an array: [{ date: "Nov 24", shops: 5, orders: 12 }, ...]
   const dateMap = new Map();
 
-  // Initialize last 30 days with 0
   for (let i = 29; i >= 0; i--) {
     const d = new Date();
     d.setDate(d.getDate() - i);
@@ -35,7 +38,6 @@ export async function getGrowthStatsAction() {
     dateMap.set(key, { date: key, shops: 0, orders: 0, revenue: 0 });
   }
 
-  // Fill Shops
   shops?.forEach((s) => {
     const key = new Date(s.created_at).toLocaleDateString("en-US", {
       month: "short",
@@ -47,7 +49,6 @@ export async function getGrowthStatsAction() {
     }
   });
 
-  // Fill Orders
   orders?.forEach((o) => {
     const key = new Date(o.created_at).toLocaleDateString("en-US", {
       month: "short",
@@ -67,7 +68,6 @@ export async function getGrowthStatsAction() {
   };
 }
 
-// 2. RECORD VIEW (Server Action)
 export async function trackEventAction(
   shopId: string,
   event: string,
@@ -75,10 +75,9 @@ export async function trackEventAction(
 ) {
   const supabase = await createClient();
 
-  // Get simple fingerprint (User Agent + IP prefix) for basic unique counting
   const headerList = await headers();
   const userAgent = headerList.get("user-agent") || "unknown";
-  // In production, get IP from x-forwarded-for
+
   const hash = btoa(userAgent).slice(0, 20);
 
   await supabase.from("analytics").insert({
@@ -89,37 +88,29 @@ export async function trackEventAction(
   });
 }
 
-// 3. GET SINGLE PRODUCT STATS
 export async function getProductStatsAction(productId: string) {
   const supabase = await createClient();
   const thirtyDaysAgo = new Date();
   thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
-  // 1. Get Views
   const { data: views } = await supabase
     .from("analytics")
     .select("created_at")
     .eq("event_type", "view_product")
-    .contains("metadata", { productId }) // JSONB filter
+    .contains("metadata", { productId })
     .gte("created_at", thirtyDaysAgo.toISOString());
 
-  // 2. Get Orders (Sales)
-  // We need to search inside the JSONB 'items' array in orders
-  // This is tricky in simple SQL, so for MVP we fetch orders and filter in JS
-  // (Or use Supabase .contains for array of objects if structure matches)
   const { data: orders } = await supabase
     .from("orders")
     .select("created_at, items")
     .gte("created_at", thirtyDaysAgo.toISOString())
-    .neq("status", "draft"); // Only real orders
+    .neq("status", "draft");
 
-  // Filter orders that contain this product
   const productOrders =
     orders?.filter((o) =>
       (o.items as any[]).some((i: any) => i.id === productId),
     ) || [];
 
-  // 3. Group by Date
   const dateMap = new Map();
   for (let i = 29; i >= 0; i--) {
     const d = new Date();
@@ -154,65 +145,74 @@ export async function getProductStatsAction(productId: string) {
   };
 }
 
-// 4. GET DEEP ANALYTICS
 export async function getDeepAnalyticsAction() {
   const supabase = await createClient();
 
-  // A. Plan Distribution (Pie Chart)
-  // Count how many shops are on 'free' vs 'pro'
-  const { data: shops } = await supabase.from("shops").select("plan");
+  const { data: shops } = await supabase
+    .from("shops")
+    .select("plan, created_at");
 
   const planDistribution = [
-    { name: "Free", value: 0, fill: "#94a3b8" }, // Gray
-    { name: "Pro", value: 0, fill: "#E6B800" }, // Gold
+    { name: "Free", value: 0, fill: "#94a3b8" },
+    { name: "Pro", value: 0, fill: "#E6B800" },
   ];
+
+  const growthMap = new Map();
+  const today = new Date();
+
+  for (let i = 5; i >= 0; i--) {
+    const d = new Date(today.getFullYear(), today.getMonth() - i, 1);
+    const key = d.toLocaleString("default", { month: "short" });
+    growthMap.set(key, { name: key, shops: 0 });
+  }
 
   shops?.forEach((s) => {
     if (s.plan === "pro") planDistribution[1].value++;
     else planDistribution[0].value++;
+
+    const key = new Date(s.created_at).toLocaleString("default", {
+      month: "short",
+    });
+    if (growthMap.has(key)) {
+      growthMap.get(key).shops += 1;
+    }
   });
 
-  // B. Top Shops (Leaderboard)
-  // We need to count orders per shop.
-  // (Note: In a huge DB, we'd use an RPC function. For MVP, we fetch orders and aggregate in JS).
+  const sixMonthsAgo = new Date();
+  sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+
   const { data: orders } = await supabase
     .from("orders")
-    .select("shop_id, total_amount")
-    .neq("status", "draft");
+    .select("created_at, total_amount")
+    .neq("status", "draft")
+    .neq("status", "cancelled")
+    .gte("created_at", sixMonthsAgo.toISOString());
 
-  const shopStats = new Map();
+  const revenueMap = new Map();
+
+  for (let i = 5; i >= 0; i--) {
+    const d = new Date(today.getFullYear(), today.getMonth() - i, 1);
+    const key = d.toLocaleString("default", { month: "short" });
+    revenueMap.set(key, { name: key, revenue: 0 });
+  }
 
   orders?.forEach((o) => {
-    if (!shopStats.has(o.shop_id)) {
-      shopStats.set(o.shop_id, { revenue: 0, orders: 0 });
+    const key = new Date(o.created_at).toLocaleString("default", {
+      month: "short",
+    });
+    if (revenueMap.has(key)) {
+      revenueMap.get(key).revenue += o.total_amount;
     }
-    const stat = shopStats.get(o.shop_id);
-    stat.revenue += o.total_amount;
-    stat.orders += 1;
   });
 
-  // Convert to array and get Shop Names (This part is heavy, so we limit to top 5 IDs first)
-  const topShopIds = Array.from(shopStats.entries())
-    .sort((a, b) => b[1].revenue - a[1].revenue)
-    .slice(0, 5)
-    .map((x) => x[0]);
-
-  const { data: topShopsDetails } = await supabase
-    .from("shops")
-    .select("id, name")
-    .in("id", topShopIds);
-
-  const leaderboard =
-    topShopsDetails
-      ?.map((s) => ({
-        name: s.name,
-        revenue: shopStats.get(s.id)?.revenue || 0,
-        orders: shopStats.get(s.id)?.orders || 0,
-      }))
-      .sort((a, b) => b.revenue - a.revenue) || [];
+  const { data: leaderboard } = await supabase.rpc("get_top_shops_analytics", {
+    limit_count: 5,
+  });
 
   return {
     planDistribution,
-    leaderboard,
+    growthData: Array.from(growthMap.values()),
+    revenueData: Array.from(revenueMap.values()),
+    leaderboard: leaderboard || [],
   };
 }

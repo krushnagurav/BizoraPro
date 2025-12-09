@@ -1,3 +1,10 @@
+// src/actions/product-actions.ts
+/**
+ * Product Actions.
+ *
+ * This file contains server-side actions for managing products,
+ * including creating, updating, deleting, and importing products.
+ */
 "use server";
 
 import { authAction } from "@/src/lib/safe-action";
@@ -10,13 +17,9 @@ import { revalidatePath } from "next/cache";
 import { createClient } from "@/src/lib/supabase/server";
 import { z } from "zod";
 
-// ==========================================
-// 1. CREATE PRODUCT (Safe Action)
-// ==========================================
 export const createProductAction = authAction
   .schema(createProductSchema)
   .action(async ({ parsedInput, ctx: { user, supabase } }) => {
-    // 1. Get Shop & Check Limits
     const { data: shop } = await supabase
       .from("shops")
       .select("id, product_limit, onboarding_step")
@@ -35,7 +38,6 @@ export const createProductAction = authAction
       throw new Error(`Limit reached (${shop.product_limit}). Upgrade to Pro.`);
     }
 
-    // 2. Parse JSON Fields
     let variantsData = [],
       galleryData = [],
       badgesData = [],
@@ -45,15 +47,13 @@ export const createProductAction = authAction
       if (parsedInput.galleryImages)
         galleryData = JSON.parse(parsedInput.galleryImages);
       if (parsedInput.badges) badgesData = JSON.parse(parsedInput.badges);
-      // Parse SKUs
+
       if (parsedInput.productSkus)
         skusData = JSON.parse(parsedInput.productSkus);
     } catch (e) {
       console.error("JSON Parse Error", e);
     }
 
-    // 3. Smart Stock Calculation
-    // If variants exist, calculate total stock from SKUs. Otherwise use simple stock input.
     let finalStock = parsedInput.stock || 0;
     if (skusData.length > 0) {
       finalStock = skusData.reduce(
@@ -62,7 +62,6 @@ export const createProductAction = authAction
       );
     }
 
-    // 4. Handle Category (Convert "" to null)
     const categoryId =
       parsedInput.category &&
       parsedInput.category !== "none" &&
@@ -70,7 +69,6 @@ export const createProductAction = authAction
         ? parsedInput.category
         : null;
 
-    // 5. Insert
     const { error } = await supabase.from("products").insert({
       shop_id: shop.id,
       name: parsedInput.name,
@@ -81,11 +79,9 @@ export const createProductAction = authAction
       image_url: parsedInput.imageUrl || "",
       status: parsedInput.status || "active",
 
-      // SEO Fields
       seo_title: parsedInput.seoTitle,
       seo_description: parsedInput.seoDescription,
 
-      // Complex Data
       variants: variantsData,
       gallery_images: galleryData,
       badges: badgesData,
@@ -95,7 +91,6 @@ export const createProductAction = authAction
 
     if (error) throw new Error(error.message);
 
-    // Handle Onboarding Redirect
     let redirectTo = "/products";
     if (shop.onboarding_step < 4) {
       await supabase
@@ -109,9 +104,6 @@ export const createProductAction = authAction
     return { success: true, redirect: redirectTo };
   });
 
-// ==========================================
-// 2. UPDATE PRODUCT (Safe Action)
-// ==========================================
 export const updateProductAction = authAction
   .schema(updateProductSchema)
   .action(async ({ parsedInput, ctx: { supabase } }) => {
@@ -130,7 +122,6 @@ export const updateProductAction = authAction
       console.error(e);
     }
 
-    // Smart Stock Calc
     let finalStock = parsedInput.stock || 0;
     if (skusData.length > 0) {
       finalStock = skusData.reduce(
@@ -152,7 +143,7 @@ export const updateProductAction = authAction
       sale_price: parsedInput.salePrice,
       category_id: categoryId,
       description: parsedInput.description,
-      status: parsedInput.status, // Allow updating status
+      status: parsedInput.status,
 
       seo_title: parsedInput.seoTitle,
       seo_description: parsedInput.seoDescription,
@@ -172,10 +163,9 @@ export const updateProductAction = authAction
       .eq("id", parsedInput.id);
 
     if (error) throw new Error(error.message);
-    // choose redirect: published -> product page, draft -> listing
+
     let redirectTo: string | undefined;
     try {
-      // parsedInput.id should be the product id being updated
       const productId = parsedInput.id as string | undefined;
       if (parsedInput.status === "active" && productId) {
         redirectTo = `/products/${productId}`;
@@ -183,19 +173,14 @@ export const updateProductAction = authAction
         redirectTo = "/products";
       }
     } catch (e) {
-      // fallback: no redirect
       redirectTo = undefined;
     }
 
     revalidatePath("/products");
 
-    // return an object with optional redirect to match createProductAction's shape
     return { success: true, redirect: redirectTo };
   });
 
-// ==========================================
-// 3. DELETE / RESTORE (Safe Action)
-// ==========================================
 export const deleteProductAction = authAction
   .schema(productIdSchema)
   .action(async ({ parsedInput, ctx: { supabase } }) => {
@@ -222,9 +207,6 @@ export const restoreProductAction = authAction
     return { success: true };
   });
 
-// ==========================================
-// 4. CATEGORY ACTIONS (Safe Action)
-// ==========================================
 const categorySchema = z.object({ name: z.string().min(2) });
 const categoryIdSchema = z.object({ id: z.string().uuid() });
 
@@ -260,9 +242,6 @@ export const deleteCategoryAction = authAction
     return { success: true };
   });
 
-// ==========================================
-// 5. DATA FETCHING (Standard Async - For Reading)
-// ==========================================
 export async function getProductsAction(
   shopId: string,
   page: number = 1,
@@ -287,7 +266,6 @@ export async function getProductsAction(
     dbQuery = dbQuery.ilike("name", `%${query}%`);
   }
 
-  // Apply Filters
   if (categoryId && categoryId !== "all") {
     dbQuery = dbQuery.eq("category_id", categoryId);
   }
@@ -309,9 +287,6 @@ export async function getProductsAction(
   };
 }
 
-// ==========================================
-// 6. SMART BULK IMPORT (Standard Async - Robust)
-// ==========================================
 export async function importProductsAction(products: any[]) {
   const supabase = await createClient();
   const {
@@ -320,7 +295,6 @@ export async function importProductsAction(products: any[]) {
 
   if (!user) return { error: "Login required" };
 
-  // 1. Get Shop & Limits (With Plan)
   const { data: shop } = await supabase
     .from("shops")
     .select("id, product_limit, plan")
@@ -329,12 +303,10 @@ export async function importProductsAction(products: any[]) {
 
   if (!shop) return { error: "Shop not found" };
 
-  // Pro Check
   if (shop.plan !== "pro") {
     return { error: "Bulk Import is a Pro feature." };
   }
 
-  // Limit Check
   const { count } = await supabase
     .from("products")
     .select("*", { count: "exact", head: true })
@@ -350,7 +322,6 @@ export async function importProductsAction(products: any[]) {
     };
   }
 
-  // 2. Prepare Deduplication
   const { data: existingProducts } = await supabase
     .from("products")
     .select("name")
@@ -367,24 +338,20 @@ export async function importProductsAction(products: any[]) {
   const categoryMap = new Map<string, string>();
   existingCats?.forEach((c) => categoryMap.set(c.name.toLowerCase(), c.id));
 
-  // 3. Process Rows (Normalization Logic)
   const toInsert = [];
   let skippedCount = 0;
 
   for (const item of products) {
-    // Normalize Keys (Handle "Name", "name", "Product Name")
     const safeItem: any = {};
     Object.keys(item).forEach((k) => {
       safeItem[k.toLowerCase().replace(/[^a-z]/g, "")] = item[k];
     });
 
-    // Extract Fields safely
     const rawName = safeItem.name || safeItem.productname || safeItem.title;
     const rawPrice = safeItem.price || safeItem.sellingprice || safeItem.mrp;
     const rawDesc = safeItem.description || safeItem.desc || "";
     const rawCat = safeItem.category || safeItem.categoryname;
 
-    // Validate
     if (!rawName || !rawPrice) {
       skippedCount++;
       continue;
@@ -403,7 +370,6 @@ export async function importProductsAction(products: any[]) {
       continue;
     }
 
-    // Category Logic
     let categoryId = null;
     if (rawCat) {
       const cleanCatName = String(rawCat).trim();
@@ -412,7 +378,6 @@ export async function importProductsAction(products: any[]) {
       if (categoryMap.has(lowerCatName)) {
         categoryId = categoryMap.get(lowerCatName);
       } else {
-        // Create Category on the fly
         const { data: newCat } = await supabase
           .from("categories")
           .insert({ shop_id: shop.id, name: cleanCatName })
@@ -433,7 +398,7 @@ export async function importProductsAction(products: any[]) {
       description: rawDesc,
       category_id: categoryId,
       status: "active",
-      stock_count: 10, // Default stock for imports
+      stock_count: 10,
       image_url: "",
     });
 
@@ -453,16 +418,12 @@ export async function importProductsAction(products: any[]) {
   };
 }
 
-// ==========================================
-// 7. DUPLICATE PRODUCT
-// ==========================================
 export async function duplicateProductAction(
   formData: FormData,
 ): Promise<void> {
   const id = formData.get("id") as string;
   const supabase = await createClient();
 
-  // 1. Fetch Original
   const { data: original, error: fetchError } = await supabase
     .from("products")
     .select("*")
@@ -477,7 +438,6 @@ export async function duplicateProductAction(
     throw new Error("Product not found");
   }
 
-  // 2. Create Copy Payload
   const { id: _, created_at: __, ...rest } = original;
 
   const payload = {
@@ -489,7 +449,6 @@ export async function duplicateProductAction(
     seo_description: original.seo_description ?? null,
   };
 
-  // 3. Insert
   const { error: insertError } = await supabase
     .from("products")
     .insert(payload);
@@ -501,9 +460,6 @@ export async function duplicateProductAction(
   revalidatePath("/products");
 }
 
-// ==========================================
-// 8. BULK PRICE UPDATE (Admin Tool)
-// ==========================================
 export async function bulkPriceUpdateAction(formData: FormData) {
   const supabase = await createClient();
   const {
@@ -552,7 +508,6 @@ export async function bulkPriceUpdateAction(formData: FormData) {
       name: p.name,
       price: Math.round(newPrice),
       shop_id: shop.id,
-      // Updated_at handled by DB default usually, or explicit if needed
     };
   });
 

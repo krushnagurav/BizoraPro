@@ -1,3 +1,10 @@
+// src/lib/supabase/server.ts
+/**
+ * Supabase Server Client Initialization.
+ *
+ * This file initializes and exports a Supabase client instance for server-side
+ * interactions, utilizing cookies for session management.
+ */
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 

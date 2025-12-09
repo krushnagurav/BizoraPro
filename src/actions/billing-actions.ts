@@ -1,17 +1,21 @@
+// src/actions/billing-actions.ts
+/**
+ * Billing Actions.
+ *
+ * This file contains server-side actions for handling billing-related
+ * operations such as creating subscription orders and verifying payments.
+ */
 "use server";
 
 import { createClient } from "@/src/lib/supabase/server";
 import crypto from "crypto";
 import Razorpay from "razorpay";
 
-// Initialize Razorpay instance safely
-// (It won&apos;t crash the app if keys are missing, but payments will fail gracefully)
 const razorpay = new Razorpay({
   key_id: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || "",
   key_secret: process.env.RAZORPAY_KEY_SECRET || "",
 });
 
-// 1. INITIATE CHECKOUT (Create Order)
 export async function createSubscriptionOrderAction(
   planType: "monthly" | "yearly",
 ) {
@@ -22,7 +26,6 @@ export async function createSubscriptionOrderAction(
 
   if (!user) return { error: "Login required" };
 
-  // Check if keys exist
   if (
     !process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID ||
     !process.env.RAZORPAY_KEY_SECRET
@@ -30,7 +33,7 @@ export async function createSubscriptionOrderAction(
     return { error: "Payment gateway not configured (Missing API Keys)" };
   }
 
-  const amount = planType === "monthly" ? 19900 : 199900; // Amount in Paisa (₹199.00)
+  const amount = planType === "monthly" ? 19900 : 199900;
 
   try {
     const order = await razorpay.orders.create({
@@ -56,7 +59,6 @@ export async function createSubscriptionOrderAction(
   }
 }
 
-// 2. VERIFY PAYMENT (After User Pays)
 export async function verifyPaymentAction(
   razorpay_order_id: string,
   razorpay_payment_id: string,
@@ -78,14 +80,12 @@ export async function verifyPaymentAction(
     return { error: "Payment verification failed" };
   }
 
-  // 3. UPDATE DATABASE (Upgrade User)
   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
   if (user) {
-    // 1. Find Shop
     const { data: shop } = await supabase
       .from("shops")
       .select("id")
@@ -93,16 +93,14 @@ export async function verifyPaymentAction(
       .single();
 
     if (shop) {
-      // 2. Update Shop Plan
       await supabase
         .from("shops")
         .update({
           plan: "pro",
-          product_limit: 10000, // Unlimited
+          product_limit: 10000,
         })
         .eq("owner_id", user.id);
 
-      // 3. Log Payment
       await supabase.from("payments").insert({
         shop_id: shop.id,
         amount: planType === "monthly" ? 199 : 1999,

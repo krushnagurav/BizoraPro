@@ -1,3 +1,10 @@
+// src/hooks/use-cart.ts
+/**
+ * Shopping Cart State Management Hook.
+ *
+ * This file defines a Zustand store for managing the shopping cart state,
+ * including items, quantities, coupons, and total price calculations.
+ */
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 
@@ -81,7 +88,6 @@ export const useCart = create<CartStore>()(
 
       removeCoupon: () => set({ coupon: null }),
 
-      // 👇 FIXED: Calculate Discount Logic Here
       totalPrice: () => {
         const { items, coupon } = get();
         const subtotal = items.reduce(
@@ -98,7 +104,6 @@ export const useCart = create<CartStore>()(
           discount = coupon.value;
         }
 
-        // Ensure total doesn't go below 0
         return Math.max(0, subtotal - discount);
       },
     }),

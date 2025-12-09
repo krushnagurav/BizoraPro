@@ -1,140 +1,143 @@
+// src/app/(super-admin)/admin/page.tsx
+import { Card, CardContent } from "@/components/ui/card";
+import { GrowthChart } from "@/src/components/admin/growth-chart"; // New
+import { RecentShopsTable } from "@/src/components/admin/recent-shops-table"; // New
 import { createClient } from "@/src/lib/supabase/server";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
-  Store,
+  AlertCircle,
   DollarSign,
-  TrendingUp,
   MessageCircle,
-  Eye,
-  Headphones,
+  Store,
+  TrendingUp,
 } from "lucide-react";
 
 export default async function AdminDashboardPage() {
   const supabase = await createClient();
-  const sevenDaysAgo = new Date();
-  sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-  const sevenDaysAgoIso = sevenDaysAgo.toISOString();
 
-  // 1. Fetch Real Counts (Basic)
-  const { count: totalShops } = await supabase
-    .from("shops")
-    .select("*", { count: "exact", head: true });
-  const { count: activeShops } = await supabase
-    .from("shops")
-    .select("*", { count: "exact", head: true })
-    .eq("is_open", true);
-  const { count: orders7d } = await supabase
-    .from("orders")
-    .select("*", { count: "exact", head: true })
-    .gte("created_at", sevenDaysAgoIso);
+  // 1. Parallel Data Fetching
+  const [shopsData, revenueData, ordersData, ticketsData] = await Promise.all([
+    supabase
+      .from("shops")
+      .select("id, created_at, plan, is_open, name, slug")
+      .order("created_at", { ascending: false }),
+    supabase.from("payments").select("amount").eq("status", "succeeded"), // Assuming 'payments' table tracks revenue
+    supabase
+      .from("orders")
+      .select("id, created_at")
+      .gte(
+        "created_at",
+        // eslint-disable-next-line react-hooks/purity
+        new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
+      ), // Last 7 days
+    supabase
+      .from("support_tickets")
+      .select("priority, status")
+      .eq("status", "open"),
+  ]);
 
-  // Mock Data for Advanced Metrics (Until we build full analytics engine)
-  // In Phase 3, we will replace these with real DB aggregations
+  const shops = shopsData.data || [];
+  const revenue = revenueData.data || [];
+
+  // 2. Calculate Stats
+  const totalShops = shops.length;
+  const activeShops = shops.filter((s) => s.is_open).length;
+  const totalRevenue = revenue.reduce((sum, p) => sum + Number(p.amount), 0);
+  const paidShops = shops.filter((s) => s.plan === "pro").length;
+  const conversionRate =
+    totalShops > 0 ? ((paidShops / totalShops) * 100).toFixed(1) : "0";
+  const urgentTickets =
+    ticketsData.data?.filter(
+      (t) => t.priority === "high" || t.priority === "critical",
+    ).length || 0;
+
+  // 3. Prepare Chart Data (Last 6 Months)
+  const chartData = [];
+  for (let i = 5; i >= 0; i--) {
+    const date = new Date();
+    date.setMonth(date.getMonth() - i);
+    const monthName = date.toLocaleString("default", { month: "short" });
+    const shopsInMonth = shops.filter((s) => {
+      const d = new Date(s.created_at);
+      return (
+        d.getMonth() === date.getMonth() &&
+        d.getFullYear() === date.getFullYear()
+      );
+    }).length;
+    chartData.push({ name: monthName, shops: shopsInMonth });
+  }
+
+  // Stats Array for Cards
   const stats = [
     {
       title: "Total Shops",
-      value: totalShops || 0,
-      subLabel: `Active: ${activeShops} | Suspended: ${(totalShops || 0) - (activeShops || 0)}`,
+      value: totalShops,
       icon: Store,
       color: "text-blue-500",
-      trend: "+12%",
-      trendColor: "text-green-500",
+      sub: `${activeShops} Active`,
     },
     {
       title: "Total Revenue",
-      value: "₹2,84,750",
-      subLabel: "MRR: ₹47k | ARR: ₹564k",
+      value: `₹${totalRevenue.toLocaleString()}`,
       icon: DollarSign,
       color: "text-yellow-500",
-      trend: "+24%",
-      trendColor: "text-green-500",
+      sub: "Lifetime",
     },
     {
-      title: "Trial Conversion",
-      value: "68.4%",
-      subLabel: "Trial: 412 | Converted: 282",
+      title: "Paid Conversion",
+      value: `${conversionRate}%`,
       icon: TrendingUp,
-      color: "text-orange-500",
-      trend: "+8%",
-      trendColor: "text-green-500",
-    },
-    {
-      title: "WhatsApp Orders (7d)",
-      value: orders7d || 0,
-      subLabel: `Avg: ${Math.round((orders7d || 0) / 7)} / day`,
-      icon: MessageCircle,
       color: "text-green-500",
-      trend: "+18%",
-      trendColor: "text-green-500",
+      sub: `${paidShops} Pro Users`,
     },
     {
-      title: "Platform Traffic (7d)",
-      value: "487,234",
-      subLabel: "Unique: 124k",
-      icon: Eye,
-      color: "text-cyan-500",
-      trend: "-3%",
-      trendColor: "text-red-500",
-    },
-    {
-      title: "Support Queue",
-      value: "23",
-      subLabel: "Urgent: 7 | Normal: 16",
-      icon: Headphones,
+      title: "Weekly Orders",
+      value: ordersData.data?.length || 0,
+      icon: MessageCircle,
       color: "text-purple-500",
-      trend: "0%",
-      trendColor: "text-gray-500",
+      sub: "Last 7 Days",
+    },
+    {
+      title: "Urgent Support",
+      value: urgentTickets,
+      icon: AlertCircle,
+      color: "text-red-500",
+      sub: "Open Tickets",
     },
   ];
 
   return (
     <div className="space-y-8">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-white">Platform Overview</h1>
-          <p className="text-gray-400">
-            Monitor and manage your entire platform ecosystem
-          </p>
-        </div>
-        <button className="bg-[#E6B800] text-black px-4 py-2 rounded-lg font-bold hover:bg-[#FFD700] transition">
-          + Add New Shop Owner
-        </button>
+      <div>
+        <h1 className="text-3xl font-bold text-white">Platform Overview</h1>
+        <p className="text-gray-400">Real-time pulse of your SaaS business.</p>
       </div>
 
-      {/* STATS GRID */}
-      <div className="grid gap-6 md:grid-cols-3">
+      {/* KPI GRID */}
+      <div className="grid gap-6 md:grid-cols-3 lg:grid-cols-5">
         {stats.map((item, i) => (
           <Card key={i} className="bg-[#111] border-white/10 text-white">
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-gray-400">
-                {item.title}
-              </CardTitle>
-              <div className="flex items-center gap-2">
-                <span className={`text-xs font-bold ${item.trendColor}`}>
-                  {item.trend}
-                </span>
+            <CardContent className="p-6 flex flex-col gap-2">
+              <div className="flex justify-between items-start">
                 <div className={`p-2 rounded-lg bg-white/5 ${item.color}`}>
-                  <item.icon className="h-4 w-4" />
+                  <item.icon className="h-5 w-5" />
                 </div>
+                {/* Optional: Add trend arrow here */}
               </div>
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold mb-1">{item.value}</div>
-              <p className="text-xs text-gray-500">{item.subLabel}</p>
+              <div>
+                <h3 className="text-2xl font-bold">{item.value}</h3>
+                <p className="text-xs text-gray-500">{item.title}</p>
+                <p className="text-[10px] text-gray-600 mt-1">{item.sub}</p>
+              </div>
             </CardContent>
           </Card>
         ))}
       </div>
 
-      {/* GRAPH SECTION (Placeholder for now) */}
-      <Card className="bg-[#111] border-white/10 text-white h-[300px] flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-lg font-bold">Platform Growth</p>
-          <p className="text-sm text-gray-500">
-            Monthly trends for new shops and order requests
-          </p>
-        </div>
-      </Card>
+      {/* CHARTS & TABLES */}
+      <div className="grid lg:grid-cols-3 gap-8">
+        <GrowthChart data={chartData} />
+        <RecentShopsTable shops={shops.slice(0, 5)} />
+      </div>
     </div>
   );
 }

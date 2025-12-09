@@ -1,6 +1,12 @@
+// src/lib/validators/product.ts
+/**
+ * Product Data Validation Schemas.
+ *
+ * This file defines Zod schemas for validating product data structures
+ * used in creating and updating products in the application.
+ */
 import { z } from "zod";
 
-// The Master Schema
 export const productSchema = z.object({
   name: z.string().min(1, "Name is required"),
   price: z.coerce.number().min(0, "Price must be positive"),
@@ -18,7 +24,6 @@ export const productSchema = z.object({
   status: z.enum(["active", "draft", "archived"]).default("active"),
 });
 
-// Derived Schemas
 export const createProductSchema = productSchema;
 export const updateProductSchema = productSchema.extend({
   id: z.string().uuid(),

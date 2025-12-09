@@ -1,9 +1,11 @@
-import Link from "next/link";
-import { createClient } from "@/src/lib/supabase/server";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+// src/app/(super-admin)/admin/plans/page.tsx
 import { Badge } from "@/components/ui/badge";
-import { Plus, Edit } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { deletePlanAction } from "@/src/actions/admin-actions";
+import { createClient } from "@/src/lib/supabase/server";
+import { Edit, Plus, Trash2 } from "lucide-react";
+import Link from "next/link";
 
 export default async function AdminPlansPage() {
   const supabase = await createClient();
@@ -45,13 +47,28 @@ export default async function AdminPlansPage() {
                     {plan.product_limit} Products
                   </Badge>
                 </div>
-                <Button
-                  size="icon"
-                  variant="ghost"
-                  className="hover:bg-white/10"
-                >
-                  <Edit className="h-4 w-4" />
-                </Button>
+                <div className="flex gap-2">
+                  <Link href={`/admin/plans/${plan.id}`}>
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      className="hover:bg-white/10 text-white"
+                    >
+                      <Edit className="h-4 w-4" />
+                    </Button>
+                  </Link>
+
+                  <form action={deletePlanAction}>
+                    <input type="hidden" name="id" value={plan.id} />
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      className="hover:bg-red-500/10 text-red-500"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </form>
+                </div>
               </div>
 
               <div className="pt-4 border-t border-white/10">

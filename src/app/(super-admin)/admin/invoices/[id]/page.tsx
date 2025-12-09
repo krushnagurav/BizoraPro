@@ -1,10 +1,11 @@
-import { createClient } from "@/src/lib/supabase/server";
-import { notFound } from "next/navigation";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+// src/app/(super-admin)/admin/invoices/[id]/page.tsx
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Download, Mail, CheckCircle2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { createClient } from "@/src/lib/supabase/server";
+import { ArrowLeft, CheckCircle2, Download, Mail } from "lucide-react";
 import Link from "next/link";
+import { notFound } from "next/navigation";
 
 export default async function AdminInvoiceDetailPage({
   params,

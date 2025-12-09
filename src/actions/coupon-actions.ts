@@ -1,3 +1,10 @@
+// src/actions/coupon-actions.ts
+/**
+ * Coupon Management Actions.
+ *
+ * This file contains server-side actions for creating, updating,
+ * deleting, duplicating, and verifying coupons associated with shops.
+ */
 "use server";
 
 import { createClient } from "@/src/lib/supabase/server";
@@ -11,7 +18,6 @@ const couponSchema = z.object({
   minOrderValue: z.coerce.number().default(0),
 });
 
-// 1. CREATE
 export async function createCouponAction(formData: FormData) {
   const supabase = await createClient();
   const {
@@ -61,7 +67,6 @@ export async function createCouponAction(formData: FormData) {
   return { success: "Coupon Created" };
 }
 
-// 2. DELETE
 export async function deleteCouponAction(formData: FormData): Promise<void> {
   const id = formData.get("id") as string;
   const supabase = await createClient();
@@ -75,12 +80,10 @@ export async function deleteCouponAction(formData: FormData): Promise<void> {
   revalidatePath("/coupons");
 }
 
-// 3. DUPLICATE (NEW)
 export async function duplicateCouponAction(formData: FormData): Promise<void> {
   const id = formData.get("id") as string;
   const supabase = await createClient();
 
-  // Fetch Original
   const { data: original, error: fetchError } = await supabase
     .from("coupons")
     .select("*")
@@ -114,7 +117,6 @@ export async function duplicateCouponAction(formData: FormData): Promise<void> {
   revalidatePath("/coupons");
 }
 
-// 4. VERIFY (Public)
 export async function verifyCouponAction(
   code: string,
   shopSlug: string,
@@ -139,12 +141,10 @@ export async function verifyCouponAction(
 
   if (!coupon) return { error: "Invalid Coupon Code" };
 
-  // Check Expiry
   if (coupon.end_date && new Date(coupon.end_date) < new Date()) {
     return { error: "Coupon has expired" };
   }
 
-  // Check Rules
   if (coupon.min_order_value > cartTotal) {
     return { error: `Minimum order of ₹${coupon.min_order_value} required` };
   }
@@ -163,7 +163,6 @@ export async function verifyCouponAction(
   };
 }
 
-// 5. UPDATE COUPON (Fix for Duplicate issue)
 export async function updateCouponAction(formData: FormData) {
   const id = formData.get("id") as string;
   const supabase = await createClient();
@@ -171,7 +170,6 @@ export async function updateCouponAction(formData: FormData) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  // Verify ownership
   const { data: shop } = await supabase
     .from("shops")
     .select("id")
@@ -187,11 +185,8 @@ export async function updateCouponAction(formData: FormData) {
     startDate: formData.get("startDate"),
     endDate: formData.get("endDate") || null,
     maxUsesTotal: formData.get("maxUsesTotal") || null,
-    status: formData.get("status") === "active", // Handle Active/Inactive toggle
+    status: formData.get("status") === "active",
   };
-
-  // Validate (reuse schema or simplified check)
-  // We skip full Zod here for brevity, but you should use it in prod
 
   const { error } = await supabase
     .from("coupons")

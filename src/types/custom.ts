@@ -1,3 +1,4 @@
+// src/types/custom.ts
 // 1. Common Configs
 export interface ThemeConfig {
   primaryColor?: string;

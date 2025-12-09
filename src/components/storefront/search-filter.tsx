@@ -23,8 +23,6 @@ export function ShopSearch({ slug }: { slug: string }) {
   const [text, setText] = useState(searchParams.get("q") || "");
   const debouncedText = useDebounceValue(text, 500);
 
-  console.log(slug);
-
   useEffect(() => {
     const params = new URLSearchParams(searchParams.toString());
 
@@ -72,7 +70,7 @@ export function CategoryFilter({
   const pathname = usePathname(); // Use here too
   const searchParams = useSearchParams();
   const activeCat = searchParams.get("cat");
-  console.log(slug);
+
   const toggleCat = (catId: string) => {
     const params = new URLSearchParams(searchParams.toString());
     if (activeCat === catId) {

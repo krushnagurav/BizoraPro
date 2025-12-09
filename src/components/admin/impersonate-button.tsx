@@ -1,9 +1,10 @@
+// src/components/admin/impersonate-button.tsx
 "use client";
 
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { UserCog, Loader2 } from "lucide-react";
 import { impersonateUserAction } from "@/src/actions/admin-actions";
+import { Loader2, UserCog } from "lucide-react";
+import { useState } from "react";
 import { toast } from "sonner";
 
 export function ImpersonateButton({ userId }: { userId: string }) {

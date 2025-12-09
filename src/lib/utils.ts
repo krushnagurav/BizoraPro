@@ -1,15 +1,18 @@
-// Helper to convert Hex to HSL string for Tailwind
+// src/lib/utils.ts
+/**
+ * Utility functions for various common tasks.
+ *
+ * This file contains helper functions that can be used across the application
+ * to perform specific transformations or calculations.
+ */
 export function hexToHsl(hex: string) {
-  // Remove # if present
   hex = hex.replace(/^#/, "");
 
-  // Parse r, g, b
   const bigint = parseInt(hex, 16);
   let r = (bigint >> 16) & 255;
   let g = (bigint >> 8) & 255;
   let b = bigint & 255;
 
-  // Convert RGB to HSL
   r /= 255;
   g /= 255;
   b /= 255;
@@ -36,6 +39,5 @@ export function hexToHsl(hex: string) {
     h /= 6;
   }
 
-  // Return space separated string: "H S% L%"
   return `${Math.round(h * 360)} ${Math.round(s * 100)}% ${Math.round(l * 100)}%`;
 }

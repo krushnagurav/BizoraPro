@@ -1,3 +1,10 @@
+// src/lib/validators/category.ts
+/**
+ * Category Data Validation Schemas.
+ *
+ * This file defines Zod schemas for validating category data structures
+ * used in creating and updating categories in the application.
+ */
 import { z } from "zod";
 
 export const categorySchema = z.object({

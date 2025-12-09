@@ -1,3 +1,4 @@
+// src/app/(super-admin)/admin/templates/page.tsx
 import Link from "next/link";
 import { createClient } from "@/src/lib/supabase/server";
 import { Card, CardContent } from "@/components/ui/card";

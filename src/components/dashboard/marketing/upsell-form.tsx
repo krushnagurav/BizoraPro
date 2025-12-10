@@ -1,3 +1,12 @@
+// src/components/dashboard/marketing/upsell-form.tsx
+/*  * Upsell Form Component
+ * This component allows users
+ * to create upsell recommendations
+ * between products in their shop.
+ * It includes validation to prevent
+ * suggesting the same product and
+ * warns about out-of-stock items.
+ */
 "use client";
 
 import { useState } from "react";
@@ -36,10 +45,8 @@ export function UpsellForm({ products }: { products: Product[] }) {
   const [triggerId, setTriggerId] = useState("");
   const [suggestedId, setSuggestedId] = useState("");
 
-  // 1️⃣ Logic: Filter out the selected trigger from suggestions
   const availableSuggestions = products.filter((p) => p.id !== triggerId);
 
-  // 2️⃣ Logic: Check if suggestion is OOS
   const selectedSuggestion = products.find((p) => p.id === suggestedId);
   const isSuggestionOOS = selectedSuggestion
     ? selectedSuggestion.stock_count === 0
@@ -64,7 +71,6 @@ export function UpsellForm({ products }: { products: Product[] }) {
       toast.error(res.error);
     } else {
       toast.success("Recommendation added!");
-      // Reset
       setTriggerId("");
       setSuggestedId("");
     }
@@ -73,7 +79,6 @@ export function UpsellForm({ products }: { products: Product[] }) {
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="flex flex-col md:flex-row gap-4 items-start">
-        {/* Trigger Product */}
         <div className="space-y-2 flex-1 w-full">
           <span className="text-sm font-medium text-muted-foreground">
             When user views...
@@ -114,7 +119,6 @@ export function UpsellForm({ products }: { products: Product[] }) {
           <ArrowRight className="text-muted-foreground w-5 h-5" />
         </div>
 
-        {/* Suggestion Product */}
         <div className="space-y-2 flex-1 w-full">
           <span className="text-sm font-medium text-muted-foreground">
             Suggest this...
@@ -167,7 +171,6 @@ export function UpsellForm({ products }: { products: Product[] }) {
             </SelectContent>
           </Select>
 
-          {/* OOS Warning */}
           {isSuggestionOOS && (
             <div className="text-xs text-amber-500 flex items-center gap-1 animate-in fade-in">
               <AlertTriangle className="w-3 h-3" /> Warning: This item is

@@ -1,4 +1,9 @@
 // src/components/storefront/category-card.tsx
+/*  * Category Card Component
+ * This component displays a category card in the storefront,
+ * including category image and name. It links to the category's
+ * product listing page.
+ */
 "use client";
 
 import Link from "next/link";

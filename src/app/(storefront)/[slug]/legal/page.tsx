@@ -1,4 +1,9 @@
 // src/app/(storefront)/[slug]/legal/page.tsx
+/* Shop Legal Page
+ * This page displays the legal policies of a specific shop identified by its slug.
+ * It includes tabs for Refund Policy, Privacy Policy, and Terms of Service.
+ * The page layout and styling adapt based on the shop's theme configuration.
+ */
 import type { CSSProperties } from "react";
 import { createClient } from "@/src/lib/supabase/server";
 import { notFound } from "next/navigation";
@@ -42,7 +47,6 @@ export default async function ShopLegalPage({
       <ShopHeader shop={shop} />
 
       <div className="max-w-3xl mx-auto px-4 py-12 space-y-8">
-        {/* Title Section */}
         <div className="text-center space-y-4 mb-12">
           <div className="w-16 h-16 bg-white rounded-2xl shadow-sm border border-slate-100 flex items-center justify-center mx-auto text-primary">
             <Scale className="w-8 h-8" />
@@ -56,7 +60,6 @@ export default async function ShopLegalPage({
           </p>
         </div>
 
-        {/* Policies Tabs */}
         <Tabs defaultValue="refund" className="w-full">
           <TabsList className="grid w-full grid-cols-3 bg-white p-1 rounded-xl border border-slate-200 shadow-sm h-auto">
             <TabsTrigger
@@ -109,7 +112,6 @@ export default async function ShopLegalPage({
           </div>
         </Tabs>
 
-        {/* Footer Note */}
         <div className="text-center pt-12 border-t border-slate-200">
           <p className="text-xs text-slate-400">
             These policies are set by <strong>{shop.name}</strong>. BizoraPro is

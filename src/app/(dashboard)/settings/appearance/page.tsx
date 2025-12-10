@@ -1,3 +1,9 @@
+// src/app/(dashboard)/settings/appearance/page.tsx
+/*
+ * Appearance Settings Page
+ * This component allows shop owners to customize
+ * the visual appearance of their BizoraPro store.
+ */
 "use client";
 
 import { Button } from "@/components/ui/button";
@@ -24,7 +30,6 @@ export default function AppearancePage() {
   const [color, setColor] = useState("#E6B800");
   const [shopName, setShopName] = useState("");
 
-  // 1. FETCH DATA
   useEffect(() => {
     const fetchSettings = async () => {
       const supabase = createClient();
@@ -82,7 +87,6 @@ export default function AppearancePage() {
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
-        {/* BANNER */}
         <Card className="bg-card border-border/50">
           <CardHeader>
             <CardTitle className="text-lg">Shop Banner</CardTitle>
@@ -107,7 +111,6 @@ export default function AppearancePage() {
           </CardContent>
         </Card>
 
-        {/* LOGO */}
         <Card className="bg-card border-border/50">
           <CardHeader>
             <CardTitle className="text-lg">Shop Logo</CardTitle>
@@ -136,7 +139,6 @@ export default function AppearancePage() {
           </CardContent>
         </Card>
 
-        {/* BRAND COLOR */}
         <Card className="bg-card border-border/50">
           <CardHeader>
             <CardTitle className="text-lg">Brand Color</CardTitle>

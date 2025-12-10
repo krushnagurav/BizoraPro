@@ -1,3 +1,10 @@
+// src/components/dashboard/multi-image-upload.tsx
+/*  * Multi Image Upload Component
+ * This component allows users to upload multiple images,
+ * compresses them for optimized storage, and uploads them
+ * to Supabase Storage. It also provides functionality to
+ * remove images from the selection.
+ */
 "use client";
 
 import { useState } from "react";
@@ -31,11 +38,9 @@ export function MultiImageUpload({
     try {
       const supabase = createClient();
 
-      // Loop through selected files
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
 
-        // 1. Compress
         const options = {
           maxSizeMB: 0.5,
           maxWidthOrHeight: 1000,
@@ -43,7 +48,6 @@ export function MultiImageUpload({
         };
         const compressedFile = await imageCompression(file, options);
 
-        // 2. Upload
         const fileExt = file.name.split(".").pop();
         const fileName = `gallery/${Math.random()}.${fileExt}`;
 
@@ -53,7 +57,6 @@ export function MultiImageUpload({
 
         if (error) throw error;
 
-        // 3. Get URL
         const { data } = supabase.storage
           .from("product-images")
           .getPublicUrl(fileName);
@@ -61,7 +64,6 @@ export function MultiImageUpload({
         newUrls.push(data.publicUrl);
       }
 
-      // Add new URLs to existing list
       onChange([...value, ...newUrls]);
       toast.success("Images uploaded!");
     } catch (error) {
@@ -100,7 +102,7 @@ export function MultiImageUpload({
               className="object-cover"
               alt="Gallery Image"
               src={url}
-              unoptimized // Fix for local dev issue
+              unoptimized
             />
           </div>
         ))}
@@ -120,7 +122,7 @@ export function MultiImageUpload({
             type="file"
             className="hidden"
             accept="image/*"
-            multiple // Allow selecting multiple files
+            multiple
             onChange={onUpload}
             disabled={disabled || isUploading}
           />

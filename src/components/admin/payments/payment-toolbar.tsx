@@ -1,3 +1,13 @@
+// src/components/admin/payments/payment-toolbar.tsx
+/*  * Payment Toolbar Component
+ * This component provides
+ * a toolbar for the payments
+ * section in the admin
+ * dashboard, allowing admins
+ * to filter and search
+ * payment transactions by
+ * status and keywords.
+ */
 "use client";
 
 import { Button } from "@/components/ui/button";

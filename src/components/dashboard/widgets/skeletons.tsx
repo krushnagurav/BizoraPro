@@ -1,3 +1,9 @@
+// src/components/dashboard/widgets/skeletons.tsx
+/*  * Skeleton Loaders for Dashboard Widgets
+ * This file contains skeleton loader components for
+ * various dashboard widgets, providing a visual
+ * placeholder while data is being fetched.
+ */
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 

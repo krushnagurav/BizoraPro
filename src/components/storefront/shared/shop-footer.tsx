@@ -1,4 +1,9 @@
 // src/components/storefront/shared/shop-footer.tsx
+/*  * Shop Footer Component
+ * This component renders the footer for the storefront,
+ * including shop information, navigation links, social media
+ * icons, and legal policy links.
+ */
 import Link from "next/link";
 import { Instagram, Facebook, Youtube, Twitter } from "lucide-react";
 
@@ -9,7 +14,6 @@ export function ShopFooter({ shop }: { shop: any }) {
   return (
     <footer className="bg-slate-900 text-slate-200 mt-16 pt-12 pb-6">
       <div className="container mx-auto px-6 grid gap-10 md:grid-cols-4">
-        {/* Brand */}
         <div className="md:col-span-2 space-y-3">
           <p className="text-lg font-bold text-white">{shop.name}</p>
           <p className="text-sm text-slate-400 max-w-md">
@@ -18,7 +22,6 @@ export function ShopFooter({ shop }: { shop: any }) {
           </p>
         </div>
 
-        {/* Shop Links */}
         <div>
           <h4 className="font-semibold text-sm mb-3 text-white">Shop</h4>
           <div className="flex flex-col gap-2 text-sm text-slate-400">
@@ -29,7 +32,6 @@ export function ShopFooter({ shop }: { shop: any }) {
           </div>
         </div>
 
-        {/* Policies Quick Access (if present) */}
         <div>
           <h4 className="font-semibold text-sm mb-3 text-white">Support</h4>
           <div className="flex flex-col gap-2 text-sm text-slate-400">
@@ -48,7 +50,6 @@ export function ShopFooter({ shop }: { shop: any }) {
         </div>
       </div>
 
-      {/* Social + bottom bar */}
       <div className="container mx-auto px-6 mt-8 pt-4 border-t border-slate-700 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-slate-500">
         <div className="flex items-center gap-3">
           <span>

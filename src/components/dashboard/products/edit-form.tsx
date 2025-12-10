@@ -1,3 +1,10 @@
+// src/components/dashboard/products/edit-form.tsx
+/*  * Edit Product Form Component
+ * This component provides a form
+ * for editing product details,
+ * including media, variants,
+ * inventory, SEO, and publishing.
+ */
 "use client";
 
 import { useState } from "react";
@@ -41,7 +48,6 @@ export function EditProductForm({
   const router = useRouter();
   const [loading, setLoading] = useState(false);
 
-  // Local state with safe defaults
   const [imageUrl, setImageUrl] = useState<string>(product.image_url || "");
   const [variants, setVariants] = useState<any[]>(product.variants || []);
   const [gallery, setGallery] = useState<string[]>(
@@ -72,19 +78,15 @@ export function EditProductForm({
             : null,
           category: formData.get("category") as string,
           description: formData.get("description") as string,
-
-          // SEO fields (use existing if left blank)
           seoTitle:
             (formData.get("seoTitle") as string) ?? (product.seo_title || ""),
           seoDescription:
             (formData.get("seoDescription") as string) ??
             (product.seo_description || ""),
-
           status:
             status ??
             (product.status as "active" | "draft" | undefined) ??
             "draft",
-
           imageUrl,
           variants: JSON.stringify(variants),
           productSkus: JSON.stringify(skus),
@@ -118,9 +120,7 @@ export function EditProductForm({
       }}
     >
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* LEFT COLUMN: MAIN INFO */}
         <div className="lg:col-span-2 space-y-8">
-          {/* Basic Info */}
           <Card className="bg-card border-border/50">
             <CardContent className="pt-6 space-y-4">
               <div className="space-y-2">
@@ -144,7 +144,6 @@ export function EditProductForm({
             </CardContent>
           </Card>
 
-          {/* Media */}
           <Card className="bg-card border-border/50">
             <CardHeader>
               <CardTitle>Media</CardTitle>
@@ -167,7 +166,6 @@ export function EditProductForm({
             </CardContent>
           </Card>
 
-          {/* Inventory & Variants */}
           <Card className="bg-card border-border/50">
             <CardHeader>
               <CardTitle>Inventory & Variants</CardTitle>
@@ -219,7 +217,6 @@ export function EditProductForm({
             </CardContent>
           </Card>
 
-          {/* SEO Section */}
           <Card className="bg-card border-border/50 overflow-hidden">
             <Accordion type="single" collapsible>
               <AccordionItem value="seo" className="border-0">
@@ -253,9 +250,7 @@ export function EditProductForm({
           </Card>
         </div>
 
-        {/* RIGHT COLUMN: SIDEBAR */}
         <div className="space-y-6">
-          {/* Organization */}
           <Card className="bg-card border-border/50">
             <CardHeader>
               <CardTitle>Organization</CardTitle>
@@ -293,7 +288,6 @@ export function EditProductForm({
             </CardContent>
           </Card>
 
-          {/* Publish / Status Actions */}
           <Card className="bg-card border-border/50">
             <CardHeader>
               <CardTitle>Publish</CardTitle>

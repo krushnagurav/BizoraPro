@@ -1,7 +1,14 @@
+// src/app/(dashboard)/dashboard/support/[id]/page.tsx
+/*
+ * Ticket Detail Page
+ * This component displays the details of a specific support ticket
+ * in the BizoraPro dashboard. Users can view messages, reply to the ticket,
+ * and mark it as resolved.
+ */
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { updateTicketStatusAction } from "@/src/actions/support-actions"; // Need to ensure these exist
+import { updateTicketStatusAction } from "@/src/actions/support-actions";
 import { TicketReplyForm } from "@/src/components/dashboard/support/ticket-reply-form";
 import { createClient } from "@/src/lib/supabase/server";
 import { ArrowLeft, CheckCircle2 } from "lucide-react";
@@ -31,7 +38,6 @@ export default async function TicketDetailPage({
 
   return (
     <div className="p-8 max-w-3xl mx-auto h-[calc(100vh-64px)] flex flex-col">
-      {/* Header */}
       <div className="flex items-center justify-between mb-4 shrink-0">
         <div className="flex items-center gap-3">
           <Link href="/dashboard/support">
@@ -70,10 +76,8 @@ export default async function TicketDetailPage({
         )}
       </div>
 
-      {/* Chat Area */}
       <Card className="flex-1 bg-card border-border/50 flex flex-col overflow-hidden">
         <div className="flex-1 overflow-y-auto p-6 space-y-6">
-          {/* Initial System Message */}
           <div className="flex justify-center">
             <span className="text-[10px] bg-secondary/50 text-muted-foreground px-3 py-1 rounded-full">
               Ticket created on {new Date(ticket.created_at).toLocaleString()}
@@ -81,7 +85,7 @@ export default async function TicketDetailPage({
           </div>
 
           {messages?.map((msg) => {
-            const isMe = msg.sender_role === "owner"; // Assuming 'owner' is the role for shop owner
+            const isMe = msg.sender_role === "owner";
             return (
               <div
                 key={msg.id}
@@ -118,7 +122,6 @@ export default async function TicketDetailPage({
           )}
         </div>
 
-        {/* Reply Box */}
         {ticket.status !== "resolved" && (
           <TicketReplyForm ticketId={ticket.id} role="owner" />
         )}

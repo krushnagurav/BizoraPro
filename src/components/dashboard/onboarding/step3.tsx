@@ -1,4 +1,10 @@
 // src/components/dashboard/onboarding/step3.tsx
+/*  * Step 3 Form Component
+ * This component is used in the
+ * onboarding process to allow users
+ * to add their first product before
+ * launching their shop.
+ */
 "use client";
 
 import { useState } from "react";
@@ -20,12 +26,10 @@ export function Step3Form() {
 
     const formData = new FormData(event.currentTarget);
 
-    // 1. Prepare Data Object (Matching the Safe Action Schema)
     const rawData = {
       name: formData.get("name") as string,
       price: Number(formData.get("price")),
-      imageUrl: imageUrl, // Pass the uploaded image URL
-      // Optional fields can be null/empty for the first product
+      imageUrl: imageUrl,
       description: "",
       category: "",
       salePrice: null,
@@ -34,12 +38,10 @@ export function Step3Form() {
       badges: "[]",
     };
 
-    // 2. Call the Server Action
     const result = await createProductAction(rawData);
 
     setLoading(false);
 
-    // 3. Handle Result
     if (result?.serverError) {
       toast.error("Server Error: " + result.serverError);
     } else if (result?.validationErrors) {
@@ -47,7 +49,6 @@ export function Step3Form() {
       toast.error(firstError ? String(firstError) : "Validation Failed");
     } else if (result?.data?.success) {
       toast.success("Shop Launched Successfully! 🚀");
-      // Force a hard refresh/redirect to ensure dashboard loads fresh
       if (result.data.redirect) {
         window.location.href = result.data.redirect;
       }
@@ -62,7 +63,6 @@ export function Step3Form() {
         </div>
       </div>
 
-      {/* Real Image Uploader */}
       <div className="space-y-2">
         <Label className="text-gray-300">Product Image (Optional)</Label>
         <div className="bg-[#0A0A0A] border border-white/10 rounded-xl p-4">

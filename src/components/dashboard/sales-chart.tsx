@@ -1,3 +1,9 @@
+// src/components/dashboard/sales-chart.tsx
+/*  * Sales Chart Component
+ * This component renders a sales trend area chart
+ * for the dashboard, visualizing revenue data over
+ * the last 30 days using the Recharts library.
+ */
 "use client";
 
 import {

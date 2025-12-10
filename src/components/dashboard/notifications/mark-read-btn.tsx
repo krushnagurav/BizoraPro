@@ -1,3 +1,9 @@
+// src/components/dashboard/notifications/mark-read-btn.tsx
+/*  * Mark All Read Button Component
+ * This component provides a button
+ * to mark all notifications as read
+ * in the dashboard notifications panel.
+ */
 "use client";
 
 import { Button } from "@/components/ui/button";

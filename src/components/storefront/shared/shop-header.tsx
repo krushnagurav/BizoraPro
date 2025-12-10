@@ -1,4 +1,10 @@
 // src/components/storefront/shared/shop-header.tsx
+/*  * Shop Header Component
+ * This component renders the header for the storefront,
+ * including the shop logo, navigation links, search button,
+ * and cart icon with item count. It is responsive for mobile
+ * and desktop views.
+ */
 import Link from "next/link";
 import { Store, Search, Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -10,14 +16,13 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { CartBar } from "@/src/components/storefront/cart-bar";
-import { CartIcon } from "@/src/components/storefront/cart-icon"; // 👈 Import New Component
+import { CartIcon } from "@/src/components/storefront/cart-icon";
 
 export function ShopHeader({ shop }: { shop: any }) {
   return (
     <>
       <header className="bg-white border-b border-gray-100 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 md:px-8 h-16 flex items-center justify-between">
-          {/* 1. Mobile Menu & Logo */}
           <div className="flex items-center gap-3">
             <Sheet>
               <SheetTrigger asChild>
@@ -71,7 +76,6 @@ export function ShopHeader({ shop }: { shop: any }) {
             </Link>
           </div>
 
-          {/* 2. Desktop Navigation */}
           <nav className="hidden md:flex gap-8 text-sm font-medium text-slate-600">
             <Link
               href={`/${shop.slug}`}
@@ -93,7 +97,6 @@ export function ShopHeader({ shop }: { shop: any }) {
             </Link>
           </nav>
 
-          {/* 3. Icons */}
           <div className="flex items-center gap-2">
             <Link href={`/${shop.slug}/search`}>
               <Button
@@ -105,13 +108,11 @@ export function ShopHeader({ shop }: { shop: any }) {
               </Button>
             </Link>
 
-            {/* 👇 New Cart Icon with Count */}
             <CartIcon slug={shop.slug} />
           </div>
         </div>
       </header>
 
-      {/* Mobile Sticky Cart Bar */}
       <CartBar slug={shop.slug} />
     </>
   );

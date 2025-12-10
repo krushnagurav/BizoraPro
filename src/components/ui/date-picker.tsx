@@ -1,3 +1,10 @@
+// src/components/ui/date-picker.tsx
+/*
+ * DatePicker Component
+ *
+ * This component provides a user interface for selecting dates using a popover calendar.
+ * It leverages the Calendar component and Popover from the UI library to create an interactive date picker.
+ */
 "use client";
 
 import * as React from "react";

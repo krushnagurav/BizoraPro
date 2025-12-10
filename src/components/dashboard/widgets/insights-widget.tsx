@@ -1,3 +1,10 @@
+// src/components/dashboard/widgets/insights-widget.tsx
+/*  * Insights Widget Component
+ * This component fetches and displays
+ * key insights such as views, clicks,
+ * orders, revenue, and provides optimization
+ * tips for the dashboard.
+ */
 import { createClient } from "@/src/lib/supabase/server";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -19,7 +26,6 @@ export async function InsightsWidget({ shop }: { shop: any }) {
   sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
   const isoDate = sevenDaysAgo.toISOString();
 
-  // Fetch Data for Logic
   const [views, clicks, productsCount, orders7d, revenue, randomProduct] =
     await Promise.all([
       supabase
@@ -66,13 +72,11 @@ export async function InsightsWidget({ shop }: { shop: any }) {
     revenue.data?.reduce((acc, o) => acc + Number(o.total_amount), 0) || 0;
   const suggestedProduct = randomProduct.data;
 
-  // Funnel Math
   const clickRate =
     viewCount > 0 ? Math.round((clickCount / viewCount) * 100) : 0;
   const conversionRate =
     clickCount > 0 ? Math.round((orderCount / clickCount) * 100) : 0;
 
-  // 🧠 SMART TIPS LOGIC
   let smartTip = {
     title: "Add more products",
     text: "Stores with 5+ products get 3x more orders.",
@@ -111,7 +115,6 @@ export async function InsightsWidget({ shop }: { shop: any }) {
 
   return (
     <div className="grid md:grid-cols-3 gap-6">
-      {/* 1. Optimization Tip */}
       <Card className="bg-gradient-to-br from-card to-secondary/10 border-border/50">
         <CardHeader className="pb-2">
           <CardTitle className="flex items-center gap-2 text-base">
@@ -160,7 +163,6 @@ export async function InsightsWidget({ shop }: { shop: any }) {
         </CardContent>
       </Card>
 
-      {/* 2. Smart Alert */}
       <Card className="bg-primary/5 border-primary/20">
         <CardHeader className="pb-2">
           <CardTitle className="flex items-center gap-2 text-base text-primary">
@@ -183,7 +185,6 @@ export async function InsightsWidget({ shop }: { shop: any }) {
         </CardContent>
       </Card>
 
-      {/* 3. Funnel */}
       <Card className="bg-card border-border/50">
         <CardHeader className="pb-2">
           <CardTitle className="flex items-center gap-2 text-base">

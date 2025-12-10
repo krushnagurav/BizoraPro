@@ -1,3 +1,10 @@
+// src/components/dashboard/products/sku-manager.tsx
+/*  * SKU Manager Component
+ * This component generates and manages
+ * Stock Keeping Units (SKUs) based on
+ * product variants, allowing users to
+ * set pricing and stock levels for each SKU.
+ */
 "use client";
 
 import { useState, useEffect } from "react";
@@ -19,8 +26,8 @@ interface Variant {
 }
 
 interface Sku {
-  code: string; // Unique ID like "S-RED"
-  attributes: Record<string, string>; // { Size: "S", Color: "Red" }
+  code: string;
+  attributes: Record<string, string>;
   stock: number;
   price: number;
 }
@@ -38,14 +45,12 @@ export function SkuManager({
 }) {
   const [skus, setSkus] = useState<Sku[]>(value || []);
 
-  // 1. Auto-Generate SKUs when Variants Change
   useEffect(() => {
     if (variants.length === 0) {
       setSkus([]);
       return;
     }
 
-    // Helper to generate combinations (Cartesian Product)
     const generateCombinations = (
       vars: Variant[],
       prefix: Record<string, string> = {},
@@ -65,27 +70,24 @@ export function SkuManager({
 
     const combos = generateCombinations(variants);
 
-    // Map combos to SKUs (Preserve existing data if SKU code matches)
     const newSkus = combos.map((combo) => {
       const code = Object.values(combo).join("-").toUpperCase();
       const existing = skus.find((s) => s.code === code);
       return {
         code,
         attributes: combo,
-        stock: existing ? existing.stock : 10, // Default 10 stock
-        price: existing ? existing.price : defaultPrice, // Default to main price
+        stock: existing ? existing.stock : 10,
+        price: existing ? existing.price : defaultPrice,
       };
     });
 
-    // Only update if strictly different (to avoid loops)
     if (JSON.stringify(newSkus) !== JSON.stringify(skus)) {
       setSkus(newSkus);
       onChange(newSkus);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [variants]); // Run when variants structure changes
+  }, [variants]);
 
-  // 2. Update a specific SKU
   const updateSku = (index: number, field: keyof Sku, val: any) => {
     const updated = [...skus];
     updated[index] = { ...updated[index], [field]: val };

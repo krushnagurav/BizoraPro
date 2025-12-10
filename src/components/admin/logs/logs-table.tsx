@@ -1,4 +1,14 @@
 // src/components/admin/logs/logs-table.tsx
+/*  * Logs Table Component
+ * This component displays
+ * a table of admin logs,
+ * allowing admins to
+ * view actions taken
+ * within the admin
+ * dashboard, including
+ * timestamps, actors,
+ * actions, and targets.
+ */
 "use client";
 
 import { Badge } from "@/components/ui/badge";

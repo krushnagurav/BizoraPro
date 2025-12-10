@@ -1,4 +1,9 @@
 // src/components/storefront/sections/featured-products.tsx
+/*  * Featured Products Section
+ * This component displays a selection of featured products
+ * in the storefront, allowing users to quickly browse
+ * highlighted items and navigate to the full shop.
+ */
 "use client";
 
 import Link from "next/link";

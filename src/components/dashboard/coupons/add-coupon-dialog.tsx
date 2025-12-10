@@ -1,3 +1,12 @@
+// src/components/dashboard/coupons/add-coupon-dialog.tsx
+/*  * Add Coupon Dialog Component
+ * This component provides a dialog
+ * interface for creating new coupons
+ * in the coupons dashboard.
+ * It includes form fields for
+ * coupon code, discount type,
+ * value, usage limits, and expiry date.
+ */
 "use client";
 
 import { useState } from "react";
@@ -28,9 +37,8 @@ export function AddCouponDialog() {
   const [loading, setLoading] = useState(false);
   const [code, setCode] = useState("");
   const [type, setType] = useState("percent");
-  const [date, setDate] = useState<Date>(); // State for Date
+  const [date, setDate] = useState<Date>();
 
-  // Auto-Generator
   const handleGenerate = () => {
     const random = Math.random().toString(36).substring(2, 8).toUpperCase();
     setCode(`SAVE${random}`);
@@ -41,7 +49,6 @@ export function AddCouponDialog() {
     setLoading(true);
     const formData = new FormData(event.currentTarget);
 
-    // Append the date from state manually since it's not in a native input
     if (date) {
       formData.append("endDate", date.toISOString());
     }
@@ -54,7 +61,6 @@ export function AddCouponDialog() {
     } else {
       toast.success("Coupon created!");
       setOpen(false);
-      // Reset form
       setCode("");
       setDate(undefined);
     }
@@ -72,7 +78,6 @@ export function AddCouponDialog() {
           <DialogTitle>New Coupon</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4 mt-4">
-          {/* Code */}
           <div className="space-y-2">
             <Label>Coupon Code</Label>
             <div className="flex gap-2">
@@ -98,7 +103,6 @@ export function AddCouponDialog() {
             </div>
           </div>
 
-          {/* Discount Logic */}
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label>Type</Label>
@@ -124,7 +128,6 @@ export function AddCouponDialog() {
             </div>
           </div>
 
-          {/* Limits */}
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label>Min Order (₹)</Label>
@@ -147,11 +150,9 @@ export function AddCouponDialog() {
             </div>
           </div>
 
-          {/* Dates */}
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2 flex flex-col">
               <Label className="mb-2">End Date</Label>
-              {/* Use the new DatePicker Component */}
               <DatePicker date={date} setDate={setDate} />
             </div>
           </div>

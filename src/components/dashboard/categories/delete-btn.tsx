@@ -1,3 +1,10 @@
+// src/components/dashboard/categories/delete-btn.tsx
+/*  * Category Delete Button Component
+ * This component provides a button
+ * to delete categories from the
+ * dashboard, ensuring user
+ * confirmation and feedback.
+ */
 "use client";
 import { deleteCategoryAction } from "@/src/actions/category-actions";
 import { Button } from "@/components/ui/button";

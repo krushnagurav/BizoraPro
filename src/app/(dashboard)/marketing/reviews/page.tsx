@@ -1,10 +1,17 @@
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"; // Import Avatar
+// src/app/(dashboard)/marketing/reviews/page.tsx
+/*
+ * Reviews Center Page
+ * This component displays and manages product reviews for the BizoraPro
+ * dashboard. Users can view, filter, approve, reply to, and delete
+ * customer reviews to maintain their shop's reputation.
+ */
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { toggleReviewStatusAction } from "@/src/actions/marketing-actions";
 import { ReplyDialog } from "@/src/components/dashboard/marketing/reply-dialog";
-import { ReviewsFilter } from "@/src/components/dashboard/marketing/reviews-filter"; // Import Filter
+import { ReviewsFilter } from "@/src/components/dashboard/marketing/reviews-filter";
 import { createClient } from "@/src/lib/supabase/server";
 import {
   AlertTriangle,
@@ -41,7 +48,6 @@ export default async function ReviewsPage({
     .eq("owner_id", user!.id)
     .single();
 
-  // 1. Build Query
   let query = supabase
     .from("product_reviews")
     .select("*, products(name, image_url)", { count: "exact" })
@@ -55,7 +61,6 @@ export default async function ReviewsPage({
 
   const { data: reviews, count } = await query;
 
-  // 2. Fetch Stats (Separate fast query)
   const { data: allReviews } = await supabase
     .from("product_reviews")
     .select("rating, is_approved")
@@ -85,7 +90,6 @@ export default async function ReviewsPage({
         <ReviewsFilter />
       </div>
 
-      {/* SUMMARY STATS */}
       <div className="grid grid-cols-4 gap-4">
         <Card className="bg-card border-border/50">
           <CardContent className="p-4 flex items-center justify-between">
@@ -129,7 +133,6 @@ export default async function ReviewsPage({
         </Card>
       </div>
 
-      {/* REVIEW LIST */}
       <div className="grid gap-4">
         {reviews?.map((review) => (
           <Card
@@ -139,7 +142,6 @@ export default async function ReviewsPage({
             <CardContent className="p-6 flex flex-col gap-4">
               <div className="flex justify-between items-start">
                 <div className="flex gap-4 items-start">
-                  {/* User Avatar */}
                   <Avatar className="h-10 w-10 border border-border">
                     <AvatarFallback className="bg-primary/10 text-primary text-xs">
                       {review.customer_name.slice(0, 2).toUpperCase()}
@@ -244,7 +246,6 @@ export default async function ReviewsPage({
           </div>
         )}
 
-        {/* Pagination */}
         {totalPages > 1 && (
           <div className="flex justify-center gap-2 pt-4">
             <Link

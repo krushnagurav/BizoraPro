@@ -1,4 +1,10 @@
 // src/app/(super-admin)/admin/plans/page.tsx
+/*
+ * Admin Plans Page
+ *
+ * This page displays a list of subscription plans available in the system.
+ * Super administrators can view, create, edit, and delete plans from this interface.
+ */
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";

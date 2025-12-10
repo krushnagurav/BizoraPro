@@ -1,3 +1,10 @@
+// src/components/dashboard/mobile-header.tsx
+/*  * Mobile Header Component
+ * This component renders the mobile header for the dashboard
+ * section of the application. It includes a menu button that
+ * opens a sidebar navigation sheet for easy access to dashboard
+ * features on mobile devices.
+ */
 "use client";
 
 import Link from "next/link";
@@ -38,7 +45,6 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 
-// 1. Reuse the Grouped Config (Consistent with Desktop)
 const navGroups = [
   {
     label: "Main",
@@ -99,7 +105,6 @@ export function MobileHeader() {
           side="left"
           className="p-0 w-72 bg-card border-r border-border flex flex-col"
         >
-          {/* 1. Menu Header */}
           <SheetHeader className="h-16 flex items-center justify-center border-b border-border px-6 shrink-0">
             <SheetTitle className="flex items-center font-bold text-lg tracking-tight text-foreground">
               <Store className="h-6 w-6 text-primary mr-2" />
@@ -107,7 +112,6 @@ export function MobileHeader() {
             </SheetTitle>
           </SheetHeader>
 
-          {/* 2. Menu Links (Grouped & Scrollable) */}
           <div className="flex-1 py-6 px-3 space-y-6 overflow-y-auto">
             {navGroups.map((group, i) => (
               <div key={i}>
@@ -140,7 +144,6 @@ export function MobileHeader() {
             ))}
           </div>
 
-          {/* 3. Menu Footer (Logout) */}
           <div className="p-4 border-t border-border shrink-0">
             <form action={logoutAction}>
               <Button

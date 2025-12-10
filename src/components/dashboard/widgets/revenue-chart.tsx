@@ -1,4 +1,10 @@
-import { SalesChart } from "@/src/components/dashboard/sales-chart"; // Your existing chart component
+// src/components/dashboard/widgets/revenue-chart.tsx
+/*  * Revenue Chart Component
+ * This component fetches and displays a revenue
+ * trend chart for the last 30 days in the dashboard
+ * using the SalesChart component.
+ */
+import { SalesChart } from "@/src/components/dashboard/sales-chart";
 import { createClient } from "@/src/lib/supabase/server";
 
 export async function RevenueChart({ shopId }: { shopId: string }) {
@@ -13,7 +19,6 @@ export async function RevenueChart({ shopId }: { shopId: string }) {
     .neq("status", "draft")
     .gte("created_at", thirtyDaysAgo.toISOString());
 
-  // Process Data
   const chartDataMap = new Map();
   for (let i = 29; i >= 0; i--) {
     const d = new Date();

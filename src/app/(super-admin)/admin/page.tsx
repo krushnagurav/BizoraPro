@@ -1,7 +1,13 @@
 // src/app/(super-admin)/admin/page.tsx
+/*
+ * Admin Dashboard Page
+ *
+ * This page provides super administrators with an overview of key platform metrics.
+ * It includes statistics on shops, revenue, growth trends, and recent activity.
+ */
 import { Card, CardContent } from "@/components/ui/card";
-import { GrowthChart } from "@/src/components/admin/growth-chart"; // New
-import { RecentShopsTable } from "@/src/components/admin/recent-shops-table"; // New
+import { GrowthChart } from "@/src/components/admin/growth-chart";
+import { RecentShopsTable } from "@/src/components/admin/recent-shops-table";
 import { createClient } from "@/src/lib/supabase/server";
 import {
   AlertCircle,
@@ -14,21 +20,21 @@ import {
 export default async function AdminDashboardPage() {
   const supabase = await createClient();
 
-  // 1. Parallel Data Fetching
   const [shopsData, revenueData, ordersData, ticketsData] = await Promise.all([
     supabase
       .from("shops")
       .select("id, created_at, plan, is_open, name, slug")
       .order("created_at", { ascending: false }),
-    supabase.from("payments").select("amount").eq("status", "succeeded"), // Assuming 'payments' table tracks revenue
+    supabase.from("payments").select("amount").eq("status", "succeeded"),
     supabase
       .from("orders")
       .select("id, created_at")
       .gte(
         "created_at",
+
         // eslint-disable-next-line react-hooks/purity
         new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
-      ), // Last 7 days
+      ),
     supabase
       .from("support_tickets")
       .select("priority, status")
@@ -38,7 +44,6 @@ export default async function AdminDashboardPage() {
   const shops = shopsData.data || [];
   const revenue = revenueData.data || [];
 
-  // 2. Calculate Stats
   const totalShops = shops.length;
   const activeShops = shops.filter((s) => s.is_open).length;
   const totalRevenue = revenue.reduce((sum, p) => sum + Number(p.amount), 0);
@@ -50,7 +55,6 @@ export default async function AdminDashboardPage() {
       (t) => t.priority === "high" || t.priority === "critical",
     ).length || 0;
 
-  // 3. Prepare Chart Data (Last 6 Months)
   const chartData = [];
   for (let i = 5; i >= 0; i--) {
     const date = new Date();
@@ -66,7 +70,6 @@ export default async function AdminDashboardPage() {
     chartData.push({ name: monthName, shops: shopsInMonth });
   }
 
-  // Stats Array for Cards
   const stats = [
     {
       title: "Total Shops",
@@ -112,7 +115,6 @@ export default async function AdminDashboardPage() {
         <p className="text-gray-400">Real-time pulse of your SaaS business.</p>
       </div>
 
-      {/* KPI GRID */}
       <div className="grid gap-6 md:grid-cols-3 lg:grid-cols-5">
         {stats.map((item, i) => (
           <Card key={i} className="bg-[#111] border-white/10 text-white">
@@ -121,7 +123,6 @@ export default async function AdminDashboardPage() {
                 <div className={`p-2 rounded-lg bg-white/5 ${item.color}`}>
                   <item.icon className="h-5 w-5" />
                 </div>
-                {/* Optional: Add trend arrow here */}
               </div>
               <div>
                 <h3 className="text-2xl font-bold">{item.value}</h3>
@@ -133,7 +134,6 @@ export default async function AdminDashboardPage() {
         ))}
       </div>
 
-      {/* CHARTS & TABLES */}
       <div className="grid lg:grid-cols-3 gap-8">
         <GrowthChart data={chartData} />
         <RecentShopsTable shops={shops.slice(0, 5)} />

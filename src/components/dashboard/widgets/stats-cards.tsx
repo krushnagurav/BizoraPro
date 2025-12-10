@@ -1,3 +1,9 @@
+// src/components/dashboard/widgets/stats-cards.tsx
+/*  * Stats Cards Component
+ * This component fetches and displays key statistics
+ * for the dashboard, including total revenue, store views,
+ * WhatsApp clicks, and active products.
+ */
 import { Card, CardContent } from "@/components/ui/card";
 import { createClient } from "@/src/lib/supabase/server";
 import { Eye, IndianRupee, MessageCircle, Store } from "lucide-react";

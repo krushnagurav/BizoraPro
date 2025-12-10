@@ -1,3 +1,10 @@
+// src/app/(dashboard)/marketing/instagram/page.tsx
+/*
+ * Instagram Integration Page
+ * This component allows users to manage their Instagram feed integration
+ * for their BizoraPro shop. Users can upload and display Instagram photos
+ * directly on their WhatsApp shop to enhance visual appeal.
+ */
 import { createClient } from "@/src/lib/supabase/server";
 import { FeatureLock } from "@/src/components/dashboard/shared/feature-lock";
 import { InstagramForm } from "@/src/components/dashboard/marketing/instagram-form";
@@ -14,7 +21,6 @@ export default async function InstagramPage() {
     .eq("owner_id", user!.id)
     .single();
 
-  // Extract feed safely
   const feed = (shop?.instagram_feed as string[]) || [];
 
   return (

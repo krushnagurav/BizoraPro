@@ -1,3 +1,9 @@
+// src/components/dashboard/products/badge-selector.tsx
+/*  * Badge Selector Component
+ * This component allows users to
+ * select and manage badges for
+ * products in the dashboard.
+ */
 "use client";
 
 import { useState, useEffect } from "react";

@@ -1,4 +1,8 @@
 // src\app\(auth)\login\page.tsx
+/*  * Reset Password Page
+ * This component renders the reset password page where users can set a new password.
+ * It includes a form for entering and confirming the new password, along with validation and submission handling.
+ */
 "use client";
 
 import { Button } from "@/components/ui/button";
@@ -33,7 +37,6 @@ export default function LoginPage() {
         toast.error(result.error);
         setLoading(false);
       }
-      // on success the server action should redirect or return success
     } catch (err) {
       console.error(err);
       toast.error("Something went wrong. Please try again.");

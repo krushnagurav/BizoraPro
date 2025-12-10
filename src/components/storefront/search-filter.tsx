@@ -1,4 +1,10 @@
 // src\components\storefront\search-filter.tsx
+/*  * Search and Category Filter Components
+ * These components provide search and category filtering functionality
+ * for the storefront. The ShopSearch component allows users to search
+ * for products by name, while the CategoryFilter component enables
+ * filtering products by selected categories.
+ */
 "use client";
 
 import { Input } from "@/components/ui/input";
@@ -6,7 +12,6 @@ import { Search, X } from "lucide-react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
 
-// Debounce Hook
 function useDebounceValue(value: string, delay: 500) {
   const [debouncedValue, setDebouncedValue] = useState(value);
   useEffect(() => {
@@ -18,7 +23,7 @@ function useDebounceValue(value: string, delay: 500) {
 
 export function ShopSearch({ slug }: { slug: string }) {
   const router = useRouter();
-  const pathname = usePathname(); // <--- 1. Get current path (e.g. /diyara-cloth)
+  const pathname = usePathname();
   const searchParams = useSearchParams();
   const [text, setText] = useState(searchParams.get("q") || "");
   const debouncedText = useDebounceValue(text, 500);
@@ -31,9 +36,6 @@ export function ShopSearch({ slug }: { slug: string }) {
     } else {
       params.delete("q");
     }
-
-    // 2. Use pathname instead of manual slug construction
-    // This prevents double slashes or wrong slug issues
     router.replace(`${pathname}?${params.toString()}`);
   }, [debouncedText, router, pathname, searchParams]);
 
@@ -58,7 +60,6 @@ export function ShopSearch({ slug }: { slug: string }) {
   );
 }
 
-// ... (Keep CategoryFilter as is) ...
 export function CategoryFilter({
   categories,
   slug,
@@ -67,7 +68,7 @@ export function CategoryFilter({
   slug: string;
 }) {
   const router = useRouter();
-  const pathname = usePathname(); // Use here too
+  const pathname = usePathname();
   const searchParams = useSearchParams();
   const activeCat = searchParams.get("cat");
 
@@ -78,7 +79,6 @@ export function CategoryFilter({
     } else {
       params.set("cat", catId);
     }
-    // Use replace to prevent history spam
     router.replace(`${pathname}?${params.toString()}`);
   };
 

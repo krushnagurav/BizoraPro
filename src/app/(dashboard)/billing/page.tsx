@@ -1,3 +1,10 @@
+// src/app/(dashboard)/billing/page.tsx
+/*
+ * Billing and Subscription Page
+ * This component allows users to manage their billing information and subscription plans
+ * for their BizoraPro shop. Users can view their current plan, change plans, and
+ * access their billing history and invoices.
+ */
 import { createClient } from "@/src/lib/supabase/server";
 import { PlanManager } from "@/src/components/dashboard/billing/plan-manager";
 import { InvoiceList } from "@/src/components/dashboard/billing/invoice-list";
@@ -12,21 +19,18 @@ export default async function BillingPage() {
 
   if (!user) redirect("/login");
 
-  // 1. Fetch Shop & Plan
   const { data: shop } = await supabase
     .from("shops")
     .select("id, plan, product_limit")
     .eq("owner_id", user.id)
     .single();
 
-  // 2. Fetch Product Usage
   const { count } = await supabase
     .from("products")
     .select("*", { count: "exact", head: true })
     .eq("shop_id", shop?.id)
     .is("deleted_at", null);
 
-  // 3. Fetch Invoices (Payments Table)
   const { data: invoices } = await supabase
     .from("payments")
     .select("*")
@@ -44,14 +48,12 @@ export default async function BillingPage() {
         </p>
       </div>
 
-      {/* PLAN MANAGER (Upgrade UI) */}
       <PlanManager
         currentPlan={shop?.plan || "free"}
         productCount={count || 0}
         productLimit={shop?.product_limit || 10}
       />
 
-      {/* INVOICE SECTION */}
       <div className="space-y-4">
         <h2 className="text-xl font-bold flex items-center gap-2">
           <Receipt className="h-5 w-5 text-primary" /> Billing History
@@ -60,7 +62,6 @@ export default async function BillingPage() {
         <InvoiceList invoices={invoices || []} />
       </div>
 
-      {/* HELPER TEXT */}
       <div className="flex gap-3 items-start p-4 bg-blue-500/10 border border-blue-500/20 rounded-xl text-sm text-muted-foreground">
         <AlertCircle className="h-5 w-5 text-blue-500 shrink-0" />
         <div>

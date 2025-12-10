@@ -1,3 +1,10 @@
+// src/components/dashboard/categories/category-form.tsx
+/*  * Category Form Component
+ * This component provides a form
+ * to create or edit categories
+ * within the dashboard, including
+ * image upload, name, slug, and status.
+ */
 "use client";
 
 import { useState } from "react";
@@ -53,7 +60,6 @@ export function CategoryForm({ initialData }: { initialData?: any }) {
     },
   });
 
-  // Auto-generate slug
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const name = e.target.value;
     form.setValue("name", name);
@@ -63,7 +69,6 @@ export function CategoryForm({ initialData }: { initialData?: any }) {
   };
 
   const onSubmit = async (data: CategoryFormValues) => {
-    // Attach image state
     data.imageUrl = imageUrl;
 
     const res = await upsertCategoryAction(data);

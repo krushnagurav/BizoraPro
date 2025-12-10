@@ -1,3 +1,10 @@
+// src/app/(dashboard)/categories/page.tsx
+/*
+ * Categories Management Page
+ * This component allows users to manage product categories for their BizoraPro shop.
+ * Users can create, view, edit, and delete categories to organize their products
+ * effectively.
+ */
 import { createClient } from "@/src/lib/supabase/server";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -8,8 +15,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { CategoryForm } from "@/src/components/dashboard/categories/category-form"; // New Form
-import { CategoryDeleteButton } from "@/src/components/dashboard/categories/delete-btn"; // We'll make this small helper
+import { CategoryForm } from "@/src/components/dashboard/categories/category-form";
+import { CategoryDeleteButton } from "@/src/components/dashboard/categories/delete-btn";
 import { Tag, Eye } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import Image from "next/image";
@@ -28,7 +35,6 @@ export default async function CategoriesPage() {
     .eq("owner_id", user.id)
     .single();
 
-  // Fetch Categories with Count
   const { data: categories } = await supabase
     .from("categories")
     .select("*, products(count)")

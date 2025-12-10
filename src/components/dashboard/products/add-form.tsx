@@ -1,3 +1,10 @@
+// src/components/dashboard/products/add-form.tsx
+/*  * Add Product Form Component
+ * This component provides a form
+ * interface for adding new products
+ * to the dashboard with various
+ * attributes and media.
+ */
 "use client";
 
 import { useRouter } from "next/navigation";
@@ -38,8 +45,6 @@ export function AddProductForm({
 }) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
-
-  // Client State
   const [imageUrl, setImageUrl] = useState("");
   const [price, setPrice] = useState("");
   const [variants, setVariants] = useState<any[]>([]);
@@ -52,12 +57,7 @@ export function AddProductForm({
     <form
       action={async (formData) => {
         setLoading(true);
-        // Get status from the clicked button
-        // We will handle this by appending status manually in the action call below
-        // ACTUALLY: Better pattern ->
-        // We extract data here.
-
-        const status = formData.get("status") as "active" | "draft"; // Gets value from clicked button
+        const status = formData.get("status") as "active" | "draft";
 
         const rawData = {
           name: formData.get("name") as string,
@@ -67,12 +67,9 @@ export function AddProductForm({
             : null,
           category: formData.get("category") as string,
           description: formData.get("description") as string,
-
-          // NEW SEO Fields
           seoTitle: formData.get("seoTitle") as string,
           seoDescription: formData.get("seoDescription") as string,
-          status: status, // Pass status
-
+          status: status,
           imageUrl: imageUrl,
           variants: JSON.stringify(variants),
           productSkus: JSON.stringify(skus),
@@ -101,7 +98,6 @@ export function AddProductForm({
       }}
     >
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* LEFT COLUMN: MAIN INFO */}
         <div className="lg:col-span-2 space-y-8">
           <Card className="bg-card border-border/50">
             <CardContent className="pt-6 space-y-4">
@@ -225,7 +221,6 @@ export function AddProductForm({
           </Card>
         </div>
 
-        {/* RIGHT COLUMN: SIDEBAR */}
         <div className="space-y-6">
           <Card className="bg-card border-border/50">
             <CardHeader>
@@ -260,7 +255,6 @@ export function AddProductForm({
             </CardContent>
           </Card>
 
-          {/* 👇 ACTIONS CARD 👇 */}
           <Card className="bg-card border-border/50">
             <CardHeader>
               <CardTitle>Publish</CardTitle>

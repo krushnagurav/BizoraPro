@@ -1,4 +1,10 @@
 // src/app/(storefront)/[slug]/search/page.tsx
+/* Shop Search Page
+ * This page displays search results for products within a specific shop
+ * identified by its slug. Users can filter products based on search queries
+ * and price range. The page layout and styling adapt based on the shop's
+ * theme configuration.
+ */
 import type { CSSProperties } from "react";
 import { createClient } from "@/src/lib/supabase/server";
 import { ShopHeader } from "@/src/components/storefront/shared/shop-header";
@@ -21,7 +27,6 @@ export default async function SearchPage({
   const { q, min, max } = (await searchParams) ?? {};
   const supabase = await createClient();
 
-  // 1. Fetch Shop
   const { data: shop } = await supabase
     .from("shops")
     .select("*")
@@ -30,7 +35,6 @@ export default async function SearchPage({
 
   if (!shop) return notFound();
 
-  // 2. Build Query
   let query = supabase
     .from("products")
     .select("*")
@@ -39,19 +43,15 @@ export default async function SearchPage({
     .is("deleted_at", null)
     .order("created_at", { ascending: false });
 
-  // Apply Filters
   if (q) query = query.ilike("name", `%${q}%`);
   if (min) query = query.gte("price", Number(min));
   if (max) query = query.lte("price", Number(max));
-  // stock filter can be added when inventory is implemented
 
   const { data: products } = await query;
 
-  // Theme
   const theme = (shop.theme_config as any) || {};
   const primaryColorHsl = hexToHsl(theme.primaryColor || "#E6B800");
 
-  // Auto-Close Check
   let isShopActuallyOpen = shop.is_open;
   if (shop.auto_close) {
     const now = new Date();
@@ -76,7 +76,6 @@ export default async function SearchPage({
       <ShopHeader shop={shop} />
 
       <div className="max-w-7xl mx-auto px-4 md:px-8 py-8">
-        {/* Search Header */}
         <div className="mb-8 bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
           <h1 className="text-2xl font-bold text-slate-900 mb-4">
             {products?.length ?? 0} results found{" "}
@@ -92,10 +91,8 @@ export default async function SearchPage({
         </div>
 
         <div className="flex gap-8 items-start">
-          {/* Sidebar Filters */}
           <FilterSidebar slug={slug} />
 
-          {/* Results Grid */}
           <div className="flex-1">
             {products && products.length > 0 ? (
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">

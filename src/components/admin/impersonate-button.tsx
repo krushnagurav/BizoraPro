@@ -1,4 +1,11 @@
 // src/components/admin/impersonate-button.tsx
+/*  * Impersonate Button Component
+ * This component provides a button
+ * for admin users to impersonate
+ * another user, allowing them to
+ * log in as that user for support
+ * or troubleshooting purposes.
+ */
 "use client";
 
 import { Button } from "@/components/ui/button";
@@ -24,7 +31,6 @@ export function ImpersonateButton({ userId }: { userId: string }) {
       setLoading(false);
     } else if (res?.url) {
       toast.success("Redirecting to user dashboard...");
-      // Force redirect to the magic link
       window.location.href = res.url;
     }
   };

@@ -1,3 +1,13 @@
+// src/components/dashboard/marketing/template-editor.tsx
+/*  * Template Editor Component
+ * This component provides a form
+ * for creating and editing message
+ * templates used in marketing
+ * communications. It includes fields
+ * for template name, category, and
+ * message content with variable
+ * placeholders.
+ */
 "use client";
 
 import { Badge } from "@/components/ui/badge";
@@ -20,7 +30,6 @@ import { Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
-// Available variables
 const VARIABLES = [
   { label: "Customer Name", value: "{{customer_name}}" },
   { label: "Order ID", value: "{{order_id}}" },
@@ -43,14 +52,12 @@ export function TemplateEditor({
     setMessage((prev: string) => `${prev} ${val}`.trim());
   };
 
-  // Reset when initialData changes (for switching between templates)
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     if (initialData) setMessage(initialData.message);
     else setMessage("");
   }, [initialData]);
 
-  // Live Preview Logic
   const previewText = message
     .replace("{{customer_name}}", "Rahul")
     .replace("{{order_id}}", "#ORD-123")
@@ -63,7 +70,6 @@ export function TemplateEditor({
     setLoading(true);
     const formData = new FormData(e.currentTarget);
 
-    // Manually append controlled message state
     formData.set("message", message);
 
     let res;
@@ -79,7 +85,6 @@ export function TemplateEditor({
     else {
       toast.success(initialData ? "Template updated" : "Template saved");
       if (onClose) onClose();
-      // Reset if creating new
       if (!initialData) setMessage("");
     }
   };
@@ -140,7 +145,6 @@ export function TemplateEditor({
         />
       </div>
 
-      {/* Smart Preview */}
       <div className="bg-secondary/20 p-3 rounded-lg text-sm text-muted-foreground">
         <p className="text-xs font-bold mb-1 uppercase tracking-wider">
           Preview:

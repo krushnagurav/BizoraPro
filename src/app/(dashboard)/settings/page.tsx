@@ -1,3 +1,9 @@
+// src/app/(dashboard)/settings/page.tsx
+/*  * Settings Page
+ * This component renders the settings page for BizoraPro shop owners.
+ * It allows users to update general settings such as store status,
+ * order rules, store hours, social links, and SEO configurations.
+ */
 "use client";
 
 import { useState, useEffect } from "react";
@@ -66,7 +72,6 @@ export default function SettingsPage() {
       <h1 className="text-3xl font-bold text-primary">General Settings</h1>
 
       <form onSubmit={handleSubmit} className="space-y-6">
-        {/* Store Status */}
         <Card className="bg-card border-border/50">
           <CardHeader>
             <CardTitle>Store Status</CardTitle>
@@ -85,7 +90,6 @@ export default function SettingsPage() {
           </CardContent>
         </Card>
 
-        {/* Order Rules */}
         <Card className="bg-card border-border/50">
           <CardHeader>
             <CardTitle>Order Rules</CardTitle>
@@ -111,7 +115,6 @@ export default function SettingsPage() {
           </CardContent>
         </Card>
 
-        {/* 3. Store Hours */}
         <Card
           className={`bg-card border-border/50 ${!isPro ? "opacity-70" : ""}`}
         >
@@ -156,7 +159,6 @@ export default function SettingsPage() {
           </CardContent>
         </Card>
 
-        {/* 4. Social Media */}
         <Card className="bg-card border-border/50">
           <CardHeader>
             <CardTitle>Social Links {!isPro && <ProBadge />}</CardTitle>
@@ -204,7 +206,6 @@ export default function SettingsPage() {
           </CardContent>
         </Card>
 
-        {/* 5. SEO Settings */}
         <Card className="bg-card border-border/50">
           <CardHeader>
             <CardTitle>SEO & Social Sharing</CardTitle>

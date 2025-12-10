@@ -1,4 +1,9 @@
 // src/app/(marketing)/support/page.tsx
+/*  * Support Page
+ * This component renders the support page for BizoraPro, providing users with
+ * various support channels including WhatsApp support, help articles, and a contact form.
+ * It also highlights popular support topics and offers additional help options.
+ */
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -25,7 +30,6 @@ export const metadata: Metadata = {
 export default function SupportPage() {
   return (
     <>
-      {/* HERO + SEARCH */}
       <section
         className="container mx-auto px-6 pt-28 pb-16 text-center md:px-12"
         aria-labelledby="support-heading"
@@ -48,7 +52,6 @@ export default function SupportPage() {
         <SearchBoxClient action="/docs" />
       </section>
 
-      {/* MAIN SUPPORT CHANNELS */}
       <section
         className="container mx-auto mb-24 max-w-6xl px-6 md:px-12"
         aria-labelledby="channels-heading"
@@ -62,7 +65,6 @@ export default function SupportPage() {
         </h2>
 
         <div className="grid gap-8 md:grid-cols-3">
-          {/* WhatsApp */}
           <div
             className="group rounded-2xl border border-white/10 bg-[#111] p-8 text-center transition-all hover:border-green-500/40"
             role="article"
@@ -101,7 +103,6 @@ export default function SupportPage() {
             </p>
           </div>
 
-          {/* Help Articles */}
           <div
             className="group flex flex-col rounded-2xl border border-white/10 bg-[#111] p-8 text-center transition-all hover:border-blue-500/40"
             role="article"
@@ -120,7 +121,6 @@ export default function SupportPage() {
               Step-by-step guides to set up and manage your shop.
             </p>
 
-            {/* use Link (no onClick) so page remains a server component */}
             <Button
               className="h-11 w-full bg-blue-600 text-xs font-bold text-white hover:bg-blue-700 md:text-sm"
               asChild
@@ -135,7 +135,6 @@ export default function SupportPage() {
             </p>
           </div>
 
-          {/* Contact Support */}
           <div
             className="group rounded-2xl border border-white/10 bg-[#111] p-8 text-center transition-all hover:border-purple-500/40"
             role="article"
@@ -171,7 +170,6 @@ export default function SupportPage() {
         </div>
       </section>
 
-      {/* POPULAR TOPICS */}
       <section
         className="container mx-auto mb-24 max-w-4xl px-6 md:px-12"
         aria-labelledby="popular-topics-heading"
@@ -208,7 +206,6 @@ export default function SupportPage() {
         </div>
       </section>
 
-      {/* NEED MORE HELP */}
       <section
         className="container mx-auto mb-24 max-w-4xl px-6 text-center md:px-12"
         aria-labelledby="more-help-heading"
@@ -278,7 +275,6 @@ export default function SupportPage() {
         </p>
       </section>
 
-      {/* BOTTOM CTA */}
       <section
         className="pb-10 text-center"
         role="region"

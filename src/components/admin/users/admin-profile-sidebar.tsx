@@ -1,3 +1,13 @@
+// src/components/admin/users/admin-profile-sidebar.tsx
+/*  * Admin Profile Sidebar Component
+ * This component displays
+ * detailed information about
+ * a selected admin user in
+ * the sidebar, including
+ * their profile details,
+ * permissions, and recent
+ * activity.
+ */
 "use client";
 
 import { Badge } from "@/components/ui/badge";
@@ -16,7 +26,6 @@ export function AdminProfileSidebar({ user }: { user: any }) {
     );
   }
 
-  // Mock Permissions based on Role
   const permissions =
     user.role === "super_admin"
       ? [
@@ -44,7 +53,6 @@ export function AdminProfileSidebar({ user }: { user: any }) {
         </CardContent>
       </Card>
 
-      {/* Permissions */}
       <div className="space-y-3">
         <h4 className="text-sm font-semibold text-gray-400 uppercase">
           Permissions
@@ -61,7 +69,6 @@ export function AdminProfileSidebar({ user }: { user: any }) {
         </div>
       </div>
 
-      {/* Actions */}
       <div className="space-y-3">
         <Button
           variant="outline"
@@ -77,7 +84,6 @@ export function AdminProfileSidebar({ user }: { user: any }) {
         </Button>
       </div>
 
-      {/* Activity */}
       <div className="space-y-3 pt-4 border-t border-white/10">
         <h4 className="text-sm font-semibold text-gray-400 uppercase">
           Recent Activity

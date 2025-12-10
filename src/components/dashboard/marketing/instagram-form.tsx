@@ -1,3 +1,12 @@
+// src/components/dashboard/marketing/instagram-form.tsx
+/*  * Instagram Form Component
+ * This component allows users
+ * to update their Instagram feed
+ * gallery in the marketing dashboard.
+ * Users can upload multiple images
+ * which will be displayed in their
+ * public shop.
+ */
 "use client";
 
 import { useState } from "react";

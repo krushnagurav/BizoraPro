@@ -1,3 +1,9 @@
+// src/components/dashboard/coupons/coupon-share-button.tsx
+/*  * Coupon Share Button Component
+ * This component provides a button
+ * to share coupon codes via WhatsApp
+ * directly from the coupons dashboard.
+ */
 "use client";
 
 import { Button } from "@/components/ui/button";

@@ -1,3 +1,10 @@
+// src/app/(super-admin)/admin/settings/page.tsx
+/*
+ * Admin Settings Page
+ *
+ * This page allows super administrators to manage platform settings such as maintenance mode
+ * and global banners. It also displays a log of recent system changes for auditing purposes.
+ */
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { SettingsForm } from "@/src/components/admin/settings/settings-form";
 import { createClient } from "@/src/lib/supabase/server";
@@ -32,7 +39,6 @@ export default async function AdminSettingsPage() {
 
       <SettingsForm settings={settings} />
 
-      {/* Recent Changes Log */}
       <Card className="bg-[#111] border-white/10 text-white">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-base">

@@ -1,4 +1,9 @@
 // src/app/(super-admin)/admin/support/[id]/page.tsx
+/* Admin Ticket Detail Page
+ *
+ * This page allows super administrators to view and manage the details of a specific support ticket.
+ * It displays the ticket conversation, shop details, and provides options to reply or update the ticket status.
+ */
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -17,7 +22,6 @@ export default async function AdminTicketDetail({
   const { id } = await params;
   const supabase = await createClient();
 
-  // 1. Fetch Ticket + Shop + Shop Stats (Join is tricky for stats, so separate queries)
   const { data: ticket } = await supabase
     .from("support_tickets")
     .select("*, shops(*)")
@@ -25,14 +29,12 @@ export default async function AdminTicketDetail({
     .single();
   if (!ticket) return notFound();
 
-  // Fetch messages
   const { data: messages } = await supabase
     .from("ticket_messages")
     .select("*")
     .eq("ticket_id", id)
     .order("created_at", { ascending: true });
 
-  // Fetch Shop Vital Stats (Context for Admin)
   const { count: productCount } = await supabase
     .from("products")
     .select("*", { count: "exact", head: true })
@@ -46,9 +48,7 @@ export default async function AdminTicketDetail({
 
   return (
     <div className="h-[calc(100vh-100px)] flex gap-6">
-      {/* LEFT: CHAT AREA */}
       <div className="flex-1 flex flex-col gap-4">
-        {/* Header */}
         <div className="flex items-center justify-between bg-[#111] p-4 rounded-xl border border-white/10">
           <div className="flex items-center gap-3">
             <Link href="/admin/support">
@@ -93,7 +93,6 @@ export default async function AdminTicketDetail({
           )}
         </div>
 
-        {/* Messages */}
         <Card className="flex-1 bg-[#111] border-white/10 flex flex-col overflow-hidden">
           <div className="flex-1 overflow-y-auto p-6 space-y-6">
             {messages?.map((msg) => {
@@ -125,14 +124,12 @@ export default async function AdminTicketDetail({
             })}
           </div>
 
-          {/* Reply Input */}
           {ticket.status !== "resolved" && (
             <TicketReplyForm ticketId={ticket.id} role="admin" />
           )}
         </Card>
       </div>
 
-      {/* RIGHT: SHOP CONTEXT (The "Spy" Panel) */}
       <div className="w-80 shrink-0 space-y-6">
         <Card className="bg-[#111] border-white/10 text-white">
           <CardHeader className="pb-3 border-b border-white/5">

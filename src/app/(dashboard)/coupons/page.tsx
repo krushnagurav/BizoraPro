@@ -1,3 +1,10 @@
+// src/app/(dashboard)/coupons/page.tsx
+/*
+ * Coupons Management Page
+ * This component allows users to manage discount coupons for their BizoraPro shop.
+ * Users can create, view, duplicate, and delete coupons to offer promotions
+ * to their customers.
+ */
 import { createClient } from "@/src/lib/supabase/server";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -24,7 +31,6 @@ import { CouponForm } from "@/src/components/dashboard/coupons/coupon-form";
 export default async function CouponsPage() {
   const supabase = await createClient();
 
-  // 1. Check User & Shop
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -50,7 +56,6 @@ export default async function CouponsPage() {
     );
   }
 
-  // 2. Fetch Coupons
   const { data: coupons } = await supabase
     .from("coupons")
     .select("*")
@@ -75,7 +80,7 @@ export default async function CouponsPage() {
                 <TableHead>Code</TableHead>
                 <TableHead>Discount</TableHead>
                 <TableHead>Min Order</TableHead>
-                <TableHead>Expiry</TableHead> {/* NEW COLUMN */}
+                <TableHead>Expiry</TableHead>
                 <TableHead>Usage</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
@@ -118,7 +123,6 @@ export default async function CouponsPage() {
                           : "None"}
                       </TableCell>
 
-                      {/* EXPIRED DATE COLUMN */}
                       <TableCell className="text-xs text-muted-foreground">
                         {coupon.end_date ? (
                           <div className="flex items-center gap-1">
@@ -154,7 +158,6 @@ export default async function CouponsPage() {
 
                           <CouponForm initialData={coupon} />
 
-                          {/* DUPLICATE BUTTON */}
                           <form action={duplicateCouponAction}>
                             <input type="hidden" name="id" value={coupon.id} />
                             <Button
@@ -166,7 +169,6 @@ export default async function CouponsPage() {
                             </Button>
                           </form>
 
-                          {/* DELETE BUTTON */}
                           <form action={deleteCouponAction}>
                             <input type="hidden" name="id" value={coupon.id} />
                             <Button

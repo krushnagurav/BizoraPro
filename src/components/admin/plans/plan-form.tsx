@@ -1,4 +1,12 @@
 // src/components/admin/plans/plan-form.tsx
+/*  * Plan Form Component
+ * This component renders
+ * the form for creating
+ * or editing subscription
+ * plans in the admin dashboard,
+ * allowing admins to set
+ * plan details and feature limits.
+ */
 "use client";
 
 import { Button } from "@/components/ui/button";
@@ -65,7 +73,6 @@ export function PlanForm({ initialData }: { initialData?: any }) {
 
   return (
     <div className="grid lg:grid-cols-3 gap-8">
-      {/* LEFT: FORM */}
       <div className="lg:col-span-2">
         <form onSubmit={handleSubmit} className="space-y-6">
           <Card className="bg-[#111] border-white/10 text-white">
@@ -187,7 +194,6 @@ export function PlanForm({ initialData }: { initialData?: any }) {
         </form>
       </div>
 
-      {/* RIGHT: PREVIEW CARD */}
       <div className="lg:col-span-1">
         <div className="sticky top-6">
           <h3 className="text-gray-400 mb-4 flex items-center gap-2">

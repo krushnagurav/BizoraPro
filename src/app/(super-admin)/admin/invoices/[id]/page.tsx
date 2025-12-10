@@ -1,4 +1,10 @@
 // src/app/(super-admin)/admin/invoices/[id]/page.tsx
+/*
+ * Subscription Invoice Detail Page
+ *
+ * This page displays detailed information about a specific subscription invoice.
+ * Super administrators can view invoice summary, billed shop details, and download invoices.
+ */
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -25,7 +31,6 @@ export default async function AdminInvoiceDetailPage({
 
   return (
     <div className="max-w-5xl mx-auto space-y-6">
-      {/* Breadcrumb / Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
           <Link href="/admin/invoices">
@@ -52,7 +57,6 @@ export default async function AdminInvoiceDetailPage({
         </div>
       </div>
 
-      {/* Status Banner */}
       <div className="bg-green-500/10 border border-green-500/20 rounded-lg p-4 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <CheckCircle2 className="text-green-500 h-5 w-5" />
@@ -67,7 +71,6 @@ export default async function AdminInvoiceDetailPage({
       </div>
 
       <div className="grid md:grid-cols-3 gap-6">
-        {/* INVOICE PREVIEW */}
         <Card className="md:col-span-2 bg-[#111] border-white/10 text-white">
           <CardHeader className="border-b border-white/10 pb-6">
             <div className="flex justify-between">
@@ -122,7 +125,6 @@ export default async function AdminInvoiceDetailPage({
               </div>
             </div>
 
-            {/* Line Items */}
             <div className="border rounded-lg border-white/10 overflow-hidden">
               <table className="w-full text-sm">
                 <thead className="bg-white/5 text-gray-400">
@@ -159,7 +161,6 @@ export default async function AdminInvoiceDetailPage({
           </CardContent>
         </Card>
 
-        {/* SIDEBAR INFO */}
         <div className="space-y-6">
           <Card className="bg-[#111] border-white/10 text-white">
             <CardHeader>

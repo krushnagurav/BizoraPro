@@ -1,4 +1,9 @@
 // src/app/(marketing)/pricing/page.tsx
+/*  * Pricing Page
+ * This component renders the pricing page for BizoraPro, showcasing
+ * different subscription plans, their features, and a comparison table.
+ * It also includes trust signals and a FAQ section to assist potential customers.
+ */
 "use client";
 
 import Link from "next/link";
@@ -116,7 +121,6 @@ export default function PricingPage() {
 
   return (
     <>
-      {/* HEADER + TOGGLE */}
       <section
         className="container mx-auto mb-16 px-6 pt-24 text-center md:px-12"
         aria-labelledby="pricing-heading"
@@ -188,7 +192,6 @@ export default function PricingPage() {
         </p>
       </section>
 
-      {/* PRICING CARDS */}
       <section
         id="plans-grid"
         className="container mx-auto mb-24 grid max-w-6xl grid-cols-1 gap-8 px-6 md:px-12 lg:grid-cols-3"
@@ -286,7 +289,6 @@ export default function PricingPage() {
         })}
       </section>
 
-      {/* COMPARISON TABLE */}
       <section
         className="container mx-auto mb-24 max-w-5xl px-6 md:px-12"
         aria-labelledby="compare-heading"
@@ -337,7 +339,6 @@ export default function PricingPage() {
                 >
                   <td className="py-3 pl-4 pr-2 text-gray-200">{row.name}</td>
 
-                  {/* Starter */}
                   <td
                     className="px-2 text-center"
                     role="cell"
@@ -374,7 +375,6 @@ export default function PricingPage() {
                     )}
                   </td>
 
-                  {/* Business */}
                   <td
                     className="px-2 text-center"
                     role="cell"
@@ -409,7 +409,6 @@ export default function PricingPage() {
                     )}
                   </td>
 
-                  {/* Pro */}
                   <td
                     className="px-2 pr-4 text-center"
                     role="cell"
@@ -450,7 +449,6 @@ export default function PricingPage() {
         </div>
       </section>
 
-      {/* TRUST SIGNALS */}
       <section
         className="container mx-auto mb-24 grid max-w-5xl grid-cols-1 gap-8 px-6 text-center md:grid-cols-3 md:px-12"
         aria-label="Trust signals"
@@ -494,7 +492,6 @@ export default function PricingPage() {
         ))}
       </section>
 
-      {/* FAQ */}
       <section
         className="container mx-auto mb-24 max-w-3xl px-6 md:px-12"
         aria-labelledby="faq-heading"
@@ -540,7 +537,6 @@ export default function PricingPage() {
         </Accordion>
       </section>
 
-      {/* FINAL CTA */}
       <section
         className="container mx-auto max-w-4xl px-6 text-center md:px-12"
         aria-labelledby="final-cta-heading"

@@ -1,4 +1,11 @@
 // src/components/admin/template-form.tsx
+/*  * Template Form Component
+ * This component provides a form
+ * to create or edit message
+ * templates for admin use,
+ * including variable insertion
+ * and preview functionality.
+ */
 "use client";
 
 import { Badge } from "@/components/ui/badge";
@@ -33,7 +40,6 @@ export function TemplateForm({ initialData }: { initialData?: any }) {
   const [loading, setLoading] = useState(false);
   const [body, setBody] = useState(initialData?.body || "");
 
-  // Insert variable into text
   const insertVariable = (variable: string) => {
     setBody((prev: string) => prev + " " + variable);
   };
@@ -43,7 +49,6 @@ export function TemplateForm({ initialData }: { initialData?: any }) {
     if (initialData?.id) {
       formData.append("id", initialData.id);
     }
-    // Append the controlled body state
     formData.set("body", body);
 
     const res = await saveTemplateAction(formData);
@@ -59,7 +64,6 @@ export function TemplateForm({ initialData }: { initialData?: any }) {
 
   return (
     <div className="grid lg:grid-cols-3 gap-8 h-[calc(100vh-140px)]">
-      {/* LEFT: EDITOR */}
       <div className="lg:col-span-2 flex flex-col">
         <form action={handleSubmit} className="flex-1 flex flex-col gap-6">
           <Card className="bg-[#111] border-white/10 text-white flex-1 flex flex-col">
@@ -175,9 +179,7 @@ export function TemplateForm({ initialData }: { initialData?: any }) {
         </form>
       </div>
 
-      {/* RIGHT: VARIABLES & PREVIEW */}
       <div className="lg:col-span-1 space-y-6">
-        {/* Variables Helper */}
         <Card className="bg-[#111] border-white/10 text-white">
           <CardHeader>
             <CardTitle className="text-base">Available Variables</CardTitle>
@@ -201,7 +203,6 @@ export function TemplateForm({ initialData }: { initialData?: any }) {
           </CardContent>
         </Card>
 
-        {/* Mock Preview */}
         <Card className="bg-[#1C1C1C] border-2 border-white/10 text-white">
           <CardHeader className="bg-white/5 border-b border-white/5 py-3">
             <CardTitle className="text-sm font-medium">Email Preview</CardTitle>
@@ -210,7 +211,6 @@ export function TemplateForm({ initialData }: { initialData?: any }) {
             <div className="h-4 w-3/4 bg-white/10 rounded animate-pulse" />
             <div className="h-4 w-1/2 bg-white/10 rounded animate-pulse" />
             <div className="h-32 w-full bg-white/5 rounded border border-white/5 p-4 text-xs text-gray-400">
-              {/* Simple text preview logic */}
               {body ? (
                 <div
                   dangerouslySetInnerHTML={{

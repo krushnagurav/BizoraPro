@@ -1,3 +1,10 @@
+// src/components/dashboard/orders/order-row-actions.tsx
+/*  * Order Row Actions Component
+ * This component provides a dropdown
+ * menu for updating the status of
+ * an order directly from the orders
+ * dashboard.
+ */
 "use client";
 
 import { Button } from "@/components/ui/button";
@@ -50,10 +57,8 @@ export function OrderRowActions({ order }: { order: any }) {
       formData.append("orderId", order.id);
       formData.append("status", status);
 
-      // Cast to any so we can inspect runtime shape safely
       const res = (await updateOrderStatusAction(formData)) as any;
 
-      // Common action shapes: { error }, { success }, string id, or void.
       if (res?.error) {
         toast.error(String(res.error));
       } else if (res?.success) {
@@ -61,7 +66,6 @@ export function OrderRowActions({ order }: { order: any }) {
       } else if (typeof res === "string") {
         toast.success(res);
       } else {
-        // fallback success message
         toast.success("Order status updated");
       }
     } catch (err: any) {

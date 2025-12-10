@@ -1,3 +1,10 @@
+// src/components/dashboard/billing/plan-manager.tsx
+/*  * Plan Manager Component
+ * This component allows users to
+ * view their current subscription
+ * plan and upgrade to a Pro plan
+ * directly from the dashboard.
+ */
 "use client";
 
 import { useState } from "react";
@@ -67,7 +74,6 @@ export function PlanManager({
     <div className="grid md:grid-cols-2 gap-8">
       <Script src="https://checkout.razorpay.com/v1/checkout.js" />
 
-      {/* CURRENT PLAN */}
       <Card className="bg-card border-border/50">
         <CardContent className="p-6">
           <h3 className="text-lg font-medium mb-4">Current Plan</h3>
@@ -82,7 +88,6 @@ export function PlanManager({
                 {productCount} / {productLimit}
               </span>
             </div>
-            {/* Progress Bar */}
             <div className="h-2 bg-secondary rounded-full overflow-hidden">
               <div
                 className={`h-full ${productCount >= productLimit ? "bg-red-500" : "bg-green-500"}`}
@@ -100,7 +105,6 @@ export function PlanManager({
         </CardContent>
       </Card>
 
-      {/* UPGRADE CARD */}
       <Card className="bg-card border-primary shadow-lg shadow-primary/10 relative overflow-hidden">
         {currentPlan === "free" && (
           <div className="absolute top-0 right-0 bg-primary text-black text-xs font-bold px-3 py-1 rounded-bl-lg">

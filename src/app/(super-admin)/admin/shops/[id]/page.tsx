@@ -1,4 +1,9 @@
 // src/app/(super-admin)/admin/shops/[id]/page.tsx
+/*  * Admin Shop Detail Page
+ *
+ * This page allows super administrators to view detailed information about a specific shop.
+ * It includes shop owner details, business information, recent products, financial overview, and audit logs.
+ */
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -28,7 +33,6 @@ export default async function AdminShopDetailPage({
   const supabase = await createClient();
   const adminAuth = createAdminClient();
 
-  // 1. Parallel Data Fetching
   const [shopRes, productsRes, ordersRes, paymentsRes] = await Promise.all([
     supabase.from("shops").select("*").eq("id", id).single(),
     supabase
@@ -54,14 +58,11 @@ export default async function AdminShopDetailPage({
   const shop = shopRes.data;
   if (!shop) return notFound();
 
-  // 2. Fetch Owner Details (Requires Admin Privileges)
   const {
     data: { user: owner },
   } = await adminAuth.auth.admin.getUserById(shop.owner_id);
 
-  // 3. Calculate Stats
-  const totalProducts = productsRes.count || 0; // Note: count not fetched in select above, using length for MVP or fix query
-  // Let's assume we want accurate counts, usually separate queries are better but for detail view small overhead is ok.
+  const totalProducts = productsRes.count || 0;
   const { count: productCount } = await supabase
     .from("products")
     .select("id", { count: "exact", head: true })
@@ -70,16 +71,14 @@ export default async function AdminShopDetailPage({
   const totalOrders = ordersRes.data?.length || 0;
   const totalRevenue =
     ordersRes.data?.reduce((sum, o) => sum + (o.total_amount || 0), 0) || 0;
-  const whatsappOrders = Math.round(totalOrders * 0.8); // Estimated or fetch from analytics
+  const whatsappOrders = Math.round(totalOrders * 0.8);
 
-  // Mock Storage (Replace with real bucket size if available)
   const storageUsed = "1.2 GB";
   const storageLimit = "5 GB";
   const storagePercent = 24;
 
   return (
     <div className="space-y-8 max-w-7xl mx-auto pb-10">
-      {/* --- HEADER --- */}
       <div className="flex flex-col md:flex-row justify-between gap-4 items-start md:items-center">
         <div className="flex items-center gap-4">
           <Link href="/admin/shops">
@@ -140,9 +139,7 @@ export default async function AdminShopDetailPage({
         </div>
       </div>
 
-      {/* --- TOP GRID --- */}
       <div className="grid md:grid-cols-3 gap-6">
-        {/* 1. Owner Info */}
         <Card className="bg-[#111] border-white/10 text-white">
           <CardHeader>
             <CardTitle className="text-base flex items-center gap-2">
@@ -179,7 +176,6 @@ export default async function AdminShopDetailPage({
           </CardContent>
         </Card>
 
-        {/* 2. Shop Info */}
         <Card className="bg-[#111] border-white/10 text-white">
           <CardHeader>
             <CardTitle className="text-base flex items-center gap-2">
@@ -222,7 +218,6 @@ export default async function AdminShopDetailPage({
           </CardContent>
         </Card>
 
-        {/* 3. Business Details */}
         <Card className="bg-[#111] border-white/10 text-white">
           <CardHeader>
             <CardTitle className="text-base">Business Details</CardTitle>
@@ -250,7 +245,6 @@ export default async function AdminShopDetailPage({
         </Card>
       </div>
 
-      {/* --- FINANCIALS --- */}
       <div className="grid md:grid-cols-3 gap-6">
         <Card className="bg-[#111] border-white/10 text-white md:col-span-1">
           <CardHeader>
@@ -325,7 +319,6 @@ export default async function AdminShopDetailPage({
         </Card>
       </div>
 
-      {/* --- RECENT PRODUCTS --- */}
       <Card className="bg-[#111] border-white/10 text-white">
         <CardHeader className="flex flex-row justify-between items-center">
           <CardTitle className="text-base">Recent Products</CardTitle>
@@ -349,7 +342,6 @@ export default async function AdminShopDetailPage({
                 <tr key={p.id}>
                   <td className="py-3 flex items-center gap-3">
                     <div className="w-8 h-8 bg-white/10 rounded overflow-hidden">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
                       {p.image_url && (
                         <img
                           src={p.image_url}
@@ -384,7 +376,6 @@ export default async function AdminShopDetailPage({
         </CardContent>
       </Card>
 
-      {/* --- AUDIT LOGS (Mock for now) --- */}
       <Card className="bg-[#111] border-white/10 text-white">
         <CardHeader>
           <CardTitle className="text-base">System Audit Logs</CardTitle>

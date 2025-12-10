@@ -1,3 +1,13 @@
+// src/components/admin/settings/settings-form.tsx
+/*  * Settings Form Component
+ * This component renders
+ * the settings form in the
+ * admin dashboard, allowing
+ * admins to configure system
+ * settings such as maintenance
+ * mode and global announcement
+ * banners.
+ */
 "use client";
 
 import { Button } from "@/components/ui/button";
@@ -28,7 +38,6 @@ import { toast } from "sonner";
 export function SettingsForm({ settings }: { settings: any }) {
   const [loading, setLoading] = useState(false);
 
-  // State for Preview
   const [bannerTitle, setBannerTitle] = useState(settings?.banner_title || "");
   const [bannerMessage, setBannerMessage] = useState(
     settings?.global_banner || "",
@@ -48,7 +57,6 @@ export function SettingsForm({ settings }: { settings: any }) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      {/* 1. Maintenance & Access */}
       <Card className="bg-[#111] border-white/10 text-white">
         <CardHeader>
           <CardTitle>System Status</CardTitle>
@@ -96,14 +104,12 @@ export function SettingsForm({ settings }: { settings: any }) {
         </CardContent>
       </Card>
 
-      {/* 2. Global Banner Configuration */}
       <Card className="bg-[#111] border-white/10 text-white">
         <CardHeader>
           <CardTitle>Global Announcement Banner</CardTitle>
           <CardDescription>Broadcast messages to dashboards.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
-          {/* Inputs */}
           <div className="space-y-2">
             <Label>Banner Title</Label>
             <Input
@@ -197,7 +203,6 @@ export function SettingsForm({ settings }: { settings: any }) {
             </div>
           </div>
 
-          {/* LIVE PREVIEW */}
           <div className="pt-4 border-t border-white/10">
             <Label className="text-gray-500 text-xs uppercase tracking-wider mb-3 block">
               Banner Preview

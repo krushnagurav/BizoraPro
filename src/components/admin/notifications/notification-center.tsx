@@ -1,3 +1,14 @@
+// src/components/admin/notifications/notification-center.tsx
+/*  * Notification Center Component
+ * This component provides
+ * an interface for admin
+ * users to compose and
+ * send broadcast
+ * notifications to all
+ * shop owners, as well
+ * as view the history of
+ * sent notifications.
+ */
 "use client";
 
 import { Badge } from "@/components/ui/badge";
@@ -55,7 +66,6 @@ export function NotificationCenter({ history }: { history: any[] }) {
 
   return (
     <div className="grid lg:grid-cols-2 gap-8 h-[calc(100vh-140px)]">
-      {/* LEFT: CONTROLS */}
       <div className="flex flex-col gap-6">
         <Tabs defaultValue="compose" className="w-full flex-1 flex flex-col">
           <TabsList className="bg-[#111] border border-white/10 w-full justify-start">
@@ -186,7 +196,6 @@ export function NotificationCenter({ history }: { history: any[] }) {
         </Tabs>
       </div>
 
-      {/* RIGHT: PREVIEW */}
       <div className="hidden lg:flex flex-col items-center justify-center bg-[#111] border border-white/10 rounded-xl p-8">
         <div className="mb-6 text-center">
           <h3 className="text-lg font-bold text-white mb-1">

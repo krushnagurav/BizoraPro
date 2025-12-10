@@ -1,3 +1,9 @@
+// src/app/(dashboard)/settings/policies/page.tsx
+/*
+ * Store Policies Page
+ * This component allows shop owners to define and manage
+ * their store policies including refund, privacy, and terms of service.
+ */
 "use client";
 
 import { useState, useEffect } from "react";
@@ -29,7 +35,6 @@ export default function PoliciesPage() {
   const [loading, setLoading] = useState(false);
   const [shop, setShop] = useState<any>(null);
 
-  // State for inputs
   const [refund, setRefund] = useState("");
   const [privacy, setPrivacy] = useState("");
   const [terms, setTerms] = useState("");
@@ -117,7 +122,6 @@ export default function PoliciesPage() {
             </TabsTrigger>
           </TabsList>
 
-          {/* Refund Tab */}
           <TabsContent value="refund">
             <Card className="bg-card border-border/50">
               <CardHeader className="flex flex-row items-center justify-between">
@@ -148,7 +152,6 @@ export default function PoliciesPage() {
             </Card>
           </TabsContent>
 
-          {/* Privacy Tab */}
           <TabsContent value="privacy">
             <Card className="bg-card border-border/50">
               <CardHeader className="flex flex-row items-center justify-between">
@@ -179,7 +182,6 @@ export default function PoliciesPage() {
             </Card>
           </TabsContent>
 
-          {/* Terms Tab */}
           <TabsContent value="terms">
             <Card className="bg-card border-border/50">
               <CardHeader className="flex flex-row items-center justify-between">

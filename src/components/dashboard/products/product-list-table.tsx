@@ -1,3 +1,9 @@
+// src/components/dashboard/products/product-list-table.tsx
+/*  * Product List Table Component
+ * This component displays a list of products
+ * in a table format with options to edit,
+ * duplicate, share, and delete each product.
+ */
 "use client";
 
 import { useOptimistic, startTransition } from "react";
@@ -48,7 +54,6 @@ export function ProductListTable({
   products: any[];
   slug: string;
 }) {
-  // 🚀 OPTIMISTIC UI: Delete instantly updates the list
   const [optimisticProducts, removeOptimisticProduct] = useOptimistic(
     products,
     (state, idToRemove) => state.filter((p) => p.id !== idToRemove),
@@ -109,15 +114,14 @@ export function ProductListTable({
                   key={product.id}
                   className="border-border hover:bg-secondary/10"
                 >
-                  {/* 🖼️ OPTIMIZED IMAGE */}
                   <TableCell>
                     <div className="relative h-10 w-10 rounded-md overflow-hidden border border-border bg-secondary flex items-center justify-center">
                       {product.image_url ? (
                         <Image
                           src={product.image_url}
                           alt={product.name}
-                          width={40} // ⚡ Fixed small width
-                          height={40} // ⚡ Fixed small height
+                          width={40}
+                          height={40}
                           className="object-cover w-full h-full"
                           loading="lazy"
                         />
@@ -135,7 +139,6 @@ export function ProductListTable({
                   </TableCell>
                   <TableCell>₹{product.price}</TableCell>
 
-                  {/* 📦 SMART STOCK WITH HOVER */}
                   <TableCell>
                     {product.product_skus?.length > 0 ? (
                       <HoverCard>

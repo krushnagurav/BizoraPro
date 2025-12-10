@@ -1,3 +1,9 @@
+// src/components/dashboard/products/product-filters.tsx
+/*  * Product Filters Component
+ * This component provides filtering
+ * options for products based on
+ * status and category in the dashboard.
+ */
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
@@ -20,13 +26,12 @@ export function ProductFilters({ categories }: { categories: any[] }) {
     } else {
       params.set(key, value);
     }
-    params.set("page", "1"); // Reset to page 1 on filter change
+    params.set("page", "1");
     router.push(`/products?${params.toString()}`);
   };
 
   return (
     <div className="flex gap-2">
-      {/* Status Filter */}
       <Select
         defaultValue={searchParams.get("status") || "all"}
         onValueChange={(val) => handleFilterChange("status", val)}
@@ -42,7 +47,6 @@ export function ProductFilters({ categories }: { categories: any[] }) {
         </SelectContent>
       </Select>
 
-      {/* Category Filter */}
       <Select
         defaultValue={searchParams.get("category") || "all"}
         onValueChange={(val) => handleFilterChange("category", val)}

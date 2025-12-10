@@ -1,4 +1,10 @@
 // src/app/(super-admin)/admin/logs/page.tsx
+/*
+ * Audit Logs Page
+ *
+ * This page displays a comprehensive list of audit logs for super administrators.
+ * It provides insights into all actions taken within the platform for security and compliance purposes.
+ */
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { LogsTable } from "@/src/components/admin/logs/logs-table";

@@ -1,4 +1,9 @@
 // src/app/(storefront)/[slug]/contact/page.tsx
+/* Shop Contact Page
+ * This page provides contact information for a specific shop identified by its slug.
+ * Users can find details such as phone number, social media links, and store hours.
+ * The page layout and styling adapt based on the shop's theme configuration.
+ */
 import type { CSSProperties } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -48,7 +53,6 @@ export default async function ShopContactPage({
 
         <Card className="bg-white border-0 shadow-xl shadow-slate-200/60 rounded-3xl overflow-hidden">
           <CardContent className="p-8 space-y-8 text-center">
-            {/* Avatar */}
             <div className="relative w-24 h-24 mx-auto rounded-full border-4 border-white shadow-lg overflow-hidden bg-slate-100">
               {theme.logoUrl ? (
                 <Image

@@ -1,4 +1,9 @@
 // src/app/(marketing)/features/page.tsx
+/*
+ * Features Page
+ * This component renders the features page for BizoraPro,
+ * highlighting the key functionalities and benefits of the service.
+ */
 import Link from "next/link";
 import type { Metadata } from "next";
 import { Button } from "@/components/ui/button";
@@ -126,7 +131,6 @@ export default function FeaturesPage() {
 
   return (
     <>
-      {/* HERO */}
       <section
         id="hero"
         aria-labelledby="hero-heading"
@@ -173,7 +177,6 @@ export default function FeaturesPage() {
         </div>
       </section>
 
-      {/* FEATURE GRID */}
       <section
         id="core-features"
         aria-labelledby="core-features-heading"
@@ -222,7 +225,6 @@ export default function FeaturesPage() {
         </div>
       </section>
 
-      {/* SPOTLIGHT SECTIONS */}
       {spotlights.map(({ id, label, title, icon: Icon, list, reverse }) => (
         <section
           key={id}
@@ -277,7 +279,6 @@ export default function FeaturesPage() {
         </section>
       ))}
 
-      {/* CTA FOOTER */}
       <section
         aria-labelledby="final-cta-heading"
         className="relative overflow-hidden border-t border-white/5 bg-[#050507] py-18 md:py-24"

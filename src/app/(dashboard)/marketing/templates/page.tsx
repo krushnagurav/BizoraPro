@@ -1,3 +1,10 @@
+// src/app/(dashboard)/marketing/templates/page.tsx
+/*
+ * WhatsApp Templates Page
+ * This component displays and manages WhatsApp message templates
+ * for the BizoraPro dashboard. Users can create, edit, and delete
+ * templates used for customer communication.
+ */
 import { TemplatesManager } from "@/src/components/dashboard/marketing/templates-manager";
 import { createClient } from "@/src/lib/supabase/server";
 import { MessageSquare } from "lucide-react";

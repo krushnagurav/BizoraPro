@@ -1,4 +1,9 @@
 // src\components\storefront\view-tracker.tsx
+/*  * View Tracker Component
+ * This component tracks when a product is viewed in the storefront.
+ * It sends a "view_product" event to the analytics system with the
+ * relevant shop and product identifiers.
+ */
 "use client";
 
 import { useEffect } from "react";
@@ -12,9 +17,8 @@ export function ViewTracker({
   productId: string;
 }) {
   useEffect(() => {
-    // Fire and forget - don&apos;t block UI
     trackEventAction(shopId, "view_product", { productId });
   }, [shopId, productId]);
 
-  return null; // Invisible
+  return null;
 }

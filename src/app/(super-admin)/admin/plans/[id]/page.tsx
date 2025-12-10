@@ -1,3 +1,10 @@
+// src/app/(super-admin)/admin/plans/[id]/page.tsx
+/*
+ * Edit Plan Page
+ *
+ * This page allows super administrators to edit the details of a specific subscription plan.
+ * It fetches the plan data based on the provided ID and displays a form for editing.
+ */
 import { PlanForm } from "@/src/components/admin/plans/plan-form";
 import { createClient } from "@/src/lib/supabase/server";
 import { notFound } from "next/navigation";

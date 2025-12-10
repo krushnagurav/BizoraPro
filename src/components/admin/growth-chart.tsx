@@ -1,3 +1,10 @@
+// src/components/admin/growth-chart.tsx
+/*  * Growth Chart Component
+ * This component displays
+ * a growth chart of new shops
+ * joined over the last
+ * six months in the admin dashboard.
+ */
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";

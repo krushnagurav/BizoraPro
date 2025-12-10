@@ -1,4 +1,10 @@
 // src/app/(marketing)/examples/examples-client.tsx
+/*  * Examples Client Component
+ *
+ * This client-side component renders the examples page showcasing
+ * ready-made WhatsApp shop designs for various business types.
+ * It includes filtering functionality and displays a grid of shop layouts.
+ */
 "use client";
 
 import Link from "next/link";
@@ -76,12 +82,10 @@ export function ExamplesClient() {
       ? shops
       : shops.filter((shop) => shop.category === activeFilter);
 
-  // Build an id for the tablist/panels
   const tabListId = "examples-tabs";
 
   return (
     <>
-      {/* HEADER */}
       <section
         aria-labelledby="examples-heading"
         className="mx-auto max-w-4xl px-4 pb-12 pt-16 text-center sm:px-6 md:pt-20 lg:px-8"
@@ -99,7 +103,6 @@ export function ExamplesClient() {
           Each design is 100% WhatsApp-first and mobile-ready.
         </p>
 
-        {/* FILTERS */}
         <div
           className="flex flex-wrap justify-center gap-3"
           role="tablist"
@@ -136,15 +139,11 @@ export function ExamplesClient() {
         </div>
       </section>
 
-      {/* SHOP GRID */}
       <section
         aria-label="Example shop layouts"
         className="mx-auto max-w-6xl px-4 pb-20 sm:px-6 lg:px-8"
       >
-        <div
-          className="grid gap-8 md:grid-cols-2 lg:grid-cols-3"
-          // announce active panel for screen readers: each panel has its own id linked from the active tab
-        >
+        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
           {visibleShops.map((shop) => {
             const id = `example-${shop.title.toLowerCase().replace(/\s+/g, "-")}`;
             return (
@@ -155,7 +154,6 @@ export function ExamplesClient() {
                 aria-labelledby={`${id}-title`}
                 className="group flex h-full flex-col overflow-hidden rounded-2xl border border-white/10 bg-[#060608] transition-all hover:border-primary/60"
               >
-                {/* Image / Screenshot Placeholder */}
                 <div
                   className={`relative aspect-[4/3] ${shop.imageColor} border-b border-white/5`}
                   aria-hidden="true"
@@ -180,7 +178,6 @@ export function ExamplesClient() {
                   </div>
                 </div>
 
-                {/* Card Body */}
                 <div className="flex h-full flex-col p-6">
                   <h2
                     id={`${id}-title`}
@@ -231,7 +228,6 @@ export function ExamplesClient() {
         </div>
       </section>
 
-      {/* TRUSTED BY / MICRO TESTIMONIALS */}
       <section className="border-y border-white/5 bg-[#050507] py-16 md:py-20">
         <div className="mx-auto max-w-6xl px-4 text-center sm:px-6 lg:px-8">
           <p className="mb-10 text-[10px] uppercase tracking-[0.25em] text-muted-foreground md:text-xs">
@@ -280,7 +276,6 @@ export function ExamplesClient() {
         </div>
       </section>
 
-      {/* CTA FOOTER */}
       <section className="mx-auto max-w-6xl px-4 py-20 text-center sm:px-6 md:py-24 lg:px-8">
         <h2 className="mb-5 text-2xl font-bold md:text-4xl lg:text-5xl">
           Launch your own shop in{" "}

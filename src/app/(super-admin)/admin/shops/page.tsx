@@ -1,4 +1,10 @@
 // src/app/(super-admin)/admin/shops/page.tsx
+/*  * Admin Shops Page
+ *
+ * This page displays a list of shops registered on the platform.
+ * Super administrators can view shop details, filter by status and plan,
+ * and perform actions like impersonation and status toggling.
+ */
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -45,19 +51,15 @@ export default async function AdminShopsPage({
 
   const supabase = await createClient();
 
-  // 1. Base Query
   let query = supabase.from("shops").select("*", { count: "exact" });
 
-  // 2. Filters
   if (queryText) query = query.ilike("name", `%${queryText}%`);
   if (statusFilter !== "all") {
     if (statusFilter === "active") query = query.eq("is_open", true);
     if (statusFilter === "closed") query = query.eq("is_open", false);
-    // 'suspended' logic depends on your schema, assuming 'is_open: false' + separate flag, or mostly just closed for now
   }
   if (planFilter !== "all") query = query.eq("plan", planFilter);
 
-  // 3. Pagination
   const from = (page - 1) * itemsPerPage;
   const to = from + itemsPerPage - 1;
 
@@ -65,7 +67,6 @@ export default async function AdminShopsPage({
     .order("created_at", { ascending: false })
     .range(from, to);
 
-  // 4. Global Stats (Separate fast query)
   const { count: totalShops } = await supabase
     .from("shops")
     .select("id", { count: "exact", head: true });
@@ -82,7 +83,6 @@ export default async function AdminShopsPage({
 
   return (
     <div className="space-y-8">
-      {/* Header & Add Button */}
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold text-white">Shop Management</h1>
@@ -90,10 +90,8 @@ export default async function AdminShopsPage({
             Monitor and manage all stores on the platform.
           </p>
         </div>
-        {/* <Button className="bg-[#E6B800] text-black hover:bg-[#FFD700] font-bold">+ Add Shop Manually</Button> */}
       </div>
 
-      {/* KPI Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <StatsCard
           title="Total Shops"
@@ -121,7 +119,6 @@ export default async function AdminShopsPage({
         />
       </div>
 
-      {/* Toolbar & List */}
       <div className="space-y-4">
         <ShopsTableToolbar />
 
@@ -252,7 +249,6 @@ export default async function AdminShopsPage({
           </CardContent>
         </Card>
 
-        {/* Pagination */}
         {totalPages > 1 && (
           <div className="flex justify-center gap-2">
             <Link

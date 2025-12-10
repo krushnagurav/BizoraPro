@@ -1,4 +1,9 @@
 // src\components\storefront\cart-bar.tsx
+/*  * Cart Bar Component
+ * This component displays a fixed cart bar at the bottom of the
+ * storefront when there are items in the cart. It shows the total
+ * number of items and total price, and provides a link to view the cart.
+ */
 "use client";
 
 import { useCart } from "@/src/hooks/use-cart";
@@ -13,13 +18,11 @@ export function CartBar({ slug }: { slug: string }) {
   const pathname = usePathname();
   const [isMounted, setIsMounted] = useState(false);
 
-  // Avoid Hydration Mismatch
   // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => setIsMounted(true), []);
 
   if (!isMounted || cart.items.length === 0) return null;
 
-  // Don&apos;t show on Cart or Checkout page (redundant)
   if (pathname.includes("/cart") || pathname.includes("/checkout")) return null;
 
   return (

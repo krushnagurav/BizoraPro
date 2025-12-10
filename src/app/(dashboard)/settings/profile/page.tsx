@@ -1,3 +1,9 @@
+// src/app/(dashboard)/settings/profile/page.tsx
+/*
+ * Profile Settings Page
+ * This component allows users to update their personal details
+ * and change their password within the BizoraPro dashboard.
+ */
 "use client";
 
 import { Button } from "@/components/ui/button";
@@ -76,7 +82,6 @@ export default function ProfileSettingsPage() {
         </h1>
       </div>
 
-      {/* PERSONAL DETAILS */}
       <Card className="bg-card border-border/50">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-lg">
@@ -120,7 +125,6 @@ export default function ProfileSettingsPage() {
         </CardContent>
       </Card>
 
-      {/* SECURITY */}
       <Card className="bg-card border-border/50">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-lg">

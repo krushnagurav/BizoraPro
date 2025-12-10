@@ -1,4 +1,10 @@
 // src/app/(marketing)/contact/page.tsx
+/*
+ * Contact Page
+ *
+ * This page provides users with options to get in touch with BizoraPro support.
+ * It includes a contact form and alternative methods such as WhatsApp and email.
+ */
 "use client";
 
 import { useRef, useState } from "react";
@@ -24,7 +30,6 @@ export default function ContactPage() {
   const liveRef = useRef<HTMLDivElement | null>(null);
 
   const validatePhone = (phone: string) => {
-    // basic validation: digits only, 10-13 chars (IN + country code)
     const digits = phone.replace(/\D/g, "");
     return digits.length >= 10 && digits.length <= 13;
   };
@@ -44,7 +49,6 @@ export default function ContactPage() {
       website: (fd.get("website") as string) || "",
     };
 
-    // simple client validation
     if (!data.name || !data.phone || !data.email || !data.message) {
       setStatus({ ok: false, msg: "Please fill all required fields." });
       liveRef.current?.focus();
@@ -57,7 +61,6 @@ export default function ContactPage() {
       return;
     }
 
-    // honeypot: if filled, likely bot
     if (data.website && data.website.trim() !== "") {
       setStatus({ ok: false, msg: "Submission looks like spam." });
       return;
@@ -66,7 +69,6 @@ export default function ContactPage() {
     setIsSubmitting(true);
 
     try {
-      // Replace /api/contact with your server endpoint (serverless function / API route)
       const res = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -100,7 +102,6 @@ export default function ContactPage() {
 
   return (
     <>
-      {/* Header */}
       <section
         className="mx-auto max-w-4xl px-6 py-20 text-center"
         role="region"
@@ -117,14 +118,11 @@ export default function ContactPage() {
         </p>
       </section>
 
-      {/* Content */}
       <section
         className="mx-auto max-w-6xl grid gap-12 px-6 md:grid-cols-2"
         role="main"
       >
-        {/* Support Options */}
         <div className="space-y-7" aria-hidden={false}>
-          {/* WhatsApp */}
           <div
             className="rounded-2xl border border-white/10 bg-[#111] p-8 transition-colors hover:border-primary/40"
             role="region"
@@ -170,7 +168,6 @@ export default function ContactPage() {
             </p>
           </div>
 
-          {/* Email */}
           <div
             className="rounded-2xl border border-white/10 bg-[#111] p-8 transition-colors hover:border-white/20"
             role="region"
@@ -206,7 +203,6 @@ export default function ContactPage() {
           </p>
         </div>
 
-        {/* Form */}
         <form
           onSubmit={handleSubmit}
           className="space-y-6 rounded-2xl border border-white/10 bg-[#111] p-8 md:p-10"
@@ -217,7 +213,6 @@ export default function ContactPage() {
             Contact form
           </h2>
 
-          {/* Honeypot (hidden) */}
           <input
             type="text"
             name="website"
@@ -325,7 +320,6 @@ export default function ContactPage() {
             We’ll reach out on WhatsApp or email
           </p>
 
-          {/* Live status for screen readers */}
           <div
             ref={liveRef}
             tabIndex={-1}

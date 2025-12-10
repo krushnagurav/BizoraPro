@@ -1,3 +1,9 @@
+// src/components/dashboard/products/variant-builder.tsx
+/*  * Variant Builder Component
+ * This component allows users to
+ * create and manage product variants
+ * within the product dashboard.
+ */
 "use client";
 
 import { useState, useEffect } from "react";
@@ -8,8 +14,8 @@ import { Badge } from "@/components/ui/badge";
 import { Plus, X, Trash2 } from "lucide-react";
 
 interface Variant {
-  name: string; // e.g. "Size"
-  values: string[]; // e.g. ["S", "M", "L"]
+  name: string;
+  values: string[];
 }
 
 export function VariantBuilder({
@@ -22,12 +28,10 @@ export function VariantBuilder({
   const [variants, setVariants] = useState<Variant[]>(value || []);
   const [isAdding, setIsAdding] = useState(false);
 
-  // Temp state for new variant
   const [tempName, setTempName] = useState("");
   const [tempValue, setTempValue] = useState("");
   const [tempValues, setTempValues] = useState<string[]>([]);
 
-  // Sync with parent form
   useEffect(() => {
     onChange(variants);
   }, [variants, onChange]);
@@ -43,7 +47,6 @@ export function VariantBuilder({
   const saveVariant = () => {
     if (!tempName || tempValues.length === 0) return;
     setVariants([...variants, { name: tempName, values: tempValues }]);
-    // Reset
     setTempName("");
     setTempValues([]);
     setTempValue("");
@@ -72,7 +75,6 @@ export function VariantBuilder({
         )}
       </div>
 
-      {/* List Existing Variants */}
       <div className="space-y-3">
         {variants.map((v, i) => (
           <div
@@ -97,7 +99,6 @@ export function VariantBuilder({
         ))}
       </div>
 
-      {/* Add New Variant Form */}
       {isAdding && (
         <div className="p-4 border border-primary/20 bg-secondary/10 rounded-lg space-y-4">
           <div className="space-y-2">
@@ -125,7 +126,6 @@ export function VariantBuilder({
               </Button>
             </div>
 
-            {/* Value Badges */}
             <div className="flex flex-wrap gap-2 mt-2">
               {tempValues.map((val, i) => (
                 <Badge key={i} variant="secondary" className="gap-1">

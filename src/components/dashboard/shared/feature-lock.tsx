@@ -1,3 +1,11 @@
+// src/components/dashboard/shared/feature-lock.tsx
+/*  * Feature Lock Component
+ * This component conditionally renders
+ * its children based on the user's plan.
+ * If the user is on a free plan, it displays
+ * a lock overlay prompting them to upgrade
+ * to access premium features.
+ */
 "use client";
 
 import { Button } from "@/components/ui/button";
@@ -13,16 +21,12 @@ export function FeatureLock({
   children: React.ReactNode;
   featureName: string;
 }) {
-  // If PRO, show the real feature
-  // We treat 'undefined' as 'free' for safety
   if (plan === "pro") {
     return <>{children}</>;
   }
 
-  // If FREE, show the Lock Screen
   return (
     <div className="relative rounded-xl overflow-hidden border border-border/50">
-      {/* The Content (Blurred) */}
       <div
         className="filter blur-sm opacity-20 pointer-events-none select-none p-4"
         aria-hidden="true"
@@ -30,7 +34,6 @@ export function FeatureLock({
         {children}
       </div>
 
-      {/* The Lock Overlay */}
       <div className="absolute inset-0 z-10 flex flex-col items-center justify-center text-center p-6 bg-background/10 backdrop-blur-[2px]">
         <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-4 border border-primary/20 shadow-lg shadow-primary/5">
           <Lock className="w-8 h-8 text-primary" />

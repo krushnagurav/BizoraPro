@@ -1,3 +1,12 @@
+// src/components/dashboard/coupons/coupon-form.tsx
+/*  * Coupon Form Component
+ * This component allows users
+ * to create or edit coupons
+ * in the coupons dashboard.
+ * Users can set various parameters
+ * such as discount type, value,
+ * usage limits, and expiry date.
+ */
 "use client";
 
 import { useState } from "react";
@@ -30,7 +39,6 @@ export function CouponForm({ initialData }: { initialData?: any }) {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  // State Init
   const [code, setCode] = useState(initialData?.code || "");
   const [type, setType] = useState(initialData?.discount_type || "percent");
   const [date, setDate] = useState<Date | undefined>(
@@ -68,7 +76,7 @@ export function CouponForm({ initialData }: { initialData?: any }) {
       toast.success(initialData ? "Coupon Updated!" : "Coupon Created!");
       setOpen(false);
       if (!initialData) {
-        setCode(""); // Reset only on create
+        setCode("");
         setDate(undefined);
       }
     }
@@ -94,7 +102,6 @@ export function CouponForm({ initialData }: { initialData?: any }) {
           </DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4 mt-4">
-          {/* Code & Status */}
           <div className="grid grid-cols-3 gap-4">
             <div className="col-span-2 space-y-2">
               <Label>Coupon Code</Label>
@@ -134,7 +141,6 @@ export function CouponForm({ initialData }: { initialData?: any }) {
             </div>
           </div>
 
-          {/* Discount Logic */}
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label>Type</Label>
@@ -161,7 +167,6 @@ export function CouponForm({ initialData }: { initialData?: any }) {
             </div>
           </div>
 
-          {/* Limits */}
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label>Min Order (₹)</Label>
@@ -184,7 +189,6 @@ export function CouponForm({ initialData }: { initialData?: any }) {
             </div>
           </div>
 
-          {/* Date */}
           <div className="space-y-2 flex flex-col">
             <Label className="mb-1">Expiry Date</Label>
             <DatePicker date={date} setDate={setDate} />

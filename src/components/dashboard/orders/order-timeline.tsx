@@ -1,3 +1,11 @@
+// src/components/dashboard/orders/order-timeline.tsx
+/*  * Order Timeline Component
+ * This component visually represents
+ * the progression of an order through
+ * its various stages, providing users
+ * with a clear timeline of the order's
+ * status.
+ */
 import { CheckCircle2, Circle, Truck, Package } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -9,7 +17,6 @@ const STEPS = [
 ];
 
 export function OrderTimeline({ status }: { status: string }) {
-  // Simple index logic: placed=0, confirmed=1, etc.
   const currentIdx = STEPS.findIndex((s) => s.id === status);
   const isCancelled = status === "cancelled";
 
@@ -23,10 +30,8 @@ export function OrderTimeline({ status }: { status: string }) {
 
   return (
     <div className="flex items-center justify-between w-full max-w-xl mx-auto my-8 relative">
-      {/* Line Background */}
       <div className="absolute top-1/2 left-0 w-full h-1 bg-secondary -z-10 rounded-full" />
 
-      {/* Active Line */}
       <div
         className="absolute top-1/2 left-0 h-1 bg-primary -z-10 rounded-full transition-all duration-500"
         style={{ width: `${(currentIdx / (STEPS.length - 1)) * 100}%` }}

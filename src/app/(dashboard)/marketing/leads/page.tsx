@@ -1,3 +1,10 @@
+// src/app/(dashboard)/marketing/leads/page.tsx
+/*
+ * CRM & Leads Page
+ * This component displays and manages customer leads for the BizoraPro
+ * dashboard. Users can view lead statistics, manage their subscriber list,
+ * and take actions such as contacting leads or exporting data.
+ */
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -20,7 +27,6 @@ export default async function LeadsPage() {
     data: { user },
   } = await supabase.auth.getUser();
 
-  // 1. Fetch Shop & Templates
   const { data: shop } = await supabase
     .from("shops")
     .select("id, name")
@@ -39,7 +45,6 @@ export default async function LeadsPage() {
     .eq("shop_id", shop?.id)
     .eq("category", "marketing");
 
-  // Stats
   const totalLeads = leads?.length || 0;
   const today = new Date().toISOString().split("T")[0];
   const newToday =
@@ -102,7 +107,6 @@ export default async function LeadsPage() {
       <Card className="bg-card border-border/50">
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle>Subscriber List</CardTitle>
-          {/* Placeholder for Filter button - Logic can be added later */}
           <Button variant="ghost" size="sm" className="gap-2">
             <Filter className="h-4 w-4" /> Filter
           </Button>

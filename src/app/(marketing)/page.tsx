@@ -1,4 +1,8 @@
 // src/app/(marketing)/page.tsx
+/*  * Landing Page
+ * This component renders the main landing page for BizoraPro, highlighting its features,
+ * benefits, pricing, and call-to-action for potential users.
+ */
 import Link from "next/link";
 import type { Metadata } from "next";
 import { Button } from "@/components/ui/button";
@@ -31,13 +35,11 @@ export const metadata: Metadata = {
 export default function LandingPage() {
   return (
     <>
-      {/* HERO SECTION */}
       <section
         id="home"
         aria-labelledby="hero-heading"
         className="relative pt-20 pb-20 md:pt-28 md:pb-28 overflow-hidden"
       >
-        {/* Glow background (decorative) */}
         <div
           className="pointer-events-none absolute inset-0 -z-10"
           aria-hidden="true"
@@ -47,7 +49,6 @@ export default function LandingPage() {
         </div>
 
         <div className="mx-auto max-w-6xl flex flex-col md:flex-row items-center gap-12 md:gap-16">
-          {/* Left: Text */}
           <div className="flex-1 space-y-6 text-center md:text-left">
             <span className="inline-flex items-center rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-medium uppercase tracking-[0.2em] text-primary/80">
               WhatsApp Commerce · Made Premium
@@ -94,7 +95,6 @@ export default function LandingPage() {
             </p>
           </div>
 
-          {/* Right: Phone Mockup / Preview */}
           <div
             className="flex-1 w-full max-w-[520px]"
             aria-hidden={false}
@@ -102,7 +102,6 @@ export default function LandingPage() {
             aria-label="Demo shop preview"
           >
             <div className="relative flex items-center justify-center aspect-[4/3] rounded-3xl border border-white/10 bg-gradient-to-br from-zinc-950 via-zinc-900 to-zinc-950 shadow-[0_0_120px_rgba(0,0,0,0.7)] overflow-hidden">
-              {/* Inner frame */}
               <ImageIcon
                 className="mx-auto h-20 w-20 text-white/15"
                 aria-hidden="true"
@@ -112,7 +111,6 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* HOW IT WORKS */}
       <section
         id="how-it-works"
         aria-labelledby="how-it-works-heading"
@@ -196,7 +194,6 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* VALUE PROPS */}
       <section
         id="why"
         aria-labelledby="why-heading"
@@ -256,7 +253,6 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* SAMPLE SHOPS */}
       <section
         id="examples"
         aria-labelledby="examples-heading"
@@ -323,7 +319,6 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* PREMIUM FEATURES */}
       <section
         id="features"
         aria-labelledby="features-heading"
@@ -400,7 +395,6 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* PRICING */}
       <section
         id="pricing"
         aria-labelledby="pricing-heading"
@@ -418,7 +412,6 @@ export default function LandingPage() {
           </p>
 
           <div className="grid md:grid-cols-2 gap-7">
-            {/* Monthly */}
             <Card className="bg-[#0B0B0F] border-white/10 hover:border-white/25 transition-all text-left">
               <CardHeader className="p-7 border-b border-white/5 text-center bg-[#101018]">
                 <h3 className="text-lg font-medium mb-1">Monthly</h3>
@@ -449,7 +442,6 @@ export default function LandingPage() {
               </CardContent>
             </Card>
 
-            {/* Yearly */}
             <Card className="bg-[#0B0B0F] border-primary shadow-2xl shadow-primary/15 relative overflow-hidden text-left">
               <div className="absolute top-4 right-4 bg-white text-black text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-[0.15em]">
                 Best Value
@@ -492,7 +484,6 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* FINAL CTA */}
       <section
         aria-labelledby="final-cta-heading"
         className="py-24 bg-black border-t border-white/10"

@@ -1,3 +1,10 @@
+// src/components/dashboard/categories/add-category-dialog.tsx
+/*  * Add Category Dialog Component
+ * This component provides a dialog
+ * interface for adding new categories
+ * to the dashboard, including form
+ * handling and user feedback.
+ */
 "use client";
 
 import { useState } from "react";
@@ -37,7 +44,6 @@ export function AddCategoryDialog() {
 
       setLoading(false);
 
-      // Common successful return: a string id or truthy value
       if (typeof result === "string" || !!result) {
         toast.success("Category created!");
         setOpen(false);
@@ -45,7 +51,6 @@ export function AddCategoryDialog() {
         return;
       }
 
-      // Defensive fallback: try to read message-ish properties (safe cast)
       const maybe = result as any;
       const message =
         maybe?.error ??
@@ -56,14 +61,12 @@ export function AddCategoryDialog() {
       if (message) {
         toast.error(String(message));
       } else {
-        // if nothing useful, show generic success (or generic error if you'd prefer)
         toast.success("Category created!");
         setOpen(false);
         (event.currentTarget as HTMLFormElement).reset();
       }
     } catch (err: any) {
       setLoading(false);
-      // server action threw — show that message
       toast.error(err?.message ?? "Something went wrong");
     }
   };

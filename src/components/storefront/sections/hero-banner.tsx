@@ -1,4 +1,9 @@
 // src/components/storefront/sections/hero-banner.tsx
+/*  * Hero Banner Component
+ * This component renders the hero banner section for the
+ * storefront, displaying the shop's banner image, name,
+ * and a call-to-action button to view the menu.
+ */
 "use client";
 
 import Image from "next/image";

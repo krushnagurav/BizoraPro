@@ -1,3 +1,9 @@
+// src/app/(dashboard)/dashboard/page.tsx
+/*
+ * Dashboard Home Page
+ * This component serves as the main dashboard home for BizoraPro users.
+ * It displays key metrics, charts, and quick actions to manage the shop.
+ */
 import { Suspense } from "react";
 import { redirect } from "next/navigation";
 import { createClient } from "@/src/lib/supabase/server";
@@ -28,7 +34,6 @@ export default async function DashboardHome() {
     .single();
   if (!shop) redirect("/onboarding");
 
-  // Fast fetch for banner
   const { data: settings } = await supabase
     .from("platform_settings")
     .select("global_banner")
@@ -36,7 +41,6 @@ export default async function DashboardHome() {
 
   return (
     <div className="p-8 space-y-8 max-w-7xl mx-auto">
-      {/* Header */}
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold text-primary">Dashboard</h1>
         <div className="flex items-center gap-2 bg-card px-4 py-2 rounded-full border border-border shadow-sm">
@@ -49,7 +53,6 @@ export default async function DashboardHome() {
         </div>
       </div>
 
-      {/* Announcement */}
       {settings?.global_banner && (
         <div className="bg-blue-500/10 border border-blue-500/20 p-4 rounded-xl flex gap-3 animate-in fade-in">
           <Megaphone className="h-5 w-5 text-blue-500 shrink-0" />
@@ -59,12 +62,10 @@ export default async function DashboardHome() {
         </div>
       )}
 
-      {/* 1. Stats (Priority Load) */}
       <Suspense fallback={<StatsSkeleton />}>
         <StatsCards shopId={shop.id} />
       </Suspense>
 
-      {/* 2. Chart (Lazy Load) */}
       <div className="grid lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2">
           <Suspense fallback={<ChartSkeleton />}>
@@ -72,7 +73,6 @@ export default async function DashboardHome() {
           </Suspense>
         </div>
 
-        {/* 👇 ADD LOW STOCK HERE 👇 */}
         <div className="lg:col-span-1">
           <Suspense
             fallback={
@@ -84,12 +84,10 @@ export default async function DashboardHome() {
         </div>
       </div>
 
-      {/* 3. Orders (Actionable) */}
       <Suspense fallback={<ListSkeleton />}>
         <OrdersWidget shopId={shop.id} />
       </Suspense>
 
-      {/* 4. Insights (Smart) */}
       <Suspense
         fallback={
           <div className="h-32 bg-secondary/10 rounded-xl animate-pulse" />
@@ -98,7 +96,6 @@ export default async function DashboardHome() {
         <InsightsWidget shop={shop} />
       </Suspense>
 
-      {/* 5. Quick Actions */}
       <QuickActions shop={shop} />
     </div>
   );

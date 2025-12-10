@@ -1,4 +1,10 @@
 // src/app/(onboarding)/onboarding/page.tsx
+/*
+ * Onboarding Main Page
+ *
+ * This page serves as the main entry point for the onboarding process.
+ * It determines the current step of the onboarding and renders the appropriate form.
+ */
 import { redirect } from "next/navigation";
 
 import {
@@ -16,7 +22,6 @@ import { createClient } from "@/src/lib/supabase/server";
 export default async function OnboardingPage() {
   const supabase = await createClient();
 
-  // 1. Get User & Shop Status
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -28,11 +33,8 @@ export default async function OnboardingPage() {
     .eq("owner_id", user.id)
     .single();
 
-  // Logic: Which Step to Show?
-  // If no shop exists yet, we are on Step 1.
   const currentStep = shop ? shop.onboarding_step : 1;
 
-  // If finished (Step 4), go to dashboard
   if (currentStep >= 4) {
     redirect("/dashboard");
   }
@@ -60,7 +62,6 @@ export default async function OnboardingPage() {
         </CardHeader>
 
         <CardContent className="pt-6">
-          {/* Render the correct form based on step */}
           {currentStep === 1 && <Step1Form />}
           {currentStep === 2 && <Step2Form />}
           {currentStep === 3 && <Step3Form />}

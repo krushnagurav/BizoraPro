@@ -1,3 +1,10 @@
+// src/app/(dashboard)/products/[id]/page.tsx
+/*
+ * Edit Product Page
+ * This component provides a form for editing existing products in the BizoraPro dashboard.
+ * It fetches the product details and allows users to update information such as
+ * name, price, category, and description.
+ */
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { EditProductForm } from "@/src/components/dashboard/products/edit-form";
@@ -11,7 +18,6 @@ export default async function EditProductPage({
 }) {
   const supabase = await createClient();
 
-  // 1. Await params
   const { id } = await params;
 
   const {
@@ -19,7 +25,6 @@ export default async function EditProductPage({
   } = await supabase.auth.getUser();
   if (!user) return notFound();
 
-  // 2. Get Shop (with PLAN) & Product
   const { data: shop } = await supabase
     .from("shops")
     .select("id, plan")
@@ -34,7 +39,6 @@ export default async function EditProductPage({
 
   if (!product || !shop) notFound();
 
-  // 3. Get Categories
   const { data: categories } = await supabase
     .from("categories")
     .select("id, name")
@@ -51,7 +55,6 @@ export default async function EditProductPage({
 
       <h1 className="text-3xl font-bold text-primary mb-8">Edit Product</h1>
 
-      {/* 4. Pass 'plan' to the form */}
       <EditProductForm
         product={product}
         categories={categories || []}

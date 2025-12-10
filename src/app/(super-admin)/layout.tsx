@@ -1,3 +1,11 @@
+// src/app/(super-admin)/layout.tsx
+/*
+ * Super Admin Layout
+ * This layout is specifically for super administrator pages.
+ * It includes authentication checks to ensure only the designated
+ * super admin can access these routes, along with the necessary
+ * UI components like sidebar and mobile header.
+ */
 import { AdminMobileHeader } from "@/src/components/admin/admin-mobile-header";
 import { AdminSidebar } from "@/src/components/admin/admin-sidebar";
 import { createClient } from "@/src/lib/supabase/server";
@@ -25,13 +33,10 @@ export default async function SuperAdminLayout({
 
   return (
     <div className="min-h-screen bg-black text-white font-sans">
-      {/* Desktop Sidebar */}
       <AdminSidebar />
 
-      {/* Mobile Header */}
       <AdminMobileHeader />
 
-      {/* Content */}
       <main className="md:pl-64 pt-16 md:pt-0 min-h-screen p-4 md:p-8 bg-black">
         {children}
       </main>

@@ -1,3 +1,9 @@
+// src/components/dashboard/products/bulk-price-dialog.tsx
+/*  * Bulk Price Dialog Component
+ * This component provides a dialog
+ * interface for bulk updating product
+ * prices based on selected criteria.
+ */
 "use client";
 
 import { useState } from "react";
@@ -65,7 +71,6 @@ export function BulkPriceDialog({ categories }: { categories: any[] }) {
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4 mt-4">
-          {/* Category Filter */}
           <div className="space-y-2">
             <Label>Apply to Category</Label>
             <Select name="categoryId" defaultValue="all">
@@ -84,7 +89,6 @@ export function BulkPriceDialog({ categories }: { categories: any[] }) {
           </div>
 
           <div className="grid grid-cols-2 gap-4">
-            {/* Operation */}
             <div className="space-y-2">
               <Label>Action</Label>
               <Select name="operation" defaultValue="increase">
@@ -98,7 +102,6 @@ export function BulkPriceDialog({ categories }: { categories: any[] }) {
               </Select>
             </div>
 
-            {/* Type */}
             <div className="space-y-2">
               <Label>Type</Label>
               <Select name="type" defaultValue="percent">
@@ -113,7 +116,6 @@ export function BulkPriceDialog({ categories }: { categories: any[] }) {
             </div>
           </div>
 
-          {/* Value */}
           <div className="space-y-2">
             <Label>Value</Label>
             <Input

@@ -1,3 +1,10 @@
+// src/app/(super-admin)/admin/payments/[id]/page.tsx
+/*
+ * Payment Detail Page
+ *
+ * This page displays detailed information about a specific payment transaction.
+ * Super administrators can view transaction summary, billed shop details, and download invoices.
+ */
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -15,10 +22,9 @@ export default async function PaymentDetailPage({
   const { id } = await params;
   const supabase = await createClient();
 
-  // Fetch Payment + Shop
   const { data: payment } = await supabase
     .from("payments")
-    .select("*, shops(name, email, owner_id)") // Assuming shops has owner email or fetch separately
+    .select("*, shops(name, email, owner_id)")
     .eq("id", id)
     .single();
 
@@ -61,7 +67,6 @@ export default async function PaymentDetailPage({
       </div>
 
       <div className="grid md:grid-cols-3 gap-6">
-        {/* Main Info */}
         <Card className="bg-[#111] border-white/10 text-white md:col-span-2">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
@@ -97,7 +102,6 @@ export default async function PaymentDetailPage({
           </CardContent>
         </Card>
 
-        {/* Shop Info */}
         <Card className="bg-[#111] border-white/10 text-white">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">

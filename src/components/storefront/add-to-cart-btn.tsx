@@ -1,4 +1,9 @@
 // src\components\storefront\add-to-cart-btn.tsx
+/*  * Add to Cart Button Component
+ * This component renders an "Add to Cart" button for a product
+ * in the storefront. It integrates with the shopping cart and
+ * handles the shop's open/closed state.
+ */
 "use client";
 
 import { Button } from "@/components/ui/button";
@@ -22,7 +27,7 @@ export function AddToCartButton({
       price: product.price,
       image_url: product.image_url,
       quantity: 1,
-      shop_id: product.shop_id, // Updated to match your DB relation logic if needed
+      shop_id: product.shop_id,
     });
     toast.success("Added to cart");
   };

@@ -1,3 +1,10 @@
+// src/app/(dashboard)/orders/abandoned/page.tsx
+/*
+ * Abandoned Orders Page
+ * This component displays a list of abandoned checkouts in the BizoraPro dashboard.
+ * It allows shop owners to view customers who did not complete their orders
+ * and provides options to recover these sales via WhatsApp messages.
+ */
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -23,12 +30,11 @@ export default async function AbandonedOrdersPage() {
     .eq("owner_id", user!.id)
     .single();
 
-  // Fetch ONLY Draft Orders
   const { data: orders } = await supabase
     .from("orders")
     .select("*")
     .eq("shop_id", shop?.id)
-    .eq("status", "draft") // <--- The Filter
+    .eq("status", "draft")
     .order("created_at", { ascending: false });
 
   return (
@@ -73,7 +79,6 @@ export default async function AbandonedOrdersPage() {
                 </TableRow>
               ) : (
                 orders?.map((order) => {
-                  // Generate Recovery Link
                   const recoveryMsg = `Hi ${order.customer_info.name}, we noticed you left items in your cart at ${shop?.name || "our shop"}. Would you like to complete your order?`;
                   const waLink = `https://wa.me/${order.customer_info.phone}?text=${encodeURIComponent(recoveryMsg)}`;
 
@@ -97,7 +102,6 @@ export default async function AbandonedOrdersPage() {
                       </TableCell>
                       <TableCell className="text-muted-foreground text-xs">
                         {new Date(order.created_at).toLocaleDateString()}
-                        {/* Use date-fns here for "2 hours ago" if you want */}
                       </TableCell>
                       <TableCell className="font-bold text-red-400">
                         ₹{order.total_amount}

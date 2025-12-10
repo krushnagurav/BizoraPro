@@ -1,3 +1,9 @@
+// src/components/dashboard/products/bulk-import-form.tsx
+/*  * Bulk Import Form Component
+ * This component allows users to
+ * upload a CSV file to bulk import
+ * products into the dashboard.
+ */
 "use client";
 
 import { useState } from "react";

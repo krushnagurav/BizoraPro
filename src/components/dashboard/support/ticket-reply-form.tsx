@@ -1,4 +1,8 @@
 // src/components/dashboard/support/ticket-reply-form.tsx
+/*  * Ticket Reply Form Component
+ * This component provides a form for replying
+ * to support tickets within the dashboard.
+ */
 "use client";
 
 import { Button } from "@/components/ui/button";

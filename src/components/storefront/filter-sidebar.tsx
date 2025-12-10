@@ -1,9 +1,14 @@
 // src\components\storefront\filter-sidebar.tsx
+/*  * Filter Sidebar Component
+ * This component provides filtering options for products
+ * in the storefront, including price range, availability,
+ * and rating filters.
+ */
 "use client";
 
 import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Slider } from "@/components/ui/slider"; // Ensure shadcn slider is installed: npx shadcn@latest add slider
+import { Slider } from "@/components/ui/slider";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -31,7 +36,6 @@ export function FilterSidebar({ slug }: { slug: string }) {
 
   return (
     <div className="w-64 shrink-0 space-y-8 hidden lg:block">
-      {/* Price Range */}
       <div className="space-y-4">
         <h3 className="font-bold text-slate-900">Price Range</h3>
         <Slider
@@ -48,7 +52,6 @@ export function FilterSidebar({ slug }: { slug: string }) {
         </div>
       </div>
 
-      {/* Availability */}
       <div className="space-y-4">
         <h3 className="font-bold text-slate-900">Availability</h3>
         <div className="flex items-center gap-2">
@@ -66,7 +69,6 @@ export function FilterSidebar({ slug }: { slug: string }) {
         </div>
       </div>
 
-      {/* Rating */}
       <div className="space-y-4">
         <h3 className="font-bold text-slate-900">Rating</h3>
         {[5, 4, 3].map((stars) => (

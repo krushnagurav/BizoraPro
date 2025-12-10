@@ -1,3 +1,11 @@
+// src/components/dashboard/orders/template-selector.tsx
+/*  * Template Selector Component
+ * This component allows users to
+ * select predefined message templates
+ * for communicating with customers
+ * via WhatsApp, enhancing order
+ * management efficiency.
+ */
 "use client";
 
 import { Button } from "@/components/ui/button";
@@ -26,7 +34,6 @@ export function TemplateSelector({
   const handleSelect = async (template: any) => {
     let text = template.message || "";
 
-    // 🪄 MAGIC: Replace Variables
     text = text.replace(
       /{{customer_name}}/g,
       order.customer_info?.name || "Customer",
@@ -37,21 +44,17 @@ export function TemplateSelector({
     );
     text = text.replace(/{{amount}}/g, `₹${order.total_amount}`);
     text = text.replace(/{{shop_name}}/g, shopName);
-    // Add more replacements as needed (e.g. tracking link)
 
-    // Open WhatsApp
     const phone = order.customer_info?.phone;
     if (phone) {
       window.open(
         `https://wa.me/${phone}?text=${encodeURIComponent(text)}`,
         "_blank",
       );
-      // Track usage
       await incrementTemplateUsageAction(template.id);
     }
   };
 
-  // Group templates by category for nicer UI
   const categories = Array.from(
     new Set(templates.map((t) => t.category || "general")),
   );

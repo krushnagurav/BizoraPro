@@ -1,3 +1,8 @@
+// src\components\storefront\cart-icon.tsx
+/*  * Cart Icon Component
+ * This component displays a shopping cart icon in the storefront.
+ * It shows the number of items in the cart and links to the cart page.
+ */
 "use client";
 
 import { useCart } from "@/src/hooks/use-cart";
@@ -10,7 +15,6 @@ export function CartIcon({ slug }: { slug: string }) {
   const cart = useCart();
   const [mounted, setMounted] = useState(false);
 
-  // Hydration fix
   // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => setMounted(true), []);
 

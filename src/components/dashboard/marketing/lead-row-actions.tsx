@@ -1,3 +1,11 @@
+// src/components/dashboard/marketing/lead-row-actions.tsx
+/*  * Lead Row Actions Component
+ * This component provides action
+ * buttons for each lead in the
+ * marketing dashboard, allowing
+ * quick communication via WhatsApp
+ * using predefined templates.
+ */
 "use client";
 
 import { Button } from "@/components/ui/button";
@@ -27,12 +35,10 @@ export function LeadRowActions({
     let text = "";
 
     if (template) {
-      // Inject Variables
       text = template.message || "";
       text = text.replace(/{{customer_name}}/g, lead.name || "there");
       text = text.replace(/{{shop_name}}/g, shopName);
     } else {
-      // Default fallback
       text = `Hi ${lead.name || "there"}, thanks for subscribing to ${shopName}!`;
     }
 
@@ -41,13 +47,11 @@ export function LeadRowActions({
       "_blank",
     );
 
-    // Log contact in background
     await logLeadContactAction(lead.id);
   };
 
   return (
     <div className="flex justify-end gap-2">
-      {/* Quick Chat (Default or Template) */}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button

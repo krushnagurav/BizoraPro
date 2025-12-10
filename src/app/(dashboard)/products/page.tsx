@@ -1,3 +1,9 @@
+// src/app/(dashboard)/products/page.tsx
+/*
+ * Products Page
+ * This component displays the list of products in the BizoraPro dashboard.
+ * It includes search, filtering, pagination, and options to add or import products.
+ */
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { BulkPriceDialog } from "@/src/components/dashboard/products/bulk-price-dialog";
@@ -44,13 +50,11 @@ export default async function ProductsPage({
     .single();
   if (!shop) redirect("/onboarding");
 
-  // Fetch Categories for Filter
   const { data: categories } = await supabase
     .from("categories")
     .select("id, name")
     .eq("shop_id", shop.id);
 
-  // Fetch Data via DAL (Updated)
   const { data: products, metadata } = await getProducts(
     shop.id,
     currentPage,
@@ -61,7 +65,6 @@ export default async function ProductsPage({
 
   return (
     <div className="p-8 space-y-6">
-      {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between gap-4 items-start sm:items-center">
         <div>
           <h1 className="text-3xl font-bold text-primary">Products</h1>
@@ -84,7 +87,6 @@ export default async function ProductsPage({
         </div>
       </div>
 
-      {/* Search & Filters Toolbar */}
       <div className="flex flex-col sm:flex-row gap-4">
         <div className="relative flex-1 max-w-sm">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -95,7 +97,6 @@ export default async function ProductsPage({
               className="pl-9 bg-card"
               defaultValue={searchQuery}
             />
-            {/* Preserve filters when searching */}
             {categoryId !== "all" && (
               <input type="hidden" name="category" value={categoryId} />
             )}
@@ -105,14 +106,11 @@ export default async function ProductsPage({
           </form>
         </div>
 
-        {/* Client Filter Component */}
         <ProductFilters categories={categories || []} />
       </div>
 
-      {/* Table */}
       <ProductListTable products={products} slug={shop.slug} />
 
-      {/* Pagination */}
       {metadata.totalPages > 1 && (
         <div className="flex items-center justify-end gap-2">
           <Link

@@ -1,4 +1,10 @@
 // src\app\(auth)\layout.tsx
+/*
+ * Auth Layout
+ * This layout component is used for authentication-related pages
+ * such as login and registration. It provides a consistent design and
+ * structure for these pages within the application.
+ */
 import { Store } from "lucide-react";
 import Link from "next/link";
 import React from "react";
@@ -10,7 +16,6 @@ export default function AuthLayout({
 }) {
   return (
     <div className="min-h-screen bg-[#050505] text-white flex items-center justify-center relative overflow-hidden">
-      {/* Background Accents */}
       <div className="absolute inset-0 opacity-10 pointer-events-none">
         <div className="absolute -top-[10%] -left-[10%] w-[40%] h-[40%] bg-primary/20 blur-[100px] rounded-full" />
         <div className="absolute -bottom-[10%] -right-[10%] w-[40%] h-[40%] bg-primary/20 blur-[100px] rounded-full" />

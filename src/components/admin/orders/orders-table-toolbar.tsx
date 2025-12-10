@@ -1,3 +1,12 @@
+// src/components/admin/orders/orders-table-toolbar.tsx
+/*  * Orders Table Toolbar Component
+ * This component provides
+ * a toolbar for the orders
+ * table in the admin
+ * dashboard, allowing admins
+ * to search and filter orders
+ * by status.
+ */
 "use client";
 
 import { Input } from "@/components/ui/input";

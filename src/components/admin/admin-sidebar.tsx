@@ -1,3 +1,12 @@
+// src/components/admin/admin-sidebar.tsx
+/*  * Admin Sidebar Component
+ * This component renders
+ * the sidebar navigation
+ * for the admin dashboard,
+ * providing links to
+ * various admin sections
+ * and functionalities.
+ */
 "use client";
 
 import Link from "next/link";
@@ -17,11 +26,10 @@ import {
   Users,
   Mail,
   FileText,
-  TicketPercent, // For Plans
-  Headphones, // For Support
+  TicketPercent,
+  Headphones,
 } from "lucide-react";
 
-// ORGANIZED GROUPS
 const adminGroups = [
   {
     label: "Monitor",
@@ -63,7 +71,6 @@ export function AdminSidebar() {
 
   return (
     <div className="h-screen w-64 bg-[#050505] border-r border-white/10 hidden md:flex flex-col fixed left-0 top-0 text-white">
-      {/* Header */}
       <div className="h-16 flex items-center px-6 border-b border-white/10 shrink-0">
         <ShieldAlert className="h-6 w-6 text-primary mr-2" />
         <span className="font-bold text-lg">
@@ -71,7 +78,6 @@ export function AdminSidebar() {
         </span>
       </div>
 
-      {/* Nav (Scrollable) */}
       <div className="flex-1 py-6 px-3 space-y-6 overflow-y-auto">
         {adminGroups.map((group, i) => (
           <div key={i}>
@@ -100,7 +106,6 @@ export function AdminSidebar() {
         ))}
       </div>
 
-      {/* Footer */}
       <div className="p-4 border-t border-white/10 shrink-0">
         <Link href="/dashboard">
           <Button

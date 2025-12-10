@@ -1,3 +1,10 @@
+// src/components/dashboard/marketing/reviews-filter.tsx
+/*  * Reviews Filter Component
+ * This component provides filtering
+ * options for reviews based on
+ * status and star ratings in the
+ * marketing dashboard.
+ */
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";

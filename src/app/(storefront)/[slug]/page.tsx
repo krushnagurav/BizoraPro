@@ -1,4 +1,10 @@
 // src/app/(storefront)/[slug]/page.tsx
+/* Shop Home Page
+ * This is the main landing page for a specific shop identified by its slug.
+ * It displays the shop's banner, featured products, categories, Instagram feed,
+ * and a newsletter signup form. The page adapts its appearance based on the
+ * shop's theme configuration.
+ */
 import type { CSSProperties } from "react";
 import { createClient } from "@/src/lib/supabase/server";
 import { notFound } from "next/navigation";
@@ -43,14 +49,12 @@ export default async function ShopHomePage({ params, searchParams }: any) {
 
   const { data: allProducts } = await productQuery;
 
-  // Limit to 4 products for Featured section
   const featuredProducts = allProducts?.slice(0, 4) || [];
 
   const theme = shop.theme_config as unknown as ThemeConfig;
   const primaryColorHsl = hexToHsl(theme.primaryColor || "#E6B800");
   const banner = theme.bannerUrl || "";
 
-  // Auto-Close Logic
   let isShopActuallyOpen = shop.is_open;
   if (shop.auto_close) {
     const now = new Date();
@@ -72,7 +76,6 @@ export default async function ShopHomePage({ params, searchParams }: any) {
       className="min-h-screen bg-[#F8F9FA] text-slate-900 pb-20"
       style={{ "--primary": primaryColorHsl } as CSSProperties}
     >
-      {/* ⛔ STORE CLOSED BANNER (Moved to Top) */}
       {!isShopActuallyOpen && (
         <div className="bg-red-600 text-white text-center py-2 px-4 text-sm font-bold sticky top-0 z-[60]">
           Store is currently closed. You can browse, but orders will be
@@ -82,7 +85,6 @@ export default async function ShopHomePage({ params, searchParams }: any) {
 
       <ShopHeader shop={shop} />
 
-      {/* 1. HERO BANNER */}
       <div className="relative w-full h-56 md:h-96 bg-slate-900 overflow-hidden">
         {banner ? (
           <Image
@@ -104,7 +106,6 @@ export default async function ShopHomePage({ params, searchParams }: any) {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 md:px-8 py-12 space-y-16">
-        {/* 2. CATEGORIES */}
         <div>
           <div className="flex gap-3 overflow-x-auto pb-4 no-scrollbar">
             <Link href={`/${slug}`}>
@@ -130,7 +131,6 @@ export default async function ShopHomePage({ params, searchParams }: any) {
           </div>
         </div>
 
-        {/* 3. FEATURED COLLECTION (Max 4) */}
         <div>
           <div className="flex justify-between items-end mb-8">
             <h2 className="text-2xl md:text-3xl font-bold text-slate-900">
@@ -161,7 +161,6 @@ export default async function ShopHomePage({ params, searchParams }: any) {
             </div>
           )}
 
-          {/* View More Button (Mobile Only) */}
           <div className="mt-6 md:hidden">
             <Link href={`/${slug}/search`}>
               <Button className="w-full bg-white border border-slate-200 text-slate-900 hover:bg-slate-50">
@@ -171,7 +170,6 @@ export default async function ShopHomePage({ params, searchParams }: any) {
           </div>
         </div>
 
-        {/* 4. INSTAGRAM FEED (If setup) */}
         {shop.instagram_feed && shop.instagram_feed.length > 0 && (
           <div>
             <div className="flex items-center justify-center gap-2 mb-8">
@@ -209,7 +207,6 @@ export default async function ShopHomePage({ params, searchParams }: any) {
           </div>
         )}
 
-        {/* 5. EXCLUSIVE OFFERS (Improved UI) */}
         <div className="relative overflow-hidden bg-slate-900 rounded-3xl p-8 md:p-16 text-center">
           <div className="absolute top-0 left-0 w-full h-full opacity-10">
             <div className="absolute -top-20 -left-20 w-64 h-64 bg-primary rounded-full blur-3xl" />

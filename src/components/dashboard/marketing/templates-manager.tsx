@@ -1,3 +1,11 @@
+// src/components/dashboard/marketing/templates-manager.tsx
+/*  * Templates Manager Component
+ * This component provides an interface
+ * for managing message templates used
+ * in marketing communications. Users
+ * can create, edit, delete, and view
+ * usage statistics for each template.
+ */
 "use client";
 
 import { useState } from "react";
@@ -14,7 +22,6 @@ export function TemplatesManager({ templates }: { templates: any[] }) {
 
   return (
     <div className="grid lg:grid-cols-3 gap-8">
-      {/* LEFT: EDITOR */}
       <div className="lg:col-span-1">
         <Card className="bg-card border-border/50 sticky top-8">
           <div className="p-6 border-b border-border/50 flex justify-between items-center">
@@ -41,7 +48,6 @@ export function TemplatesManager({ templates }: { templates: any[] }) {
         </Card>
       </div>
 
-      {/* RIGHT: LIST */}
       <div className="lg:col-span-2 space-y-4">
         {templates.map((t) => (
           <Card

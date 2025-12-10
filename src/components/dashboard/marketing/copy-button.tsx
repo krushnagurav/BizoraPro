@@ -1,3 +1,11 @@
+// src/components/dashboard/marketing/copy-button.tsx
+/*  * Copy Button Component
+ * This component provides a button
+ * to copy predefined message
+ * templates to the clipboard,
+ * facilitating quick communication
+ * in the marketing dashboard.
+ */
 "use client";
 
 import { Button } from "@/components/ui/button";

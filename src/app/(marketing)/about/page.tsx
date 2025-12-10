@@ -1,4 +1,12 @@
 // src/app/(marketing)/about/page.tsx
+/*
+ * About Page
+ *
+ * This page provides information about BizoraPro, its mission, values,
+ * and the story behind its creation. It aims to connect with users by
+ * sharing the company's vision and commitment to supporting WhatsApp-first
+ * businesses in India.
+ */
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -13,7 +21,6 @@ export const metadata: Metadata = {
 export default function AboutPage() {
   return (
     <>
-      {/* HERO */}
       <section
         className="mx-auto max-w-4xl px-4 py-16 text-center sm:px-6 md:py-20 lg:px-8"
         aria-labelledby="about-heading"
@@ -38,7 +45,6 @@ export default function AboutPage() {
         </p>
       </section>
 
-      {/* VALUES */}
       <section
         className="border-y border-white/5 bg-[#050507] py-16 md:py-20"
         aria-labelledby="values-heading"
@@ -105,20 +111,17 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* FOUNDER NOTE */}
       <section
         className="mx-auto max-w-6xl px-4 py-16 sm:px-6 md:py-20 lg:px-8"
         role="region"
         aria-labelledby="founder-heading"
       >
         <div className="relative flex flex-col items-center gap-12 overflow-hidden rounded-3xl border border-white/10 bg-[#0C0C10] p-8 md:flex-row md:gap-16 md:p-14">
-          {/* Background glow (decorative) */}
           <div
             className="pointer-events-none absolute -top-10 right-0 h-72 w-72 rounded-full bg-primary/10 blur-3xl"
             aria-hidden="true"
           />
 
-          {/* Text */}
           <div className="relative z-10 flex-1 space-y-6">
             <h2
               id="founder-heading"
@@ -148,7 +151,6 @@ export default function AboutPage() {
             </div>
           </div>
 
-          {/* Visual */}
           <div
             className="relative z-10 flex flex-1 justify-center"
             aria-hidden="false"
@@ -156,7 +158,6 @@ export default function AboutPage() {
             aria-label="Founder's portrait placeholder"
           >
             <div className="flex h-56 w-56 items-center justify-center rounded-full border border-white/10 bg-[#15151F] shadow-2xl shadow-black/60 md:h-64 md:w-64">
-              {/* Placeholder avatar – replace with real photo later */}
               <Users
                 aria-hidden="true"
                 className="h-20 w-20 text-white/10 md:h-24 md:w-24"
@@ -166,7 +167,6 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* BOTTOM CTA */}
       <section
         className="mx-auto max-w-4xl px-4 pb-16 text-center sm:px-6 md:pb-20 lg:px-8"
         role="region"

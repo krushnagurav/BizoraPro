@@ -1,3 +1,10 @@
+// src/app/(super-admin)/admin/analytics/page.tsx
+/*
+ * Advanced Analytics Page
+ *
+ * This page provides super administrators with deep analytics on platform performance.
+ * It includes revenue trends, plan distributions, growth metrics, and top-performing shops.
+ */
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -21,7 +28,6 @@ export default async function AdvancedAnalyticsPage() {
 
   return (
     <div className="space-y-8">
-      {/* Header */}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-white">Deep Analytics</h1>
@@ -37,17 +43,14 @@ export default async function AdvancedAnalyticsPage() {
         </Button>
       </div>
 
-      {/* Row 1: Charts */}
       <div className="grid lg:grid-cols-3 gap-6">
         <RevenueBarChart data={stats.revenueData} />
         <RevenuePieChart data={stats.planDistribution} />
       </div>
 
-      {/* Row 2: Growth & Leaderboard */}
       <div className="grid lg:grid-cols-3 gap-6">
         <GrowthLineChart data={stats.growthData} />
 
-        {/* Shop Leaderboard */}
         <Card className="bg-[#111] border-white/10 text-white lg:col-span-2">
           <CardHeader>
             <CardTitle>Top Performing Shops</CardTitle>

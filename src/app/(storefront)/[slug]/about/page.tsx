@@ -1,4 +1,9 @@
 // src/app/(storefront)/[slug]/about/page.tsx
+/* Shop About Page
+ * This page provides information about a specific shop identified by its slug.
+ * It includes the shop's story, values, and unique selling points.
+ * The page layout and styling adapt based on the shop's theme configuration.
+ */
 import type { CSSProperties } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -36,7 +41,6 @@ export default async function ShopAboutPage({
       <ShopHeader shop={shop} />
 
       <div className="max-w-3xl mx-auto px-6 py-12 space-y-16">
-        {/* 1. Hero Story */}
         <div className="text-center space-y-6">
           <span className="text-xs font-bold tracking-widest text-primary uppercase">
             Our Story
@@ -50,7 +54,6 @@ export default async function ShopAboutPage({
           </p>
         </div>
 
-        {/* 2. Image & Text Block */}
         <div className="grid md:grid-cols-2 gap-12 items-center">
           <div className="space-y-6">
             <h3 className="text-2xl font-serif text-slate-900">
@@ -77,7 +80,6 @@ export default async function ShopAboutPage({
           </div>
         </div>
 
-        {/* 3. Why Choose Us */}
         <div className="space-y-12">
           <div className="text-center space-y-2">
             <span className="text-xs font-bold tracking-widest text-primary uppercase">
@@ -124,7 +126,6 @@ export default async function ShopAboutPage({
           </div>
         </div>
 
-        {/* 4. CTA Box */}
         <div className="bg-primary text-white rounded-3xl p-12 text-center space-y-6 shadow-xl relative overflow-hidden">
           <div className="relative z-10">
             <MessageCircle className="w-12 h-12 mx-auto mb-4 text-white/80" />

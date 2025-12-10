@@ -1,4 +1,8 @@
 // src\app\(auth)\forgot-password\page.tsx
+/*  * Forgot Password Page
+ * This component renders the forgot password page where users can request a password reset link.
+ * It includes a form for entering the user's email and handles submission to send the reset link.
+ */
 "use client";
 
 import { Button } from "@/components/ui/button";

@@ -1,6 +1,12 @@
 // src/app/(super-admin)/admin/templates/page.tsx
-import Link from "next/link";
-import { createClient } from "@/src/lib/supabase/server";
+/*
+ * Admin Templates Page
+ *
+ * This page displays a list of notification templates available in the system.
+ * Super administrators can view, create, edit, and delete templates from this interface.
+ */
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
   Table,
@@ -10,10 +16,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Plus, Edit, Trash2, Mail, MessageCircle } from "lucide-react";
 import { deleteTemplateAction } from "@/src/actions/admin-actions";
+import { createClient } from "@/src/lib/supabase/server";
+import { Edit, Mail, MessageCircle, Plus, Trash2 } from "lucide-react";
+import Link from "next/link";
 
 export default async function AdminTemplatesPage() {
   const supabase = await createClient();

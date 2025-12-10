@@ -1,4 +1,11 @@
 // src/components/admin/orders-trend-chart.tsx
+/*  * Orders Trend Chart Component
+ * This component visualizes
+ * the trend of WhatsApp orders
+ * over the past 30 days
+ * in the admin dashboard
+ * using a line chart.
+ */
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";

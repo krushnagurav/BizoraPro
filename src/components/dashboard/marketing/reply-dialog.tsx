@@ -1,3 +1,9 @@
+// src/components/dashboard/marketing/reply-dialog.tsx
+/*  * Reply Dialog Component
+ * This component provides a dialog
+ * interface for replying to customer
+ * reviews in the marketing dashboard.
+ */
 "use client";
 
 import { useState } from "react";

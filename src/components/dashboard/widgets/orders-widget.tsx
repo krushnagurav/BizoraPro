@@ -1,3 +1,9 @@
+// src/components/dashboard/widgets/orders-widget.tsx
+/*  * Orders Widget Component
+ * This component fetches and displays
+ * pending orders and recent orders
+ * for the dashboard.
+ */
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -27,7 +33,6 @@ export async function OrdersWidget({ shopId }: { shopId: string }) {
 
   return (
     <div className="grid lg:grid-cols-2 gap-6">
-      {/* Pending Actions */}
       <Card className="bg-card border-border/50 border-l-4 border-l-red-500">
         <CardHeader>
           <CardTitle className="text-lg flex items-center gap-2">
@@ -72,7 +77,6 @@ export async function OrdersWidget({ shopId }: { shopId: string }) {
         </CardContent>
       </Card>
 
-      {/* Recent Orders */}
       <Card className="bg-card border-border/50">
         <CardHeader className="flex flex-row justify-between">
           <CardTitle className="flex gap-2">

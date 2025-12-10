@@ -1,9 +1,17 @@
+// src/app/layout.tsx
+/*
+ * Root Layout
+ *
+ * This is the root layout component for the application.
+ * It handles global settings such as maintenance mode and includes
+ * necessary providers and fonts for consistent styling across the app.
+ */
+import { Toaster } from "@/components/ui/sonner";
+import { Analytics } from "@vercel/analytics/next";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";
-import { Toaster } from "@/components/ui/sonner";
 import { createClient } from "../lib/supabase/server";
-import { Analytics } from "@vercel/analytics/next";
+import "./globals.css";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -31,7 +39,6 @@ export default async function RootLayout({
     .select("maintenance_mode")
     .single();
 
-  // Check if Admin is logged in (Admins bypass maintenance)
   const {
     data: { user },
   } = await supabase.auth.getUser();

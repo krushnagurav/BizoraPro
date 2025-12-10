@@ -1,3 +1,9 @@
+// src/app/(dashboard)/notifications/page.tsx
+/*
+ * Notifications Page
+ * This component displays user notifications in the BizoraPro dashboard.
+ * It shows alerts, updates, and announcements with options to mark them as read.
+ */
 import { createClient } from "@/src/lib/supabase/server";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -26,7 +32,6 @@ export default async function NotificationsPage() {
 
   const unreadCount = notifications?.filter((n) => !n.is_read).length || 0;
 
-  // Helper to get icon
   const getIcon = (type: string) => {
     switch (type) {
       case "warning":

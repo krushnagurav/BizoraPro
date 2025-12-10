@@ -1,4 +1,9 @@
 // src/app/(storefront)/layout.tsx
+/*
+ * Storefront Layout
+ * This layout component is used for storefront-related pages.
+ * It provides a consistent structure and styling for all storefront pages.
+ */
 import type { ReactNode } from "react";
 
 export default function StorefrontLayout({

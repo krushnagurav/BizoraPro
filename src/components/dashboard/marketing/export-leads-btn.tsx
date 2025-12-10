@@ -1,3 +1,9 @@
+// src/components/dashboard/marketing/export-leads-btn.tsx
+/*  * Export Leads Button Component
+ * This component provides a button
+ * to export marketing leads as a CSV
+ * file from the marketing dashboard.
+ */
 "use client";
 
 import { Button } from "@/components/ui/button";
@@ -11,23 +17,19 @@ export function ExportLeadsButton({ data }: { data: any[] }) {
       return;
     }
 
-    // 1. Define Headers
     const headers = ["Name", "Phone", "Date"];
 
-    // 2. Format Rows
     const rows = data.map((lead) => [
       lead.name || "Guest",
       lead.phone,
       new Date(lead.created_at).toLocaleDateString(),
     ]);
 
-    // 3. Generate CSV String
     const csvContent = [
       headers.join(","),
       ...rows.map((row) => row.join(",")),
     ].join("\n");
 
-    // 4. Download File
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");

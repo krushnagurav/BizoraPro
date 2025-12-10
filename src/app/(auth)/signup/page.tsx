@@ -1,4 +1,9 @@
 // src\app\(auth)\signup\page.tsx
+/*
+ * Signup Page
+ * This component renders the signup page where new users can create an account.
+ * It includes a form for entering user details and handles form submission.
+ */
 "use client";
 
 import { Button } from "@/components/ui/button";
@@ -49,7 +54,6 @@ export default function SignupPage() {
         toast.error(result.error);
         setLoading(false);
       }
-      // success handled by server action
     } catch {
       toast.error("Something went wrong. Try again.");
       setLoading(false);

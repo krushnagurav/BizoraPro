@@ -1,10 +1,16 @@
+// src/app/verify/page.tsx
+/*  * Verify Page
+ *
+ * This page handles the verification of secure access via magic links.
+ * It processes tokens from the URL hash to authenticate users and redirect them accordingly.
+ */
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import { createClient } from "@/src/lib/supabase/client";
-import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 export default function VerifyPage() {
   const router = useRouter();
@@ -14,12 +20,9 @@ export default function VerifyPage() {
     const handleMagicLink = async () => {
       const supabase = createClient();
 
-      // 1. Parse the Hash manually (Reliable way)
-      // URL looks like: http://.../verify#access_token=xyz&refresh_token=abc...
       const hash = window.location.hash;
 
       if (!hash) {
-        // If no hash, maybe Supabase already processed it? Check session.
         const {
           data: { session },
         } = await supabase.auth.getSession();
@@ -31,8 +34,7 @@ export default function VerifyPage() {
         return;
       }
 
-      // 2. Extract tokens
-      const params = new URLSearchParams(hash.substring(1)); // remove #
+      const params = new URLSearchParams(hash.substring(1));
       const accessToken = params.get("access_token");
       const refreshToken = params.get("refresh_token");
 
@@ -41,13 +43,10 @@ export default function VerifyPage() {
         return;
       }
 
-      // 3. FORCE SET SESSION
       setStatus("Switching accounts...");
 
-      // First, sign out the Admin to clean state
       await supabase.auth.signOut();
 
-      // Then, set the new User session
       const { error } = await supabase.auth.setSession({
         access_token: accessToken,
         refresh_token: refreshToken,
@@ -67,7 +66,6 @@ export default function VerifyPage() {
       setStatus("Access granted. Redirecting...");
       toast.success("Impersonation active!");
 
-      // Force hard reload to clear any server-side caches
       setTimeout(() => {
         window.location.href = "/dashboard";
       }, 1000);

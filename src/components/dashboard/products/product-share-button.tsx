@@ -1,3 +1,10 @@
+// src/components/dashboard/products/product-share-button.tsx
+/*  * Product Share Button Component
+ * This component provides a button
+ * to share a product link via WhatsApp,
+ * enhancing product visibility and
+ * customer engagement.
+ */
 "use client";
 
 import { Button } from "@/components/ui/button";

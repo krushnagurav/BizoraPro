@@ -1,5 +1,11 @@
-import Link from "next/link";
+// src/app/not-found.tsx
+/*
+ * Not Found Page
+ * This component renders a user-friendly 404 error page
+ * when a requested resource cannot be found within the application.
+ */
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 export default function NotFound() {
   return (

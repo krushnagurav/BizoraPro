@@ -1,3 +1,13 @@
+// src/components/admin/support/support-toolbar.tsx
+/*  * Support Toolbar Component
+ * This component provides
+ * a toolbar for the support
+ * section in the admin
+ * dashboard, allowing admins
+ * to filter and search
+ * support tickets by status,
+ * priority, and keywords.
+ */
 "use client";
 
 import { Input } from "@/components/ui/input";
@@ -32,11 +42,11 @@ export function SupportToolbar() {
     if (priority !== "all") params.set("priority", priority);
     else params.delete("priority");
 
-    params.set("page", "1"); // Reset pagination
+    params.set("page", "1");
 
     const timer = setTimeout(() => {
       router.push(`/admin/support?${params.toString()}`);
-    }, 300); // Debounce
+    }, 300);
 
     return () => clearTimeout(timer);
   }, [query, status, priority, router, searchParams]);

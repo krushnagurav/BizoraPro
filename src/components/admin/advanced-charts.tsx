@@ -1,3 +1,12 @@
+// src/components/admin/advanced-charts.tsx
+/*  * Advanced Charts Component
+ * This component includes
+ * multiple advanced charts
+ * for the admin dashboard,
+ * such as revenue pie chart,
+ * revenue bar chart,
+ * and growth line chart.
+ */
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -16,7 +25,6 @@ import {
   YAxis,
 } from "recharts";
 
-// 1. REVENUE PIE CHART
 export function RevenuePieChart({ data }: { data: any[] }) {
   return (
     <Card className="bg-[#111] border-white/10 text-white">
@@ -62,7 +70,6 @@ export function RevenuePieChart({ data }: { data: any[] }) {
   );
 }
 
-// 2. REVENUE BAR CHART
 export function RevenueBarChart({ data }: { data: any[] }) {
   return (
     <Card className="bg-[#111] border-white/10 text-white col-span-2">
@@ -108,7 +115,6 @@ export function RevenueBarChart({ data }: { data: any[] }) {
   );
 }
 
-// 3. GROWTH LINE CHART
 export function GrowthLineChart({ data }: { data: any[] }) {
   return (
     <Card className="bg-[#111] border-white/10 text-white">

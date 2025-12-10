@@ -1,3 +1,9 @@
+// src/components/dashboard/sidebar.tsx
+/*  * Dashboard Sidebar Component
+ * This component renders the sidebar navigation for the
+ * dashboard section of the application. It includes links
+ * to various dashboard features and a logout button.
+ */
 "use client";
 
 import Link from "next/link";
@@ -29,7 +35,6 @@ import {
 } from "lucide-react";
 import { logoutAction } from "@/src/actions/auth-actions";
 
-// GROUPED NAVIGATION
 const navGroups = [
   {
     label: "Main",

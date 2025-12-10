@@ -1,4 +1,9 @@
 // src/app/(super-admin)/admin/plans/new/page.tsx
+/*  * New Plan Page
+ *
+ * This page allows super administrators to create new subscription plans.
+ * It provides a form for entering plan details and saving them to the system.
+ */
 import { PlanForm } from "@/src/components/admin/plans/plan-form";
 
 export default function CreatePlanPage() {

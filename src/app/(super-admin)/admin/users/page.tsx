@@ -1,3 +1,10 @@
+// src/app/(super-admin)/admin/users/page.tsx
+/*  * Admin Users Page
+ *
+ * This page allows super administrators to manage admin users.
+ * It displays a list of current admin users and provides options
+ * to view profiles and add new admins.
+ */
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -11,7 +18,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { AddAdminDialog } from "@/src/components/admin/add-admin-dialog";
-import { AdminProfileSidebar } from "@/src/components/admin/users/admin-profile-sidebar"; // Import new component
+import { AdminProfileSidebar } from "@/src/components/admin/users/admin-profile-sidebar";
 import { createClient } from "@/src/lib/supabase/server";
 import { Eye, Search } from "lucide-react";
 import Link from "next/link";
@@ -30,12 +37,10 @@ export default async function AdminUsersPage({
     .select("*")
     .order("created_at");
 
-  // Find selected user for sidebar
   const selectedUser = users?.find((u) => u.id === selectedUserId);
 
   return (
     <div className="flex gap-8 h-[calc(100vh-100px)]">
-      {/* LEFT: LIST */}
       <div className="flex-1 flex flex-col gap-6">
         <div className="flex items-center justify-between shrink-0">
           <div>
@@ -47,7 +52,6 @@ export default async function AdminUsersPage({
           <AddAdminDialog />
         </div>
 
-        {/* Toolbar */}
         <div className="flex gap-4 shrink-0">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
@@ -56,7 +60,6 @@ export default async function AdminUsersPage({
               className="pl-9 bg-[#111] border-white/10"
             />
           </div>
-          {/* Add Role Filter Dropdown here if needed */}
         </div>
 
         <Card className="bg-[#111] border-white/10 text-white flex-1 overflow-hidden">
@@ -118,7 +121,6 @@ export default async function AdminUsersPage({
         </Card>
       </div>
 
-      {/* RIGHT: PROFILE SIDEBAR */}
       {selectedUser && <AdminProfileSidebar user={selectedUser} />}
     </div>
   );

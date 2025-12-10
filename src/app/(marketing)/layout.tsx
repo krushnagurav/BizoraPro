@@ -1,4 +1,10 @@
 // src/app/(marketing)/layout.tsx
+/*
+ * Marketing Layout
+ * This layout component is used for marketing-related pages
+ * such as the landing page, pricing, and features. It provides a
+ * consistent design and structure for these pages within the application.
+ */
 import { ReactNode } from "react";
 import { SiteFooter } from "@/src/components/marketing/site-footer";
 import { SiteHeader } from "@/src/components/marketing/site-header";

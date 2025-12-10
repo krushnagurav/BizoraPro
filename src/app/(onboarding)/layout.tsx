@@ -1,4 +1,10 @@
 // src/app/(onboarding)/layout.tsx
+/*
+ * Onboarding Layout
+ *
+ * This layout wraps all onboarding-related pages, providing a consistent
+ * look and feel with branding and styling specific to the onboarding flow.
+ */
 import Link from "next/link";
 import { Store } from "lucide-react";
 
@@ -9,12 +15,10 @@ export default function OnboardingLayout({
 }) {
   return (
     <div className="min-h-screen bg-[#050505] text-white flex flex-col items-center pt-10 relative overflow-hidden">
-      {/* Background Glow */}
       <div className="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none">
         <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-primary/20 blur-[100px] rounded-full" />
       </div>
 
-      {/* Simple Header */}
       <div className="z-10 mb-8 text-center">
         <Link
           href="/"
@@ -25,7 +29,6 @@ export default function OnboardingLayout({
         </Link>
       </div>
 
-      {/* The Wizard Content */}
       <div className="w-full max-w-lg z-10 px-4">{children}</div>
     </div>
   );

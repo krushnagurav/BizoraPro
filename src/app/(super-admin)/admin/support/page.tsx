@@ -1,3 +1,9 @@
+// src/app/(super-admin)/admin/support/page.tsx
+/*  * Admin Support Page
+ *
+ * This page provides super administrators with an interface to manage support tickets.
+ * It includes ticket statistics, filtering options, and a table of current tickets.
+ */
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -42,8 +48,6 @@ export default async function AdminSupportPage({
 
   const supabase = await createClient();
 
-  // --- 1. KPI Stats (Fast Calculation) ---
-  // Using simplified queries for MVP. For scale, use RPC.
   const { count: openCount } = await supabase
     .from("support_tickets")
     .select("id", { count: "exact", head: true })
@@ -58,7 +62,6 @@ export default async function AdminSupportPage({
     .select("id", { count: "exact", head: true })
     .eq("status", "resolved");
 
-  // Calculate SLA Risk (Open tickets older than 24h)
   // eslint-disable-next-line react-hooks/purity
   const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
   const { count: slaRiskCount } = await supabase
@@ -67,21 +70,17 @@ export default async function AdminSupportPage({
     .eq("status", "open")
     .lt("created_at", yesterday);
 
-  // --- 2. Filtered List ---
   let query = supabase
     .from("support_tickets")
     .select("*, shops(name, plan)", { count: "exact" })
-    .order("created_at", { ascending: false }); // Newest first
+    .order("created_at", { ascending: false });
 
-  // Apply Filters
   if (statusFilter !== "all") query = query.eq("status", statusFilter);
   if (priorityFilter !== "all") query = query.eq("priority", priorityFilter);
   if (queryText) {
-    // Search by Subject OR Ticket ID
     query = query.or(`subject.ilike.%${queryText}%,id.eq.${queryText}`);
   }
 
-  // Pagination
   const from = (page - 1) * itemsPerPage;
   const to = from + itemsPerPage - 1;
   const { data: tickets, count } = await query.range(from, to);
@@ -104,7 +103,6 @@ export default async function AdminSupportPage({
         <p className="text-gray-400">Manage and resolve shop owner issues.</p>
       </div>
 
-      {/* STATS ROW */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <StatsCard
           title="Open Tickets"
@@ -133,10 +131,8 @@ export default async function AdminSupportPage({
       </div>
 
       <div className="space-y-4">
-        {/* TOOLBAR */}
         <SupportToolbar />
 
-        {/* TABLE */}
         <Card className="bg-[#111] border-white/10 text-white overflow-hidden">
           <CardContent className="p-0">
             <Table>
@@ -226,7 +222,6 @@ export default async function AdminSupportPage({
           </CardContent>
         </Card>
 
-        {/* PAGINATION */}
         {totalPages > 1 && (
           <div className="flex justify-center gap-2">
             <Link

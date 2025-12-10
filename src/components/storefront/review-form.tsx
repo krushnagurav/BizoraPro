@@ -1,4 +1,9 @@
 // src/components/storefront/review-form.tsx
+/*  * Review Form Component
+ * This component provides a form for customers to submit reviews
+ * for products in the storefront. It includes star rating selection,
+ * name input, comment textarea, and handles form submission.
+ */
 "use client";
 
 import { useState } from "react";

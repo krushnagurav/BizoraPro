@@ -1,5 +1,11 @@
 /* eslint-disable react-hooks/set-state-in-effect */
 // src/components/storefront/product-view.tsx
+/*  * Product View Component
+ * This component displays detailed information about a product
+ * in the storefront, including name, price, variants, stock status,
+ * and an "Add to Cart" button. It handles variant selection and
+ * integrates with the shopping cart.
+ */
 "use client";
 
 import { Button } from "@/components/ui/button";

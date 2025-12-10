@@ -1,4 +1,10 @@
 // src/components/dashboard/onboarding/step1.tsx
+/*  * Step 2 Form Component
+ * This component is used in the
+ * onboarding process to collect
+ * business contact and category
+ * information from the user.
+ */
 "use client";
 import { completeStep1 } from "@/src/actions/shop-actions";
 import { Button } from "@/components/ui/button";
@@ -16,7 +22,6 @@ export function Step1Form() {
       }}
       className="space-y-6"
     >
-      {/* Hero Icon */}
       <div className="flex justify-center mb-6">
         <div className="w-16 h-16 bg-primary/20 rounded-2xl flex items-center justify-center shadow-[0_0_30px_-5px_rgba(230,184,0,0.3)]">
           <Store className="w-8 h-8 text-primary" />

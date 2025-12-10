@@ -1,3 +1,12 @@
+// src/components/admin/analytics-chart.tsx
+/*  * Analytics Chart Component
+ * This component provides
+ * a combined analytics chart
+ * for the admin dashboard,
+ * showing growth trends
+ * and revenue volume
+ * over the past 30 days.
+ */
 "use client";
 
 import {
@@ -16,7 +25,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 export function AnalyticsChart({ data }: { data: any[] }) {
   return (
     <div className="grid md:grid-cols-2 gap-6">
-      {/* CHART 1: Growth (Shops vs Orders) */}
       <Card className="bg-[#111] border-white/10">
         <CardHeader>
           <CardTitle className="text-white">Growth Trends (30 Days)</CardTitle>
@@ -69,7 +77,6 @@ export function AnalyticsChart({ data }: { data: any[] }) {
         </CardContent>
       </Card>
 
-      {/* CHART 2: Revenue Area Chart */}
       <Card className="bg-[#111] border-white/10">
         <CardHeader>
           <CardTitle className="text-white">Revenue Volume (Est)</CardTitle>

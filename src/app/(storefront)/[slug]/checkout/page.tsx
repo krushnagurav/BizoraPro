@@ -1,4 +1,9 @@
 // src/app/(storefront)/[slug]/checkout/page.tsx
+/* Shop Checkout Page
+ * This page allows users to enter their contact and delivery details
+ * to place an order for the items in their cart. It integrates with
+ * WhatsApp for order placement and ensures a smooth checkout experience.
+ */
 "use client";
 
 import { Button } from "@/components/ui/button";
@@ -25,7 +30,7 @@ export default function CheckoutPage() {
   if (!isMounted) return null;
 
   const items = cart.items ?? [];
-  if (items.length === 0) return null; // Redirect handled in useEffect normally
+  if (items.length === 0) return null;
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();

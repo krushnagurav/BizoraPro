@@ -1,4 +1,10 @@
 // src/components/dashboard/onboarding/step2.tsx
+/*  * Step 2 Form Component
+ * This component is used in the
+ * onboarding process to collect
+ * business contact and category
+ * information from the user.
+ */
 "use client";
 import { completeStep2 } from "@/src/actions/shop-actions";
 import { Button } from "@/components/ui/button";

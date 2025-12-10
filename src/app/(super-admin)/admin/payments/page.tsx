@@ -1,3 +1,10 @@
+// src/app/(super-admin)/admin/payments/page.tsx
+/*
+ * Admin Payments Page
+ *
+ * This page displays a list of subscription payments made by shops.
+ * Super administrators can view transaction details, filter by status, and export payment records.
+ */
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -35,7 +42,6 @@ export default async function AdminPaymentsPage({
 
   const supabase = await createClient();
 
-  // --- 1. KPI Stats (Fast Calculation) ---
   const { data: revenueData } = await supabase
     .from("payments")
     .select("amount, status");
@@ -48,15 +54,12 @@ export default async function AdminPaymentsPage({
   const successCount =
     revenueData?.filter((p) => p.status === "succeeded").length || 0;
 
-  // --- 2. Filtered List ---
   let query = supabase
     .from("payments")
     .select("*, shops(name)", { count: "exact" })
     .order("created_at", { ascending: false });
 
   if (statusFilter !== "all") query = query.eq("status", statusFilter);
-  // Note: Searching across joined tables (shops.name) is tricky in Supabase basic client.
-  // For MVP, we filter by Transaction ID if provided, or ignore shop name search until RPC.
   if (queryText) query = query.ilike("id", `${queryText}%`);
 
   const from = (page - 1) * itemsPerPage;
@@ -74,7 +77,6 @@ export default async function AdminPaymentsPage({
         </p>
       </div>
 
-      {/* Summary Cards */}
       <div className="grid gap-6 md:grid-cols-3">
         <StatsCard
           title="Total Revenue"
@@ -98,7 +100,6 @@ export default async function AdminPaymentsPage({
 
       <PaymentToolbar />
 
-      {/* Payments Table */}
       <Card className="bg-[#111] border-white/10 text-white overflow-hidden">
         <CardContent className="p-0">
           <Table>
@@ -184,7 +185,6 @@ export default async function AdminPaymentsPage({
         </CardContent>
       </Card>
 
-      {/* Pagination */}
       {totalPages > 1 && (
         <div className="flex justify-center gap-2">
           <Link

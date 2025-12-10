@@ -1,4 +1,9 @@
 // src\components\storefront\newsletter-form.tsx
+/*  * Newsletter Form Component
+ * This component provides a form for customers to subscribe
+ * to the newsletter in the storefront. It collects name and
+ * WhatsApp number, and handles form submission.
+ */
 "use client";
 
 import { Button } from "@/components/ui/button";

@@ -1,3 +1,9 @@
+// src/components/dashboard/support/create-ticket-dialog.tsx
+/*  * Create Ticket Dialog Component
+ * This component provides a dialog interface
+ * for users to create and submit support tickets
+ * from within the dashboard.
+ */
 "use client";
 
 import { useState } from "react";

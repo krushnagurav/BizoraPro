@@ -1,3 +1,10 @@
+// src/app/(dashboard)/marketing/upsells/page.tsx
+/*
+ * Upsell Manager Page
+ * This component allows users to manage upsell recommendations
+ * for their BizoraPro shops. Users can create, view, and delete
+ * upsell rules to suggest additional products to customers.
+ */
 import { createClient } from "@/src/lib/supabase/server";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -14,7 +21,6 @@ export default async function UpsellPage() {
     data: { user },
   } = await supabase.auth.getUser();
 
-  // You can handle unauthenticated state however your app does globally
   if (!user) {
     return (
       <div className="p-8 max-w-5xl mx-auto">
@@ -31,7 +37,6 @@ export default async function UpsellPage() {
     .eq("owner_id", user.id)
     .single();
 
-  // Fetch products (with stock_count + price)
   const { data: productsData = [] } = await supabase
     .from("products")
     .select("id, name, image_url, price, stock_count")
@@ -56,7 +61,6 @@ export default async function UpsellPage() {
 
   return (
     <div className="p-8 space-y-8 max-w-5xl mx-auto">
-      {/* Header */}
       <div className="flex justify-between items-end">
         <div>
           <h1 className="text-3xl font-bold text-primary flex items-center gap-2">
@@ -75,7 +79,6 @@ export default async function UpsellPage() {
       </div>
 
       <FeatureLock plan={shop?.plan} featureName="Upsell Recommendations">
-        {/* CREATE FORM */}
         <Card className="bg-card border-border/50 mb-8">
           <CardHeader>
             <CardTitle>Add Recommendation</CardTitle>
@@ -85,13 +88,11 @@ export default async function UpsellPage() {
           </CardContent>
         </Card>
 
-        {/* LIST */}
         <div className="space-y-4">
           {upsells.map((item: any) => (
             <Card key={item.id} className="bg-secondary/10 border-border/50">
               <CardContent className="p-4 flex items-center justify-between">
                 <div className="flex items-center gap-6">
-                  {/* Trigger */}
                   <div className="flex items-center gap-3">
                     <div className="h-12 w-12 bg-black rounded-lg overflow-hidden relative border border-border">
                       {item.trigger?.image_url && (
@@ -114,7 +115,6 @@ export default async function UpsellPage() {
                     <ArrowRight />
                   </div>
 
-                  {/* Suggested */}
                   <div className="flex items-center gap-3">
                     <div className="h-12 w-12 bg-black rounded-lg overflow-hidden relative border border-border">
                       {item.suggested?.image_url && (

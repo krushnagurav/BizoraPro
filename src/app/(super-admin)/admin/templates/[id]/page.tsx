@@ -1,20 +1,24 @@
 // src/app/(super-admin)/admin/templates/[id]/page.tsx
-import { createClient } from "@/src/lib/supabase/server";
-import { notFound } from "next/navigation";
+/*
+ * Edit Template Page
+ *
+ * This page allows super administrators to edit the details of a specific notification template.
+ * It fetches the template data based on the provided ID and displays a form for editing.
+ */
 import { TemplateForm } from "@/src/components/admin/template-form";
+import { createClient } from "@/src/lib/supabase/server";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
+import { notFound } from "next/navigation";
 
 export default async function EditTemplatePage({
   params,
 }: {
   params: Promise<{ id: string }>;
 }) {
-  // 1. Await params (Next.js 15)
   const { id } = await params;
   const supabase = await createClient();
 
-  // 2. Fetch the existing template
   const { data: template } = await supabase
     .from("notification_templates")
     .select("*")
@@ -34,7 +38,6 @@ export default async function EditTemplatePage({
 
       <h1 className="text-3xl font-bold text-white">Edit Template</h1>
 
-      {/* 3. Pass data to the form to pre-fill it */}
       <TemplateForm initialData={template} />
     </div>
   );

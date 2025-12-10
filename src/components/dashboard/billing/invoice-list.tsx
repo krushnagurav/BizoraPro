@@ -1,3 +1,11 @@
+// src/components/dashboard/billing/invoice-list.tsx
+/*  * Invoice List Component
+ * This component displays a list
+ * of invoices in the billing
+ * section of the dashboard,
+ * allowing users to view and
+ * download their invoice history.
+ */
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -26,7 +34,6 @@ export function InvoiceList({ invoices }: { invoices: any[] }) {
       <CardHeader className="flex flex-row items-center justify-between pb-2">
         <CardTitle className="text-lg font-bold">Invoice History</CardTitle>
 
-        {/* Filters (Visual only for MVP) */}
         <div className="flex gap-2">
           <Select defaultValue="all">
             <SelectTrigger className="h-8 w-[120px] bg-background">

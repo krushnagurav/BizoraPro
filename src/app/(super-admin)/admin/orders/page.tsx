@@ -1,4 +1,10 @@
 // src/app/(super-admin)/admin/orders/page.tsx
+/*
+ * Admin Orders Page
+ *
+ * This page displays a list of WhatsApp orders made by shops.
+ * Super administrators can view order details, filter by status, and export order records.
+ */
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -11,7 +17,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { OrdersTrendChart } from "@/src/components/admin/orders-trend-chart";
-import { OrdersTableToolbar } from "@/src/components/admin/orders/orders-table-toolbar"; // Import Toolbar
+import { OrdersTableToolbar } from "@/src/components/admin/orders/orders-table-toolbar";
 import { createClient } from "@/src/lib/supabase/server";
 import {
   ChevronLeft,
@@ -37,22 +43,18 @@ export default async function AdminOrdersPage({
 
   const supabase = await createClient();
 
-  // --- 1. KPI DATA (Fast Aggregates) ---
-  // Note: For large scale, replace with RPC or Materialized View.
-  // For MVP, select count and sum is fine.
   const { count: totalCount } = await supabase
     .from("orders")
     .select("id", { count: "exact", head: true });
   const { data: revenueData } = await supabase
     .from("orders")
     .select("total_amount")
-    .neq("status", "cancelled"); // Exclude cancelled revenue
+    .neq("status", "cancelled");
 
   const totalRevenue =
     revenueData?.reduce((sum, o) => sum + (o.total_amount || 0), 0) || 0;
   const avgOrderValue = totalCount ? Math.round(totalRevenue / totalCount) : 0;
 
-  // --- 2. CHART DATA (Last 30 Days - Specific Query) ---
   const thirtyDaysAgo = new Date();
   thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
@@ -61,7 +63,6 @@ export default async function AdminOrdersPage({
     .select("created_at")
     .gte("created_at", thirtyDaysAgo.toISOString());
 
-  // Process Chart Data
   const dateMap = new Map();
   for (let i = 29; i >= 0; i--) {
     const d = new Date();
@@ -81,24 +82,18 @@ export default async function AdminOrdersPage({
   });
   const chartData = Array.from(dateMap.values());
 
-  // --- 3. TABLE DATA (Filtered & Paginated) ---
   let query = supabase
     .from("orders")
     .select("*, shops(name, slug)", { count: "exact" })
     .order("created_at", { ascending: false });
 
-  // Apply Filters
   if (statusFilter !== "all") {
     query = query.eq("status", statusFilter);
   }
   if (queryText) {
-    // Search in JSONB customer_info or join (Complex).
-    // MVP: Simple Filter by ID if it's UUID, else we skip or need RPC for JSON Search.
-    // Let's filter by Order ID prefix for MVP if text matches.
     query = query.ilike("id", `${queryText}%`);
   }
 
-  // Pagination
   const from = (page - 1) * itemsPerPage;
   const to = from + itemsPerPage - 1;
   const { data: orders, count } = await query.range(from, to);
@@ -119,7 +114,6 @@ export default async function AdminOrdersPage({
         </Button>
       </div>
 
-      {/* KPI CARDS */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <StatsCard
           title="Total Orders"
@@ -147,10 +141,8 @@ export default async function AdminOrdersPage({
         />
       </div>
 
-      {/* GRAPH */}
       <OrdersTrendChart data={chartData} />
 
-      {/* TABLE SECTION */}
       <div className="space-y-4">
         <OrdersTableToolbar />
 
@@ -251,7 +243,6 @@ export default async function AdminOrdersPage({
           </CardContent>
         </Card>
 
-        {/* PAGINATION */}
         {totalPages > 1 && (
           <div className="flex justify-center gap-2">
             <Link

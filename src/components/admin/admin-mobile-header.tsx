@@ -1,3 +1,12 @@
+// src/components/admin/admin-mobile-header.tsx
+/*  * Admin Mobile Header Component
+ * This component renders the
+ * mobile header for the admin
+ * dashboard, including a menu
+ * button that opens a sidebar
+ * with navigation links to
+ * various admin sections.
+ */
 "use client";
 
 import Link from "next/link";
@@ -30,7 +39,6 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 
-// Same groups as admin-sidebar.tsx
 const adminGroups = [
   {
     label: "Monitor",
@@ -88,7 +96,6 @@ export function AdminMobileHeader() {
           side="left"
           className="p-0 w-72 bg-[#050505] border-r border-white/10 flex flex-col text-white"
         >
-          {/* Header */}
           <SheetHeader className="h-16 flex items-center justify-center border-b border-white/10 px-6 shrink-0">
             <SheetTitle className="flex items-center font-bold text-lg tracking-tight text-white">
               <ShieldAlert className="h-6 w-6 text-primary mr-2" />
@@ -96,7 +103,6 @@ export function AdminMobileHeader() {
             </SheetTitle>
           </SheetHeader>
 
-          {/* Links */}
           <div className="flex-1 py-6 px-3 space-y-6 overflow-y-auto">
             {adminGroups.map((group, i) => (
               <div key={i}>
@@ -129,7 +135,6 @@ export function AdminMobileHeader() {
             ))}
           </div>
 
-          {/* Footer */}
           <div className="p-4 border-t border-white/10 shrink-0">
             <Link href="/dashboard">
               <Button

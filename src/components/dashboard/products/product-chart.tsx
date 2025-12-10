@@ -1,3 +1,9 @@
+// src/components/dashboard/products/product-chart.tsx
+/*  * Product Chart Component
+ * This component visualizes product
+ * performance metrics such as page
+ * views and orders using a line chart.
+ */
 "use client";
 
 import {

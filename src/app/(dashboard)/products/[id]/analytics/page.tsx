@@ -1,3 +1,9 @@
+// src/app/(dashboard)/products/[id]/analytics/page.tsx
+/*
+ * Product Analytics Page
+ * This component displays analytics for a specific product in the BizoraPro dashboard.
+ * It shows metrics such as views and sales over time, providing insights into product performance.
+ */
 import { createClient } from "@/src/lib/supabase/server";
 import { getProductStatsAction } from "@/src/actions/analytics-actions";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -5,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft, Eye, ShoppingBag } from "lucide-react";
 import Link from "next/link";
 import { ProductChart } from "@/src/components/dashboard/products/product-chart";
-import { FeatureLock } from "@/src/components/dashboard/shared/feature-lock"; // 👈 Import this
+import { FeatureLock } from "@/src/components/dashboard/shared/feature-lock";
 
 export default async function ProductAnalyticsPage({
   params,
@@ -18,14 +24,12 @@ export default async function ProductAnalyticsPage({
     data: { user },
   } = await supabase.auth.getUser();
 
-  // 1. Fetch Shop & Plan
   const { data: shop } = await supabase
     .from("shops")
     .select("plan")
     .eq("owner_id", user?.id)
     .single();
 
-  // 2. Get Product Name
   const { data: product } = await supabase
     .from("products")
     .select("name")
@@ -53,7 +57,6 @@ export default async function ProductAnalyticsPage({
 
       <FeatureLock plan={shop?.plan} featureName="Product Analytics">
         <div className="space-y-8">
-          {/* KPI Cards */}
           <div className="grid grid-cols-2 gap-6 max-w-2xl">
             <Card className="bg-card border-border/50">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
@@ -80,7 +83,6 @@ export default async function ProductAnalyticsPage({
             </Card>
           </div>
 
-          {/* Chart */}
           <Card className="bg-card border-border/50">
             <CardHeader>
               <CardTitle>Views vs Sales</CardTitle>

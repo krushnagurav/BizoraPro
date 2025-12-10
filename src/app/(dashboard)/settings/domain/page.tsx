@@ -1,3 +1,9 @@
+// src/app/(dashboard)/settings/domain/page.tsx
+/*
+ * Domain Settings Page
+ * This component allows shop owners to connect and manage
+ * custom domains for their BizoraPro store.
+ */
 "use client";
 
 import { Badge } from "@/components/ui/badge";
@@ -36,7 +42,6 @@ export default function DomainSettingsPage() {
   const [domainInput, setDomainInput] = useState("");
   const [shop, setShop] = useState<any>(null);
 
-  // 1. Fetch Shop Logic
   useEffect(() => {
     const fetchShop = async () => {
       const supabase = createClient();
@@ -56,7 +61,6 @@ export default function DomainSettingsPage() {
     fetchShop();
   }, []);
 
-  // 2. Handlers
   const handleConnect = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
@@ -67,7 +71,7 @@ export default function DomainSettingsPage() {
     if (res?.error) toast.error(res.error);
     else {
       toast.success(res.success);
-      window.location.reload(); // Reload to show DNS instructions
+      window.location.reload();
     }
   };
 
@@ -87,7 +91,6 @@ export default function DomainSettingsPage() {
 
   const handleVerify = () => {
     setVerifying(true);
-    // Simulate verification check (In V2, call Vercel API)
     setTimeout(() => {
       setVerifying(false);
       if (shop.domain_verified) toast.success("Domain is live!");
@@ -110,7 +113,6 @@ export default function DomainSettingsPage() {
         </p>
       </div>
 
-      {/* 🔒 GATEKEEPER: FREE PLAN */}
       {!isPro && (
         <Card className="bg-secondary/10 border-dashed border-yellow-500/50">
           <CardContent className="p-8 text-center flex flex-col items-center">
@@ -131,7 +133,6 @@ export default function DomainSettingsPage() {
         </Card>
       )}
 
-      {/* ✅ ACTIVE DOMAIN DASHBOARD */}
       {isPro && shop.custom_domain && (
         <Card className="bg-card border-border/50">
           <CardHeader className="border-b border-border/50 pb-4">
@@ -235,7 +236,6 @@ export default function DomainSettingsPage() {
         </Card>
       )}
 
-      {/* ➕ CONNECT FORM (Only if no domain) */}
       {isPro && !shop.custom_domain && (
         <Card className="bg-card border-border/50">
           <CardHeader>
@@ -268,7 +268,6 @@ export default function DomainSettingsPage() {
         </Card>
       )}
 
-      {/* Fallback Link */}
       <div className="text-center text-sm text-muted-foreground">
         Your store is always accessible at:{" "}
         <span className="text-foreground">bizorapro.com/{shop.slug}</span>

@@ -1,4 +1,14 @@
 // src/components/admin/logs/log-viewer.tsx
+/*  * Log Viewer Component
+ * This component provides
+ * a detailed view of a
+ * specific admin log entry,
+ * displaying information
+ * such as the actor,
+ * action, target, timestamp,
+ * and payload data in a
+ * readable format.
+ */
 "use client";
 
 import { Badge } from "@/components/ui/badge";

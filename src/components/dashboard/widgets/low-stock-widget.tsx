@@ -1,3 +1,8 @@
+// src/components/dashboard/widgets/low-stock-widget.tsx
+/*  * Low Stock Widget Component
+ * This component fetches and displays
+ * products that are low in stock for the dashboard.
+ */
 import { createClient } from "@/src/lib/supabase/server";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -8,7 +13,6 @@ import Image from "next/image";
 export async function LowStockWidget({ shopId }: { shopId: string }) {
   const supabase = await createClient();
 
-  // Fetch Low Stock Products (< 5)
   const { data: products } = await supabase
     .from("products")
     .select("id, name, stock_count, image_url")

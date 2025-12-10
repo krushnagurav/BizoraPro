@@ -1,3 +1,9 @@
+// src/app/(marketing)/legal/page.tsx
+/*
+ * Legal Page
+ * This component renders the Legal, Terms & Policies page for BizoraPro.
+ * It includes tabs for Privacy Policy, Terms of Service, and Refund Policy.
+ */
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -17,7 +23,6 @@ export default function LegalPage() {
         className="container mx-auto max-w-4xl px-6 md:px-12"
         aria-labelledby="legal-heading"
       >
-        {/* Header */}
         <header
           id="legal-heading"
           className="mb-10 text-center space-y-3"
@@ -35,7 +40,6 @@ export default function LegalPage() {
           </p>
         </header>
 
-        {/* Tabs */}
         <Tabs
           defaultValue="privacy"
           className="w-full"
@@ -84,7 +88,6 @@ export default function LegalPage() {
           </TabsList>
 
           <div className="mt-8 rounded-2xl border border-white/10 bg-[#111] p-6 md:p-8 text-sm md:text-base leading-relaxed text-slate-200 space-y-8">
-            {/* PRIVACY */}
             <TabsContent
               value="privacy"
               id="panel-privacy"
@@ -151,7 +154,6 @@ export default function LegalPage() {
               </ol>
             </TabsContent>
 
-            {/* TERMS */}
             <TabsContent
               value="terms"
               id="panel-terms"
@@ -197,7 +199,6 @@ export default function LegalPage() {
               </ol>
             </TabsContent>
 
-            {/* REFUND */}
             <TabsContent
               value="refund"
               id="panel-refund"

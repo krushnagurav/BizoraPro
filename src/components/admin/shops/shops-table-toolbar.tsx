@@ -1,3 +1,12 @@
+// src/components/admin/shops/shops-table-toolbar.tsx
+/*  * Shops Table Toolbar Component
+ * This component provides
+ * a toolbar for the shops
+ * table in the admin
+ * dashboard, allowing admins
+ * to search and filter shops
+ * by status and plan.
+ */
 "use client";
 
 import { Input } from "@/components/ui/input";
@@ -20,7 +29,6 @@ export function ShopsTableToolbar() {
   const [status, setStatus] = useState(searchParams.get("status") || "all");
   const [plan, setPlan] = useState(searchParams.get("plan") || "all");
 
-  // Update URL on change
   useEffect(() => {
     const params = new URLSearchParams(searchParams.toString());
 
@@ -33,11 +41,11 @@ export function ShopsTableToolbar() {
     if (plan !== "all") params.set("plan", plan);
     else params.delete("plan");
 
-    params.set("page", "1"); // Reset pagination
+    params.set("page", "1");
 
     const timer = setTimeout(() => {
       router.push(`/admin/shops?${params.toString()}`);
-    }, 300); // Debounce
+    }, 300);
 
     return () => clearTimeout(timer);
   }, [query, status, plan, router, searchParams]);

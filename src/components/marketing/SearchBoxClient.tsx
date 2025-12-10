@@ -1,4 +1,10 @@
 // src/components/marketing/SearchBoxClient.tsx
+/*  * Search Box Client Component
+ * This component provides a search input box for users to
+ * search help articles. It handles user input and form
+ * submission, redirecting to the specified action URL with
+ * the search query as a parameter.
+ */
 "use client";
 
 import { useState } from "react";
@@ -12,7 +18,6 @@ export function SearchBoxClient({ action = "/docs" }: { action?: string }) {
 
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // navigate to docs with query param (client-side)
     const url = `${action}?q=${encodeURIComponent(q)}`;
     router.push(url);
   };

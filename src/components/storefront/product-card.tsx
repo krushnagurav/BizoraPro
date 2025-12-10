@@ -1,4 +1,10 @@
 // src/components/storefront/product-card.tsx
+/*  * Product Card Component
+ * This component displays a product card in the storefront,
+ * including product image, name, price, badges, and an
+ * "Add to Cart" button. It handles out-of-stock and
+ * store-closed states.
+ */
 "use client";
 
 import Image from "next/image";
@@ -53,7 +59,6 @@ export function ProductCard({
   return (
     <Link href={`/${slug}/p/${product.id}`} className="block h-full">
       <Card className="group overflow-hidden bg-white border border-slate-100 shadow-sm hover:shadow-md hover:border-primary/50 transition-all duration-300 h-full flex flex-col">
-        {/* IMAGE AREA */}
         <div className="aspect-square relative bg-slate-100 overflow-hidden">
           {product.image_url ? (
             <Image
@@ -69,7 +74,6 @@ export function ProductCard({
             </div>
           )}
 
-          {/* BADGES */}
           <div className="absolute top-2 left-2 flex flex-col gap-1">
             {isOutOfStock && (
               <Badge variant="destructive" className="text-[10px] px-2">
@@ -92,7 +96,6 @@ export function ProductCard({
           </div>
         </div>
 
-        {/* CONTENT AREA */}
         <CardContent className="p-4 flex flex-col flex-1">
           <h3
             className="font-medium text-slate-900 text-sm sm:text-base line-clamp-2 mb-1 flex-1"
@@ -112,7 +115,6 @@ export function ProductCard({
             )}
           </div>
 
-          {/* SMART BUTTON */}
           {hasVariants ? (
             <Button
               variant="outline"

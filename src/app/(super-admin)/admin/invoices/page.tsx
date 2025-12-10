@@ -1,4 +1,10 @@
 // src/app/(super-admin)/admin/invoices/page.tsx
+/*
+ * Subscription Invoices Page
+ *
+ * This page provides super administrators with an overview of all subscription invoices
+ * across shops, including summary statistics and detailed invoice listings.
+ */
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -17,13 +23,11 @@ import Link from "next/link";
 export default async function AdminInvoicesPage() {
   const supabase = await createClient();
 
-  // Fetch Payments (treating them as Invoices)
   const { data: invoices } = await supabase
     .from("payments")
     .select("*, shops(name, owner_id, plan)")
     .order("created_at", { ascending: false });
 
-  // Calculate Total Revenue (Mock logic for display)
   const totalRevenue =
     invoices?.reduce((acc, curr) => acc + Number(curr.amount), 0) || 0;
 
@@ -51,7 +55,6 @@ export default async function AdminInvoicesPage() {
         </div>
       </div>
 
-      {/* Summary Cards */}
       <div className="grid md:grid-cols-3 gap-6">
         <Card className="bg-[#111] border-white/10 text-white">
           <CardContent className="p-6">
@@ -96,7 +99,6 @@ export default async function AdminInvoicesPage() {
         </Card>
       </div>
 
-      {/* Invoices Table */}
       <Card className="bg-[#111] border-white/10 text-white">
         <CardContent className="p-0">
           <Table>

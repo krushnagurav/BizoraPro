@@ -1,5 +1,11 @@
 // src/types/custom.ts
-// 1. Common Configs
+/*
+ * Custom Type Definitions
+ *
+ * This file contains TypeScript interfaces defining the structure of various
+ * custom types used throughout the application, including configurations and
+ * database table representations.
+ */
 export interface ThemeConfig {
   primaryColor?: string;
   bannerUrl?: string;
@@ -26,7 +32,6 @@ export interface Policies {
   refund?: string;
 }
 
-// 2. Database Tables
 export interface Shop {
   id: string;
   owner_id: string;

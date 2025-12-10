@@ -1,4 +1,10 @@
 // src/app/(super-admin)/admin/templates/new/page.tsx
+/*
+ * New Template Page
+ *
+ * This page allows super administrators to create new notification templates.
+ *   It provides a form for entering template details and saving them to the system.
+ */
 import { TemplateForm } from "@/src/components/admin/template-form";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
@@ -14,7 +20,6 @@ export default function NewTemplatePage() {
       </Link>
       <h1 className="text-3xl font-bold text-white">Create Template</h1>
 
-      {/* Reusable Form */}
       <TemplateForm />
     </div>
   );

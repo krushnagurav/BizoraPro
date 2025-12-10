@@ -1,3 +1,13 @@
+// src/components/admin/notifications/mobile-preview.tsx
+/*  * Mobile Preview Component
+ * This component simulates
+ * a mobile device preview
+ * for admin notifications,
+ * allowing admins to see
+ * how notifications will
+ * appear on shop owner
+ * dashboards.
+ */
 "use client";
 
 import { Badge } from "@/components/ui/badge";
@@ -35,19 +45,15 @@ export function MobilePreview({
 
   return (
     <div className="mx-auto w-[300px] h-[600px] bg-black border-8 border-gray-800 rounded-[3rem] overflow-hidden relative shadow-2xl">
-      {/* Notch */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1/3 h-6 bg-gray-800 rounded-b-xl z-20" />
 
-      {/* Screen Content */}
       <div className="bg-[#050505] w-full h-full pt-10 px-4 text-white relative">
-        {/* Header Simulation */}
         <div className="flex justify-between items-center mb-6 opacity-50">
           <Menu className="h-5 w-5" />
           <span className="text-xs font-bold">BizoraPro</span>
           <Bell className="h-5 w-5" />
         </div>
 
-        {/* Dashboard Placeholder */}
         <div className="space-y-3 opacity-30">
           <div className="h-24 bg-white/10 rounded-xl w-full" />
           <div className="grid grid-cols-2 gap-3">
@@ -57,7 +63,6 @@ export function MobilePreview({
           <div className="h-40 bg-white/10 rounded-xl w-full" />
         </div>
 
-        {/* THE NOTIFICATION PREVIEW */}
         <div className="absolute top-16 left-4 right-4 z-10 animate-in slide-in-from-top-4 fade-in duration-500">
           <div className="bg-[#1C1C1C] border border-white/10 p-4 rounded-xl shadow-2xl flex gap-3 items-start">
             <div className="mt-1 shrink-0">{getIcon()}</div>

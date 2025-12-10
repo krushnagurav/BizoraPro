@@ -1,4 +1,8 @@
 // src/app/(storefront)/[slug]/o/[orderId]/page.tsx
+/*  * Order Success Page
+ * This page displays a confirmation message after a user successfully places an order.
+ * It provides order details and next steps, including a link to contact the shop via WhatsApp.
+ */
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { createClient } from "@/src/lib/supabase/server";
@@ -49,7 +53,6 @@ ${itemList}
 
   return (
     <div className="min-h-screen bg-[#F8F9FA] text-slate-900 pb-20">
-      {/* Header */}
       <div className="bg-white border-b border-gray-100 p-4 sticky top-0 z-10">
         <div className="max-w-2xl mx-auto flex items-center justify-between">
           <Link
@@ -63,7 +66,6 @@ ${itemList}
       </div>
 
       <div className="max-w-2xl mx-auto px-4 py-12 space-y-8">
-        {/* 1. Success Hero */}
         <div className="text-center space-y-4">
           <div className="relative mx-auto w-24 h-24">
             <div className="absolute inset-0 bg-green-100 rounded-full animate-ping opacity-20" />
@@ -80,7 +82,6 @@ ${itemList}
           </p>
         </div>
 
-        {/* 2. Order Details Card */}
         <Card className="bg-white border-0 shadow-xl shadow-slate-200/60 rounded-3xl overflow-hidden">
           <CardContent className="p-8 space-y-8">
             <div className="flex justify-between items-end border-b border-slate-100 pb-6">
@@ -102,7 +103,6 @@ ${itemList}
               </div>
             </div>
 
-            {/* ACTION BUTTONS */}
             <div className="grid md:grid-cols-2 gap-4">
               <a href={whatsappUrl} target="_blank" rel="noopener noreferrer">
                 <Button className="w-full h-14 text-lg font-bold bg-[#25D366] hover:bg-[#20BD5C] text-white shadow-lg shadow-green-500/20 rounded-xl gap-2">
@@ -117,7 +117,6 @@ ${itemList}
               </Button>
             </div>
 
-            {/* TIMELINE */}
             <div className="bg-green-50/50 rounded-2xl p-6 space-y-6">
               <h3 className="font-bold text-slate-900 flex items-center gap-2">
                 <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />{" "}
@@ -155,7 +154,6 @@ ${itemList}
           </CardContent>
         </Card>
 
-        {/* 3. Need Help */}
         <div className="bg-[#0F172A] rounded-3xl p-8 md:p-12 text-center space-y-4 shadow-2xl text-white">
           <div className="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center mx-auto">
             <MessageCircle className="w-6 h-6 text-white" />

@@ -1,4 +1,10 @@
 // src/app/(storefront)/[slug]/p/[id]/page.tsx
+/*  * Product Detail Page
+ * This page displays detailed information about a specific product
+ * within a shop identified by its slug. It includes product images,
+ * descriptions, pricing, and related upsell products. The page layout
+ * and styling adapt based on the shop's theme configuration.
+ */
 import { createClient } from "@/src/lib/supabase/server";
 import { notFound } from "next/navigation";
 import Image from "next/image";
@@ -64,7 +70,6 @@ export default async function ProductDetailPage({
                 </div>
               )}
             </div>
-            {/* Gallery would go here */}
           </div>
           <div>
             <ProductView product={product} isShopOpen={product.shops.is_open} />

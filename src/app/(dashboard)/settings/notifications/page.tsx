@@ -1,3 +1,9 @@
+// src/app/(dashboard)/settings/notifications/page.tsx
+/*
+ * Notification Settings Page
+ * This component allows shop owners to customize their
+ * notification preferences for email and WhatsApp alerts.
+ */
 "use client";
 
 import { useState, useEffect } from "react";
@@ -29,7 +35,7 @@ export default function NotificationSettingsPage() {
   const [prefs, setPrefs] = useState<any>({
     email_order: true,
     email_low_stock: true,
-    whatsapp_order: false, // Default off
+    whatsapp_order: false,
     marketing_updates: false,
   });
 
@@ -62,7 +68,6 @@ export default function NotificationSettingsPage() {
     setLoading(true);
 
     const formData = new FormData();
-    // Convert boolean state to formData entries manually
     Object.keys(prefs).forEach((key) => {
       if (prefs[key]) formData.append(key, "on");
     });
@@ -86,7 +91,6 @@ export default function NotificationSettingsPage() {
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
-        {/* EMAIL ALERTS */}
         <Card className="bg-card border-border/50">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-lg">
@@ -147,7 +151,6 @@ export default function NotificationSettingsPage() {
           </CardContent>
         </Card>
 
-        {/* WHATSAPP ALERTS (Premium) */}
         <Card className="bg-card border-border/50">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-lg">

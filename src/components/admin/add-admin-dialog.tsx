@@ -1,4 +1,12 @@
 // src/components/admin/add-admin-dialog.tsx
+/*  * Add Admin Dialog Component
+ * This component provides
+ * a dialog interface for
+ * adding new admin users
+ * to the admin dashboard,
+ * allowing input of user
+ * details and role selection.
+ */
 "use client";
 
 import { Button } from "@/components/ui/button";

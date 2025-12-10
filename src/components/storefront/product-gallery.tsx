@@ -1,3 +1,9 @@
+// src/components/storefront/product-gallery.tsx
+/*  * Product Gallery Component
+ * This component displays a product's main image along with
+ * a gallery of additional images. It includes a lightbox feature
+ * for viewing images in a larger format with navigation controls.
+ */
 "use client";
 
 import { useState } from "react";
@@ -39,7 +45,6 @@ export function ProductGallery({
 
   return (
     <>
-      {/* Main image with hover zoom & click-to-open */}
       <div
         className="group relative aspect-square w-full bg-slate-100 rounded-2xl border border-slate-200 overflow-hidden cursor-zoom-in"
         onClick={() => setLightboxOpen(true)}
@@ -53,7 +58,6 @@ export function ProductGallery({
         />
       </div>
 
-      {/* Thumbnails row */}
       {allImages.length > 1 && (
         <div className="flex gap-2 overflow-x-auto no-scrollbar mt-3 pb-1">
           {allImages.map((img, index) => (
@@ -79,7 +83,6 @@ export function ProductGallery({
         </div>
       )}
 
-      {/* Lightbox overlay */}
       {lightboxOpen && (
         <div className="fixed inset-0 z-[60] bg-black/80 flex items-center justify-center">
           <button

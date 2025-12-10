@@ -1,3 +1,9 @@
+// src/app/(dashboard)/orders/page.tsx
+/*
+ * Orders Page
+ * This component displays a list of customer orders in the BizoraPro dashboard.
+ * It includes filtering options, search functionality, and actions for managing orders.
+ */
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -40,14 +46,12 @@ export default async function OrdersPage({
     redirect("/onboarding");
   }
 
-  // Build Query
   let query = supabase
     .from("orders")
     .select("*")
     .eq("shop_id", shop.id)
     .order("created_at", { ascending: false });
 
-  // Apply Status Filter
   if (statusFilter !== "all") {
     if (statusFilter === "abandoned") {
       query = query.eq("status", "draft");
@@ -55,17 +59,11 @@ export default async function OrdersPage({
       query = query.eq("status", statusFilter);
     }
   } else {
-    // Default: Don't show drafts in "All" unless asked
     query = query.neq("status", "draft");
   }
 
-  // Apply Search (Client-side filtering for JSONB is hard in basic SQL,
-  // but we can search ID or use a simple text search if columns existed.
-  // For MVP, we fetch 50 and filter in JS or stick to basic filters)
-
   const { data: orders } = await query.limit(50);
 
-  // Simple Filter Tabs
   const tabs = [
     { id: "all", label: "All Orders" },
     { id: "placed", label: "New" },
@@ -86,7 +84,6 @@ export default async function OrdersPage({
         </div>
 
         <div className="flex gap-2">
-          {/* 👇 NEW BUTTON 👇 */}
           <Link href="/orders/abandoned">
             <Button
               variant="outline"
@@ -98,7 +95,6 @@ export default async function OrdersPage({
         </div>
       </div>
 
-      {/* FILTERS */}
       <div className="flex flex-col md:flex-row gap-4">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -122,7 +118,6 @@ export default async function OrdersPage({
         </div>
       </div>
 
-      {/* TABLE */}
       <Card className="bg-card border-border/50">
         <CardContent className="p-0">
           <Table>

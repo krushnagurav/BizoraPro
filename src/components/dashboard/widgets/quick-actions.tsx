@@ -1,3 +1,11 @@
+// src/components/dashboard/widgets/quick-actions.tsx
+/*  * Quick Actions Component
+ * This component provides quick action cards
+ * for the dashboard, allowing users to easily
+ * access common tasks like adding products,
+ * sharing the store, adjusting settings, and
+ * viewing the shop.
+ */
 import { createClient } from "@/src/lib/supabase/server";
 import { Card, CardContent } from "@/components/ui/card";
 import { Plus, MessageCircle, Settings, ExternalLink } from "lucide-react";
@@ -15,7 +23,6 @@ export async function QuickActions({ shop }: { shop: any }) {
     <div>
       <h2 className="text-xl font-bold mb-4">Quick Actions</h2>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {/* Dynamic Action: Add vs Share */}
         {(productCount || 0) < 5 ? (
           <Link href="/products/new">
             <ActionCard

@@ -1,4 +1,10 @@
 // src/app/(storefront)/[slug]/cart/page.tsx
+/* Shop Cart Page
+ * This page displays the contents of the user's shopping cart for a specific shop
+ * identified by its slug. Users can view, modify, and remove items from their cart,
+ * apply coupon codes, and proceed to checkout. The page layout and styling adapt
+ * based on the shop's theme configuration.
+ */
 "use client";
 import Link from "next/link";
 import Image from "next/image";

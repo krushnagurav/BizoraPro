@@ -1,3 +1,10 @@
+// src/components/dashboard/image-upload.tsx
+/*  * Image Upload Component
+ * This component allows users to upload a single image,
+ * compresses it for optimized storage, and uploads it
+ * to Supabase Storage. It also provides functionality to
+ * remove the uploaded image.
+ */
 "use client";
 
 import { useState } from "react";
@@ -24,15 +31,13 @@ export function ImageUpload({ value, onChange, disabled }: ImageUploadProps) {
     setIsUploading(true);
 
     try {
-      // 1. Compress Image (Client Side)
       const options = {
-        maxSizeMB: 0.5, // Max 500KB
-        maxWidthOrHeight: 1000, // Max 1000px width
+        maxSizeMB: 1,
+        maxWidthOrHeight: 1080,
         useWebWorker: true,
       };
       const compressedFile = await imageCompression(file, options);
 
-      // 2. Upload to Supabase
       const supabase = createClient();
       const fileExt = file.name.split(".").pop();
       const fileName = `${Math.random()}.${fileExt}`;
@@ -46,7 +51,6 @@ export function ImageUpload({ value, onChange, disabled }: ImageUploadProps) {
         throw uploadError;
       }
 
-      // 3. Get Public URL
       const { data } = supabase.storage
         .from("product-images")
         .getPublicUrl(filePath);
@@ -61,7 +65,6 @@ export function ImageUpload({ value, onChange, disabled }: ImageUploadProps) {
     }
   };
 
-  // If image exists, show preview
   if (value) {
     return (
       <div className="relative w-[200px] h-[200px] rounded-md overflow-hidden border border-border">
@@ -87,7 +90,6 @@ export function ImageUpload({ value, onChange, disabled }: ImageUploadProps) {
     );
   }
 
-  // If no image, show upload button
   return (
     <div className="w-full flex items-center justify-center">
       <label className="flex flex-col items-center justify-center w-full h-64 border-2 border-dashed border-border rounded-lg cursor-pointer bg-card hover:bg-secondary/50 transition">

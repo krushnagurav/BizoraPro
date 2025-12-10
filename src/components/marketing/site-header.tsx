@@ -1,4 +1,9 @@
 // src/components/marketing/site-header.tsx
+/*  * Site Header Component
+ * This component renders the header for marketing pages,
+ * including the site logo, navigation links, and call-to-action
+ * buttons. It is responsive for mobile and desktop views.
+ */
 "use client";
 
 import { useEffect, useRef, useState } from "react";
@@ -28,14 +33,11 @@ export function SiteHeader() {
   const pathname = usePathname() ?? "/";
   const [isOpen, setIsOpen] = useState(false);
 
-  // refs for focus management
   const triggerRef = useRef<HTMLButtonElement | null>(null);
   const firstLinkRef = useRef<HTMLAnchorElement | null>(null);
 
-  // move focus into the sheet when opened, return focus to trigger when closed
   useEffect(() => {
     if (isOpen) {
-      // small timeout to wait for sheet to render
       const t = setTimeout(() => firstLinkRef.current?.focus(), 80);
       return () => clearTimeout(t);
     } else {
@@ -46,7 +48,6 @@ export function SiteHeader() {
   return (
     <header className="sticky top-0 z-50 border-b border-white/10 bg-black/70 backdrop-blur-xl">
       <div className="mx-auto flex h-16 md:h-20 items-center justify-between px-4 sm:px-6 lg:px-8 max-w-6xl">
-        {/* LOGO */}
         <Link
           href="/"
           className="flex items-center gap-1 text-xl md:text-2xl font-bold tracking-tight"
@@ -56,7 +57,6 @@ export function SiteHeader() {
           <span className="text-slate-50">Pro</span>
         </Link>
 
-        {/* DESKTOP NAV */}
         <nav
           className="hidden md:flex items-center gap-6 text-sm font-medium"
           role="navigation"
@@ -86,7 +86,6 @@ export function SiteHeader() {
           })}
         </nav>
 
-        {/* DESKTOP CTAs */}
         <div className="hidden md:flex items-center gap-3">
           <Link href="/login">
             <Button
@@ -103,7 +102,6 @@ export function SiteHeader() {
           </Link>
         </div>
 
-        {/* MOBILE MENU */}
         <div className="md:hidden">
           <Sheet open={isOpen} onOpenChange={setIsOpen}>
             <SheetTrigger asChild>

@@ -1,3 +1,11 @@
+// src/components/admin/recent-shops-table.tsx
+/*  * Recent Shops Table Component
+ * This component displays a table
+ * of recently signed-up shops
+ * in the admin dashboard,
+ * showing key details like
+ * shop name, plan, and status.
+ */
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";

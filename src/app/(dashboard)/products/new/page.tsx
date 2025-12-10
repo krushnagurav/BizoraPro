@@ -1,3 +1,10 @@
+// src/app/(dashboard)/products/new/page.tsx
+/*
+ * Add Product Page
+ * This component provides a form for adding new products to the BizoraPro dashboard.
+ * It includes fields for product details and integrates with the backend to save
+ * the new product information.
+ */
 import Link from "next/link";
 import { createClient } from "@/src/lib/supabase/server";
 import { AddProductForm } from "@/src/components/dashboard/products/add-form";
@@ -9,14 +16,12 @@ export default async function AddProductPage() {
     data: { user },
   } = await supabase.auth.getUser();
 
-  // 1. Get Shop ID
   const { data: shop } = await supabase
     .from("shops")
     .select("id, plan")
     .eq("owner_id", user!.id)
     .single();
 
-  // 2. Fetch Categories for this shop
   const { data: categories } = await supabase
     .from("categories")
     .select("id, name")
@@ -34,7 +39,6 @@ export default async function AddProductPage() {
 
       <h1 className="text-3xl font-bold text-primary mb-8">Add New Product</h1>
 
-      {/* Pass categories to the Client Component */}
       <AddProductForm
         categories={categories || []}
         plan={shop?.plan || "free"}

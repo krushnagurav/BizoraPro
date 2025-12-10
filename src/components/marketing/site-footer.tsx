@@ -1,4 +1,11 @@
 // src/components/marketing/site-footer.tsx
+/*  * Site Footer Component
+ * This component renders the footer for marketing pages,
+ * including navigation links, contact information, and
+ * legal disclaimers. It is designed to provide users with
+ * easy access to important site information at the bottom
+ * of marketing-related pages.
+ */
 import Link from "next/link";
 
 export function SiteFooter() {
@@ -11,7 +18,6 @@ export function SiteFooter() {
     >
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-10 mb-12">
-          {/* Brand Column */}
           <div>
             <Link
               href="/"
@@ -35,7 +41,6 @@ export function SiteFooter() {
             </address>
           </div>
 
-          {/* Product Column */}
           <nav aria-label="Product links">
             <h4 className="mb-4 text-xs font-semibold uppercase tracking-[0.2em] text-slate-200">
               Product
@@ -71,7 +76,6 @@ export function SiteFooter() {
             </ul>
           </nav>
 
-          {/* Company Column */}
           <nav aria-label="Company links">
             <h4 className="mb-4 text-xs font-semibold uppercase tracking-[0.2em] text-slate-200">
               Company
@@ -98,7 +102,6 @@ export function SiteFooter() {
             </ul>
           </nav>
 
-          {/* Support Column */}
           <nav aria-label="Support links">
             <h4 className="mb-4 text-xs font-semibold uppercase tracking-[0.2em] text-slate-200">
               Support
@@ -135,7 +138,6 @@ export function SiteFooter() {
           </nav>
         </div>
 
-        {/* Bottom Bar */}
         <div className="flex flex-col gap-3 border-t border-white/10 pt-6 text-muted-foreground md:flex-row md:items-center md:justify-between">
           <p className="text-xs md:text-sm">
             © {year} BizoraPro. All rights reserved.

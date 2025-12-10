@@ -1,3 +1,10 @@
+// src/app/(dashboard)/marketing/share/page.tsx
+/*
+ * Share Store Page
+ * This component allows users to share their BizoraPro shop link
+ * and QR code across various platforms like WhatsApp, Instagram,
+ * and Facebook. It also provides analytics on link views and clicks.
+ */
 "use client";
 
 import { Button } from "@/components/ui/button";
@@ -35,7 +42,6 @@ import { QRCodeSVG } from "qrcode.react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
-// Define Type
 interface Shop {
   id: string;
   slug: string;
@@ -49,7 +55,6 @@ export default function ShareStorePage() {
   const [qrFormat, setQrFormat] = useState("png");
   const [loading, setLoading] = useState(true);
 
-  // Real Stats State
   const [stats, setStats] = useState({ views: 0, clicks: 0 });
 
   useEffect(() => {
@@ -60,7 +65,6 @@ export default function ShareStorePage() {
       } = await supabase.auth.getUser();
 
       if (user) {
-        // 1. Fetch Shop
         const { data: shopData } = await supabase
           .from("shops")
           .select("*")
@@ -74,7 +78,6 @@ export default function ShareStorePage() {
             setShopUrl(`${baseUrl}/${shopData.slug}`);
           }
 
-          // 2. Fetch Real Analytics (Last 7 Days)
           const sevenDaysAgo = new Date();
           sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
           const isoDate = sevenDaysAgo.toISOString();
@@ -119,9 +122,8 @@ export default function ShareStorePage() {
     canvas.getContext("2d");
     const img = new Image();
 
-    // Dimensions
     const width = qrFormat === "story" ? 1080 : 1200;
-    const height = qrFormat === "story" ? 1920 : 1400; // Extra height for branding
+    const height = qrFormat === "story" ? 1920 : 1400;
 
     img.onload = () => {
       canvas.width = width;
@@ -129,17 +131,14 @@ export default function ShareStorePage() {
       const ctx = canvas.getContext("2d");
       if (!ctx) return;
 
-      // Background
       ctx.fillStyle = qrFormat === "story" ? "#000000" : "#FFFFFF";
       ctx.fillRect(0, 0, width, height);
 
-      // Draw QR
       const qrSize = qrFormat === "story" ? 600 : 800;
       const x = (width - qrSize) / 2;
-      const y = (height - qrSize) / 2 - 100; // Move up slightly
+      const y = (height - qrSize) / 2 - 100;
       ctx.drawImage(img, x, y, qrSize, qrSize);
 
-      // Add Branding Text
       ctx.font = "bold 30px sans-serif";
       ctx.fillStyle = qrFormat === "story" ? "#888888" : "#555555";
       ctx.textAlign = "center";
@@ -211,7 +210,6 @@ export default function ShareStorePage() {
 
       <div className="grid md:grid-cols-2 gap-8">
         <div className="space-y-6">
-          {/* Link Card */}
           <Card className="bg-card border-border/50">
             <CardHeader>
               <CardTitle>Your Shop Link</CardTitle>
@@ -274,7 +272,6 @@ export default function ShareStorePage() {
             </CardContent>
           </Card>
 
-          {/* 3. HOW TO USE YOUR LINK */}
           <Card className="bg-card border-border/50">
             <CardHeader>
               <CardTitle>How to Use Your Link</CardTitle>
@@ -327,7 +324,6 @@ export default function ShareStorePage() {
             </CardContent>
           </Card>
 
-          {/* Analytics Preview (Real Data) */}
           <div className="bg-secondary/10 border border-border/50 p-4 rounded-xl flex items-center justify-between">
             <div className="flex items-center gap-4">
               <div className="p-3 bg-secondary rounded-lg">
@@ -357,14 +353,12 @@ export default function ShareStorePage() {
           </div>
         </div>
 
-        {/* RIGHT: QR Code */}
         <div className="space-y-6">
           <Card className="bg-card border-border/50">
             <CardHeader>
               <CardTitle>QR Code Download</CardTitle>
             </CardHeader>
             <CardContent className="flex flex-col items-center space-y-6">
-              {/* QR Preview */}
               <div className="p-6 bg-white rounded-xl shadow-sm border-4 border-white">
                 <QRCodeSVG
                   id="shop-qr"

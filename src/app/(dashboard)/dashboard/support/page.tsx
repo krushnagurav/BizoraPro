@@ -1,3 +1,10 @@
+// src/app/(dashboard)/dashboard/support/page.tsx
+/*
+ * Support Page
+ * This component provides a support center for BizoraPro users.
+ * Users can view their support tickets, create new tickets,
+ * and access contact options for further assistance.
+ */
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -14,14 +21,12 @@ export default async function SupportPage() {
   } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
-  // Fetch Shop
   const { data: shop } = await supabase
     .from("shops")
     .select("id, plan")
     .eq("owner_id", user.id)
     .single();
 
-  // Fetch Tickets
   const { data: tickets } = await supabase
     .from("support_tickets")
     .select("*")
@@ -33,7 +38,6 @@ export default async function SupportPage() {
 
   return (
     <div className="p-8 space-y-8 max-w-5xl mx-auto">
-      {/* Header */}
       <div className="flex flex-col md:flex-row justify-between gap-4 items-start md:items-center">
         <div>
           <h1 className="text-3xl font-bold text-primary flex items-center gap-2">
@@ -49,7 +53,6 @@ export default async function SupportPage() {
         <CreateTicketDialog />
       </div>
 
-      {/* Tickets List */}
       <Tabs defaultValue="open" className="w-full">
         <TabsList className="bg-secondary/20">
           <TabsTrigger value="open">Open ({openTickets.length})</TabsTrigger>
@@ -85,7 +88,6 @@ export default async function SupportPage() {
         </TabsContent>
       </Tabs>
 
-      {/* Help Footer */}
       <div className="grid md:grid-cols-2 gap-4 mt-8">
         <a href="mailto:support@bizorapro.com" className="block">
           <Card className="bg-card border-border/50 hover:border-primary/30 transition">
@@ -102,7 +104,6 @@ export default async function SupportPage() {
             </CardContent>
           </Card>
         </a>
-        {/* FAQ Link could go here */}
       </div>
     </div>
   );

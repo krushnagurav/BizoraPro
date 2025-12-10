@@ -1,4 +1,10 @@
 // src/app/(storefront)/[slug]/shop/page.tsx
+/* Shop Products Page
+ * This page displays all products for a specific shop identified by its slug.
+ * It includes search and category filtering functionalities, allowing users
+ * to easily find products within the shop's catalog. The page layout and
+ * styling adapt based on the shop's theme configuration.
+ */
 import type { CSSProperties } from "react";
 import { createClient } from "@/src/lib/supabase/server";
 import { notFound } from "next/navigation";
@@ -112,7 +118,6 @@ export default async function ShopPage({
           </Link>
         </div>
 
-        {/* Search + Category filter */}
         <section className="space-y-4">
           <div className="p-1 bg-white border border-slate-200 rounded-xl shadow-sm">
             <ShopSearch slug={slug} />
@@ -120,7 +125,6 @@ export default async function ShopPage({
           <CategoryFilter categories={categories || []} slug={slug} />
         </section>
 
-        {/* Grid */}
         <section>
           <div className="flex items-center justify-between mb-4">
             <span className="text-sm text-slate-500">

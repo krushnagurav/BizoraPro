@@ -17,15 +17,18 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { signupAction } from "@/src/actions/auth-actions";
-import { Eye, EyeOff, Loader2, Zap } from "lucide-react";
+import { Eye, EyeOff, Loader2, MailCheck, Zap } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { toast } from "sonner";
 
 export default function SignupPage() {
+  const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
+  const [verifyNeeded, setVerifyNeeded] = useState(false);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -53,12 +56,52 @@ export default function SignupPage() {
       if (result?.error) {
         toast.error(result.error);
         setLoading(false);
+      } else if (result?.success) {
+        if (result.requireVerify) {
+          setVerifyNeeded(true);
+          setLoading(false);
+        } else if (result.redirectUrl) {
+          toast.success("Account created! Redirecting...");
+          router.push(result.redirectUrl);
+          router.refresh();
+        }
       }
     } catch {
       toast.error("Something went wrong. Try again.");
       setLoading(false);
     }
   };
+
+  if (verifyNeeded) {
+    return (
+      <Card className="bg-[#111] border-white/10 shadow-2xl relative overflow-hidden">
+        <div className="absolute top-0 left-0 right-0 h-1 bg-green-500" />
+        <CardContent className="pt-8 text-center space-y-4">
+          <div className="mx-auto w-16 h-16 bg-green-500/20 text-green-500 rounded-full flex items-center justify-center mb-4 animate-in zoom-in duration-300">
+            <MailCheck className="h-8 w-8" />
+          </div>
+          <h2 className="text-2xl font-bold text-white">
+            Verification Required
+          </h2>
+          <p className="text-gray-400">
+            It seems email verification is enabled.
+            <br />
+            Please check your email or disable it in Supabase.
+          </p>
+          <div className="pt-6">
+            <Link href="/login">
+              <Button
+                variant="outline"
+                className="w-full border-white/10 text-white hover:bg-white/10"
+              >
+                Back to Login
+              </Button>
+            </Link>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Card className="bg-[#111] border-white/10 shadow-2xl shadow-black relative overflow-hidden">
@@ -71,7 +114,7 @@ export default function SignupPage() {
           Create Your Free Shop 🚀
         </CardTitle>
         <CardDescription className="text-gray-400">
-          No credit card required. 14-day trial.
+          No credit card required. Instant Access.
         </CardDescription>
       </CardHeader>
 
@@ -119,7 +162,7 @@ export default function SignupPage() {
                 type={showPassword ? "text" : "password"}
                 required
                 minLength={8}
-                placeholder="Min 8 chars"
+                placeholder="Secure password"
                 className="bg-[#050505] border-white/10 h-12 text-white placeholder:text-gray-600 focus-visible:ring-primary/50 pr-10"
                 aria-describedby="password-help"
                 autoComplete="new-password"

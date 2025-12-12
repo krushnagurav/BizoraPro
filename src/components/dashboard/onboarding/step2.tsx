@@ -6,6 +6,7 @@
  * information from the user.
  */
 "use client";
+
 import { completeStep2 } from "@/src/actions/shop-actions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -18,16 +19,27 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { toast } from "sonner";
-import { MessageCircle, ArrowRight } from "lucide-react";
+import { MessageCircle, ArrowRight, Loader2 } from "lucide-react";
+import { useState } from "react";
 
 export function Step2Form() {
+  const [loading, setLoading] = useState(false);
+  const [category, setCategory] = useState("");
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setLoading(true);
+    const formData = new FormData(event.currentTarget);
+    const res = await completeStep2(formData);
+    setLoading(false);
+
+    if (res?.error) toast.error(res.error);
+  };
+
   return (
     <form
-      action={async (formData) => {
-        const res = await completeStep2(formData);
-        if (res?.error) toast.error(res.error);
-      }}
-      className="space-y-6"
+      onSubmit={handleSubmit}
+      className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500"
     >
       <div className="flex justify-center mb-6">
         <div className="w-16 h-16 bg-green-500/20 rounded-2xl flex items-center justify-center shadow-[0_0_30px_-5px_rgba(34,197,94,0.3)]">
@@ -45,6 +57,7 @@ export function Step2Form() {
             name="whatsapp"
             placeholder="98765 43210"
             type="tel"
+            maxLength={10}
             className="pl-24 bg-[#0A0A0A] border-white/10 h-12 text-white focus-visible:ring-green-500/50"
             required
           />
@@ -56,7 +69,9 @@ export function Step2Form() {
 
       <div className="space-y-2">
         <Label className="text-gray-300">Business Category</Label>
-        <Select name="category" required>
+        <input type="hidden" name="category" value={category} />
+
+        <Select required onValueChange={setCategory}>
           <SelectTrigger className="bg-[#0A0A0A] border-white/10 h-12 text-white">
             <SelectValue placeholder="Select Category" />
           </SelectTrigger>
@@ -70,8 +85,18 @@ export function Step2Form() {
         </Select>
       </div>
 
-      <Button className="w-full h-12 font-bold text-lg bg-primary text-black hover:bg-primary/90 gap-2">
-        Next: Add Product <ArrowRight className="w-5 h-5" />
+      <Button
+        type="submit"
+        className="w-full h-12 font-bold text-lg bg-primary text-black hover:bg-primary/90 gap-2"
+        disabled={loading}
+      >
+        {loading ? (
+          <Loader2 className="animate-spin w-5 h-5" />
+        ) : (
+          <>
+            Next: Add Product <ArrowRight className="w-5 h-5" />
+          </>
+        )}
       </Button>
     </form>
   );

@@ -24,7 +24,7 @@ import {
 } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
-import { Loader2, Save, FileText } from "lucide-react";
+import { Loader2, Save, FileText, Sparkles } from "lucide-react";
 import { VariantBuilder } from "./variant-builder";
 import { MultiImageUpload } from "../multi-image-upload";
 import { BadgeSelector } from "./badge-selector";
@@ -45,6 +45,8 @@ export function AddProductForm({
 }) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
   const [imageUrl, setImageUrl] = useState("");
   const [price, setPrice] = useState("");
   const [variants, setVariants] = useState<any[]>([]);
@@ -52,6 +54,29 @@ export function AddProductForm({
   const [badges, setBadges] = useState<string[]>([]);
   const [skus, setSkus] = useState<any[]>([]);
   const [stock, setStock] = useState(0);
+  const [seoTitle, setSeoTitle] = useState("");
+  const [seoDescription, setSeoDescription] = useState("");
+  const [isSeoTitleEdited, setIsSeoTitleEdited] = useState(false);
+  const [isSeoDescEdited, setIsSeoDescEdited] = useState(false);
+
+  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newVal = e.target.value;
+    setName(newVal);
+    if (!isSeoTitleEdited) {
+      setSeoTitle(newVal);
+    }
+  };
+
+  const handleDescriptionChange = (
+    e: React.ChangeEvent<HTMLTextAreaElement>,
+  ) => {
+    const newVal = e.target.value;
+    setDescription(newVal);
+    if (!isSeoDescEdited) {
+      const cleanDesc = newVal.replace(/(\r\n|\n|\r)/gm, " ").substring(0, 160);
+      setSeoDescription(cleanDesc);
+    }
+  };
 
   return (
     <form
@@ -60,15 +85,15 @@ export function AddProductForm({
         const status = formData.get("status") as "active" | "draft";
 
         const rawData = {
-          name: formData.get("name") as string,
-          price: Number(formData.get("price")),
+          name: name,
+          price: Number(price),
           salePrice: formData.get("salePrice")
             ? Number(formData.get("salePrice"))
             : null,
           category: formData.get("category") as string,
-          description: formData.get("description") as string,
-          seoTitle: formData.get("seoTitle") as string,
-          seoDescription: formData.get("seoDescription") as string,
+          description: description,
+          seoTitle: seoTitle,
+          seoDescription: seoDescription,
           status: status,
           imageUrl: imageUrl,
           variants: JSON.stringify(variants),
@@ -105,6 +130,8 @@ export function AddProductForm({
                 <Label>Product Name</Label>
                 <Input
                   name="name"
+                  value={name}
+                  onChange={handleNameChange}
                   placeholder="e.g. Red Cotton Saree"
                   required
                 />
@@ -113,6 +140,8 @@ export function AddProductForm({
                 <Label>Description</Label>
                 <Textarea
                   name="description"
+                  value={description}
+                  onChange={handleDescriptionChange}
                   placeholder="Product details..."
                   rows={4}
                 />
@@ -189,28 +218,64 @@ export function AddProductForm({
           </Card>
 
           <Card className="bg-card border-border/50 overflow-hidden">
-            <Accordion type="single" collapsible>
+            <Accordion type="single" collapsible defaultValue="seo">
               <AccordionItem value="seo" className="border-0">
                 <AccordionTrigger className="px-6 hover:no-underline py-4">
-                  <span className="font-bold text-lg">
-                    Search Engine Optimization (SEO)
-                  </span>
+                  <div className="flex items-center gap-2">
+                    <span className="font-bold text-lg">
+                      Search Engine Optimization (SEO)
+                    </span>
+                    <Sparkles className="w-4 h-4 text-purple-500 animate-pulse" />
+                  </div>
                 </AccordionTrigger>
                 <AccordionContent className="px-6 pb-6 pt-0 space-y-4">
-                  <div className="space-y-2">
-                    <Label>SEO Title</Label>
-                    <Input
-                      name="seoTitle"
-                      placeholder="Product Name - Shop Name"
-                    />
-                    <p className="text-xs text-muted-foreground">
-                      Leave blank to use default.
+                  <div className="p-4 bg-secondary/10 rounded-lg border border-border/50 mb-4">
+                    <p className="text-xs text-muted-foreground mb-1">
+                      Preview:
+                    </p>
+                    <h4 className="text-blue-500 text-lg font-medium hover:underline truncate cursor-pointer">
+                      {seoTitle || "Product Title"}
+                    </h4>
+                    <p className="text-green-700 text-xs mb-1">
+                      https://bizorapro.com/shop/product-slug
+                    </p>
+                    <p className="text-sm text-gray-400 line-clamp-2">
+                      {seoDescription ||
+                        "Product description will appear here..."}
                     </p>
                   </div>
+
                   <div className="space-y-2">
-                    <Label>SEO Description</Label>
+                    <div className="flex justify-between">
+                      <Label>SEO Title</Label>
+                      <span className="text-xs text-muted-foreground">
+                        {seoTitle.length} / 60
+                      </span>
+                    </div>
+                    <Input
+                      name="seoTitle"
+                      value={seoTitle}
+                      onChange={(e) => {
+                        setSeoTitle(e.target.value);
+                        setIsSeoTitleEdited(true);
+                      }}
+                      placeholder="Product Name - Shop Name"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <div className="flex justify-between">
+                      <Label>SEO Description</Label>
+                      <span className="text-xs text-muted-foreground">
+                        {seoDescription.length} / 160
+                      </span>
+                    </div>
                     <Textarea
                       name="seoDescription"
+                      value={seoDescription}
+                      onChange={(e) => {
+                        setSeoDescription(e.target.value);
+                        setIsSeoDescEdited(true);
+                      }}
                       placeholder="Short description..."
                       rows={2}
                     />

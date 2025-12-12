@@ -264,3 +264,39 @@ export async function deleteTemplateAction(formData: FormData) {
   await supabase.from("notification_templates").delete().eq("id", id);
   revalidatePath("/admin/templates");
 }
+
+export async function giftProPlanAction(formData: FormData) {
+  const shopId = formData.get("shopId") as string;
+  const durationMonths = Number(formData.get("months"));
+
+  if (!shopId || !durationMonths) return { error: "Invalid data" };
+
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  const expiryDate = new Date();
+  expiryDate.setMonth(expiryDate.getMonth() + durationMonths);
+
+  const { error } = await supabase
+    .from("shops")
+    .update({
+      plan: "pro",
+      plan_expires_at: expiryDate.toISOString(),
+    })
+    .eq("id", shopId);
+
+  if (error) return { error: error.message };
+
+  await supabase.from("audit_logs").insert({
+    actor_id: user?.id,
+    actor_email: user?.email,
+    action: "Gifted Pro Plan",
+    target: `Shop ID: ${shopId}`,
+    details: { duration: `${durationMonths} Months`, expires: expiryDate },
+  });
+
+  revalidatePath(`/admin/shops/${shopId}`);
+  return { success: `Pro Plan gifted for ${durationMonths} months!` };
+}

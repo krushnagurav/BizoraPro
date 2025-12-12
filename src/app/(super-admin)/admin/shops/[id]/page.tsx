@@ -10,6 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { toggleShopStatusAction } from "@/src/actions/admin-actions";
 import { ImpersonateButton } from "@/src/components/admin/impersonate-button";
+import { GiftProDialog } from "@/src/components/admin/shops/gift-pro-dialog";
 import { createAdminClient } from "@/src/lib/supabase/admin";
 import { createClient } from "@/src/lib/supabase/server";
 import {
@@ -108,6 +109,8 @@ export default async function AdminShopDetailPage({
         </div>
 
         <div className="flex gap-2 flex-wrap">
+          <GiftProDialog shopId={shop.id} currentPlan={shop.plan} />
+
           <ImpersonateButton userId={shop.owner_id} />
 
           <form action={toggleShopStatusAction}>

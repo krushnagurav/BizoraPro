@@ -18,10 +18,12 @@ import { Label } from "@/components/ui/label";
 import { loginAction } from "@/src/actions/auth-actions";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { toast } from "sonner";
 
 export default function LoginPage() {
+  const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
@@ -29,16 +31,20 @@ export default function LoginPage() {
     event.preventDefault();
     setLoading(true);
 
+    const formData = new FormData(event.currentTarget);
+
     try {
-      const formData = new FormData(event.currentTarget);
       const result = await loginAction(formData);
 
       if (result?.error) {
         toast.error(result.error);
         setLoading(false);
+      } else if (result?.redirectUrl) {
+        toast.success("Welcome back!");
+        router.push(result.redirectUrl);
+        router.refresh();
       }
-    } catch (err) {
-      console.error(err);
+    } catch {
       toast.error("Something went wrong. Please try again.");
       setLoading(false);
     }

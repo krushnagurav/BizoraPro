@@ -9,6 +9,7 @@
 
 import { useState } from "react";
 import { createProductAction } from "@/src/actions/product-actions";
+import { completeOnboardingAction } from "@/src/actions/shop-actions";
 import { ImageUpload } from "@/src/components/dashboard/image-upload";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -18,6 +19,7 @@ import { ShoppingBag, Rocket, Loader2 } from "lucide-react";
 
 export function Step3Form() {
   const [loading, setLoading] = useState(false);
+  const [skipping, setSkipping] = useState(false);
   const [imageUrl, setImageUrl] = useState("");
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -53,6 +55,12 @@ export function Step3Form() {
         window.location.href = result.data.redirect;
       }
     }
+  };
+
+  const handleSkip = async () => {
+    setSkipping(true);
+    toast.info("Finalizing setup...");
+    await completeOnboardingAction();
   };
 
   return (
@@ -95,7 +103,7 @@ export function Step3Form() {
         <Button
           type="submit"
           className="w-full h-12 font-bold text-lg bg-primary text-black hover:bg-primary/90 gap-2"
-          disabled={loading}
+          disabled={loading || skipping}
         >
           {loading ? (
             <Loader2 className="animate-spin w-5 h-5" />
@@ -106,15 +114,14 @@ export function Step3Form() {
           )}
         </Button>
 
-        <p
-          onClick={() => {
-            toast.info("Skipping product setup...");
-            window.location.href = "/dashboard";
-          }}
-          className="text-center text-xs text-gray-500 mt-4 cursor-pointer hover:text-white hover:underline"
+        <button
+          type="button"
+          onClick={handleSkip}
+          disabled={loading || skipping}
+          className="w-full text-center text-xs text-gray-500 mt-4 cursor-pointer hover:text-white hover:underline disabled:opacity-50"
         >
-          Skip for now
-        </p>
+          {skipping ? "Setting up dashboard..." : "Skip for now"}
+        </button>
       </div>
     </form>
   );

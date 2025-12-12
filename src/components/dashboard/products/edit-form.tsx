@@ -24,7 +24,7 @@ import {
 } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
-import { Loader2, Save, FileText } from "lucide-react";
+import { Loader2, Save, FileText, Sparkles } from "lucide-react";
 import { VariantBuilder } from "./variant-builder";
 import { MultiImageUpload } from "../multi-image-upload";
 import { BadgeSelector } from "./badge-selector";
@@ -47,20 +47,50 @@ export function EditProductForm({
 }) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
-
+  const [name, setName] = useState(product.name || "");
+  const [description, setDescription] = useState(product.description || "");
+  const [price, setPrice] = useState<string>(
+    product.price !== undefined && product.price !== null
+      ? String(product.price)
+      : "",
+  );
   const [imageUrl, setImageUrl] = useState<string>(product.image_url || "");
   const [variants, setVariants] = useState<any[]>(product.variants || []);
   const [gallery, setGallery] = useState<string[]>(
     product.gallery_images || [],
   );
   const [badges, setBadges] = useState<string[]>(product.badges || []);
-  const [price, setPrice] = useState<string>(
-    product.price !== undefined && product.price !== null
-      ? String(product.price)
-      : "",
-  );
-  const [skus, setSkus] = useState<any[]>(product.skus || []);
+  const [skus, setSkus] = useState<any[]>(product.product_skus || []);
   const [stock, setStock] = useState<number>(product.stock_count ?? 0);
+
+  const [seoTitle, setSeoTitle] = useState(product.seo_title || "");
+  const [seoDescription, setSeoDescription] = useState(
+    product.seo_description || "",
+  );
+
+  const [isSeoTitleEdited, setIsSeoTitleEdited] = useState(!!product.seo_title);
+  const [isSeoDescEdited, setIsSeoDescEdited] = useState(
+    !!product.seo_description,
+  );
+
+  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newVal = e.target.value;
+    setName(newVal);
+    if (!isSeoTitleEdited) {
+      setSeoTitle(newVal);
+    }
+  };
+
+  const handleDescriptionChange = (
+    e: React.ChangeEvent<HTMLTextAreaElement>,
+  ) => {
+    const newVal = e.target.value;
+    setDescription(newVal);
+    if (!isSeoDescEdited) {
+      const cleanDesc = newVal.replace(/(\r\n|\n|\r)/gm, " ").substring(0, 160);
+      setSeoDescription(cleanDesc);
+    }
+  };
 
   return (
     <form
@@ -71,18 +101,15 @@ export function EditProductForm({
 
         const rawData = {
           id: product.id,
-          name: formData.get("name") as string,
-          price: Number(formData.get("price")),
+          name: name,
+          price: Number(price),
           salePrice: formData.get("salePrice")
             ? Number(formData.get("salePrice"))
             : null,
           category: formData.get("category") as string,
-          description: formData.get("description") as string,
-          seoTitle:
-            (formData.get("seoTitle") as string) ?? (product.seo_title || ""),
-          seoDescription:
-            (formData.get("seoDescription") as string) ??
-            (product.seo_description || ""),
+          description: description,
+          seoTitle: seoTitle,
+          seoDescription: seoDescription,
           status:
             status ??
             (product.status as "active" | "draft" | undefined) ??
@@ -127,7 +154,8 @@ export function EditProductForm({
                 <Label>Product Name</Label>
                 <Input
                   name="name"
-                  defaultValue={product.name}
+                  value={name}
+                  onChange={handleNameChange}
                   placeholder="e.g. Red Cotton Saree"
                   required
                 />
@@ -136,7 +164,8 @@ export function EditProductForm({
                 <Label>Description</Label>
                 <Textarea
                   name="description"
-                  defaultValue={product.description || ""}
+                  value={description}
+                  onChange={handleDescriptionChange}
                   placeholder="Product details..."
                   rows={4}
                 />
@@ -218,28 +247,64 @@ export function EditProductForm({
           </Card>
 
           <Card className="bg-card border-border/50 overflow-hidden">
-            <Accordion type="single" collapsible>
+            <Accordion type="single" collapsible defaultValue="seo">
               <AccordionItem value="seo" className="border-0">
                 <AccordionTrigger className="px-6 hover:no-underline py-4">
-                  <span className="font-bold text-lg">
-                    Search Engine Optimization (SEO)
-                  </span>
+                  <div className="flex items-center gap-2">
+                    <span className="font-bold text-lg">
+                      Search Engine Optimization (SEO)
+                    </span>
+                    <Sparkles className="w-4 h-4 text-purple-500 animate-pulse" />
+                  </div>
                 </AccordionTrigger>
                 <AccordionContent className="px-6 pb-6 pt-0 space-y-4">
-                  <div className="space-y-2">
-                    <Label>SEO Title</Label>
-                    <Input
-                      name="seoTitle"
-                      placeholder="Product Name - Shop Name"
-                    />
-                    <p className="text-xs text-muted-foreground">
-                      Leave blank to use default.
+                  <div className="p-4 bg-secondary/10 rounded-lg border border-border/50 mb-4">
+                    <p className="text-xs text-muted-foreground mb-1">
+                      Preview:
+                    </p>
+                    <h4 className="text-blue-500 text-lg font-medium hover:underline truncate cursor-pointer">
+                      {seoTitle || "Product Title"}
+                    </h4>
+                    <p className="text-green-700 text-xs mb-1">
+                      https://bizorapro.com/shop/product-slug
+                    </p>
+                    <p className="text-sm text-gray-400 line-clamp-2">
+                      {seoDescription ||
+                        "Product description will appear here..."}
                     </p>
                   </div>
+
                   <div className="space-y-2">
-                    <Label>SEO Description</Label>
+                    <div className="flex justify-between">
+                      <Label>SEO Title</Label>
+                      <span className="text-xs text-muted-foreground">
+                        {seoTitle.length} / 60
+                      </span>
+                    </div>
+                    <Input
+                      name="seoTitle"
+                      value={seoTitle}
+                      onChange={(e) => {
+                        setSeoTitle(e.target.value);
+                        setIsSeoTitleEdited(true);
+                      }}
+                      placeholder="Product Name - Shop Name"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <div className="flex justify-between">
+                      <Label>SEO Description</Label>
+                      <span className="text-xs text-muted-foreground">
+                        {seoDescription.length} / 160
+                      </span>
+                    </div>
                     <Textarea
                       name="seoDescription"
+                      value={seoDescription}
+                      onChange={(e) => {
+                        setSeoDescription(e.target.value);
+                        setIsSeoDescEdited(true);
+                      }}
                       placeholder="Short description..."
                       rows={2}
                     />
@@ -280,7 +345,6 @@ export function EditProductForm({
                   </SelectContent>
                 </Select>
               </div>
-
               <div className="space-y-2">
                 <Label>Badges</Label>
                 <BadgeSelector value={badges} onChange={setBadges} />
@@ -304,7 +368,7 @@ export function EditProductForm({
                   <Loader2 className="animate-spin mr-2" />
                 ) : (
                   <>
-                    <Save className="w-4 h-4 mr-2" /> Save & Publish
+                    <Save className="w-4 h-4 mr-2" /> Save Changes
                   </>
                 )}
               </Button>
@@ -317,7 +381,7 @@ export function EditProductForm({
                 className="w-full"
                 disabled={loading}
               >
-                <FileText className="w-4 h-4 mr-2" /> Save as Draft
+                <FileText className="w-4 h-4 mr-2" /> Revert to Draft
               </Button>
 
               <Button
@@ -346,7 +410,7 @@ export function EditProductForm({
           className="flex-1 font-bold bg-primary text-black"
           disabled={loading}
         >
-          {loading ? <Loader2 className="animate-spin mr-2" /> : "Save Product"}
+          {loading ? <Loader2 className="animate-spin mr-2" /> : "Save Changes"}
         </Button>
       </div>
 

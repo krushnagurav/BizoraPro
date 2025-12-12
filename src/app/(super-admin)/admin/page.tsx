@@ -6,6 +6,7 @@
  * It includes statistics on shops, revenue, growth trends, and recent activity.
  */
 import { Card, CardContent } from "@/components/ui/card";
+import { AtRiskShops } from "@/src/components/admin/at-risk-shops";
 import { GrowthChart } from "@/src/components/admin/growth-chart";
 import { RecentShopsTable } from "@/src/components/admin/recent-shops-table";
 import { createClient } from "@/src/lib/supabase/server";
@@ -40,6 +41,10 @@ export default async function AdminDashboardPage() {
       .select("priority, status")
       .eq("status", "open"),
   ]);
+
+  const { data: atRiskShops } = await supabase.rpc("get_at_risk_shops", {
+    days_old: 3,
+  });
 
   const shops = shopsData.data || [];
   const revenue = revenueData.data || [];
@@ -135,6 +140,7 @@ export default async function AdminDashboardPage() {
       </div>
 
       <div className="grid lg:grid-cols-3 gap-8">
+        <AtRiskShops shops={atRiskShops || []} />
         <GrowthChart data={chartData} />
         <RecentShopsTable shops={shops.slice(0, 5)} />
       </div>

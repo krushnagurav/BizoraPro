@@ -43,11 +43,9 @@ export async function loginAction(formData: FormData) {
     return { error: error.message };
   }
 
-  if (parsed.data.email === ADMIN_EMAIL) {
-    redirect("/admin");
-  }
-
-  redirect("/dashboard");
+  const destination =
+    parsed.data.email === ADMIN_EMAIL ? "/admin" : "/dashboard";
+  return { success: true, redirectUrl: destination };
 }
 
 export async function signupAction(formData: FormData) {
@@ -59,7 +57,7 @@ export async function signupAction(formData: FormData) {
   }
   const supabase = await createClient();
 
-  const { error } = await supabase.auth.signUp({
+  const { data: authData, error } = await supabase.auth.signUp({
     email: parsed.data.email,
     password: parsed.data.password,
     options: {
@@ -73,11 +71,13 @@ export async function signupAction(formData: FormData) {
     return { error: error.message };
   }
 
-  if (parsed.data.email === ADMIN_EMAIL) {
-    redirect("/admin");
+  if (!authData.session) {
+    return { success: true, requireVerify: true };
   }
 
-  redirect("/onboarding");
+  const destination =
+    parsed.data.email === ADMIN_EMAIL ? "/admin" : "/onboarding";
+  return { success: true, requireVerify: false, redirectUrl: destination };
 }
 
 export async function logoutAction() {

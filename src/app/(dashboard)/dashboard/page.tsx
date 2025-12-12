@@ -19,6 +19,7 @@ import {
 } from "@/src/components/dashboard/widgets/skeletons";
 import { Megaphone } from "lucide-react";
 import { LowStockWidget } from "@/src/components/dashboard/widgets/low-stock-widget";
+import { OnboardingProgress } from "@/src/components/dashboard/widgets/onboarding-progress";
 
 export default async function DashboardHome() {
   const supabase = await createClient();
@@ -61,6 +62,14 @@ export default async function DashboardHome() {
           </p>
         </div>
       )}
+
+      <Suspense
+        fallback={
+          <div className="h-40 bg-secondary/10 rounded-xl animate-pulse mb-8" />
+        }
+      >
+        <OnboardingProgress />
+      </Suspense>
 
       <Suspense fallback={<StatsSkeleton />}>
         <StatsCards shopId={shop.id} />

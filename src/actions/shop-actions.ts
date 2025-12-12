@@ -14,6 +14,27 @@ import { createClient } from "../lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import { categoryPresets } from "@/src/lib/fonts";
 
+const RESERVED_SLUGS = [
+  "admin",
+  "dashboard",
+  "login",
+  "signup",
+  "onboarding",
+  "api",
+  "auth",
+  "settings",
+  "profile",
+  "billing",
+  "support",
+  "legal",
+  "pricing",
+  "contact",
+  "about",
+  "shop",
+  "cart",
+  "checkout",
+];
+
 const step1Schema = z.object({
   name: z.string().min(3, "Shop name too short"),
   slug: z
@@ -35,27 +56,69 @@ export async function completeStep1(formData: FormData) {
   if (!user) return { error: "Login required" };
 
   const raw = { name: formData.get("name"), slug: formData.get("slug") };
-  const parsed = step1Schema.safeParse(raw);
 
-  if (!parsed.success) {
-    return { error: parsed.error.issues[0]?.message ?? "Invalid shop details" };
+  if (!raw.name || String(raw.name).length < 3)
+    return { error: "Name too short" };
+  if (!raw.slug || String(raw.slug).length < 3)
+    return { error: "URL too short" };
+
+  const slug = String(raw.slug).toLowerCase();
+
+  if (RESERVED_SLUGS.includes(slug)) {
+    return { error: "This Shop URL is reserved. Please choose another." };
   }
 
-  const { data: exists } = await supabase
+  const { data: existingShop } = await supabase
     .from("shops")
     .select("id")
-    .eq("slug", parsed.data.slug)
+    .eq("owner_id", user.id)
     .single();
-  if (exists) return { error: "URL already taken" };
 
-  const { error } = await supabase.from("shops").insert({
-    owner_id: user.id,
-    name: parsed.data.name,
-    slug: parsed.data.slug,
-    onboarding_step: 2,
-  });
+  let error;
 
-  if (error) return { error: error.message };
+  if (existingShop) {
+    const { data: slugTaken } = await supabase
+      .from("shops")
+      .select("id")
+      .eq("slug", slug)
+      .neq("id", existingShop.id)
+      .single();
+
+    if (slugTaken) return { error: "URL already taken by another shop" };
+
+    const { error: updateError } = await supabase
+      .from("shops")
+      .update({
+        name: raw.name,
+        slug: slug,
+        onboarding_step: 2,
+      })
+      .eq("id", existingShop.id);
+    error = updateError;
+  } else {
+    const { data: slugTaken } = await supabase
+      .from("shops")
+      .select("id")
+      .eq("slug", slug)
+      .single();
+
+    if (slugTaken) return { error: "URL already taken" };
+
+    const { error: insertError } = await supabase.from("shops").insert({
+      owner_id: user.id,
+      name: raw.name,
+      slug: slug,
+      onboarding_step: 2,
+    });
+    error = insertError;
+  }
+
+  if (error) {
+    if (error.code === "23505") {
+      return { error: "This URL was just taken. Please try another." };
+    }
+    return { error: error.message };
+  }
 
   redirect("/onboarding");
 }
@@ -147,15 +210,33 @@ export async function completeStep3(formData: FormData) {
   redirect("/dashboard");
 }
 
+export async function completeOnboardingAction() {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) return { error: "Login required" };
+
+  const { error } = await supabase
+    .from("shops")
+    .update({ onboarding_step: 4 })
+    .eq("owner_id", user.id);
+
+  if (error) return { error: error.message };
+
+  redirect("/dashboard");
+}
+
 export async function updateShopAppearanceAction(formData: FormData) {
   const bannerUrl = formData.get("bannerUrl") as string;
   const primaryColor = formData.get("primaryColor") as string;
+  const logoUrl = formData.get("logoUrl") as string;
 
   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  const logoUrl = formData.get("logoUrl") as string;
 
   if (!user) return { error: "Login required" };
 
@@ -167,6 +248,7 @@ export async function updateShopAppearanceAction(formData: FormData) {
         bannerUrl: bannerUrl || "",
         logoUrl: logoUrl,
       },
+      logo_url: logoUrl || null,
     })
     .eq("owner_id", user.id);
 
